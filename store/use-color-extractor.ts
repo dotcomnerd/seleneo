@@ -1,8 +1,8 @@
 import { create } from 'zustand'
 
 interface ActiveIndexState {
-  extractedColor: {}
-  setExtractedColor: (extractedColor: {}) => void
+  extractedColor: object
+  setExtractedColor: (extractedColor: object) => void
 
   imagesCheck: string[]
   setImagesCheck: (imagesCheck: string[]) => void
