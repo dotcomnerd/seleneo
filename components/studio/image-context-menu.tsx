@@ -57,7 +57,7 @@ export default function ContextMenuImage({
   const { showControls, setShowControls } = useMoveable()
 
 
-  const handleImageDelete = (id?: number) => {
+  const handleImageDelete = () => {
     // const newImages = images.filter((image) => image.id !== id)
     // setImages(newImages)
 
@@ -106,7 +106,7 @@ export default function ContextMenuImage({
   useHotkeys('Delete', () => {
     if (selectedImage)
       if (showControls) {
-        handleImageDelete(selectedImage)
+        handleImageDelete()
         setShowControls(false)
         setSelectedImage(null)
       }
@@ -120,7 +120,7 @@ export default function ContextMenuImage({
     const scaleY = image.naturalHeight / image.height
     canvas.width = crop.width
     canvas.height = crop.height
-    const ctx: any = canvas.getContext('2d')
+    const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d') as CanvasRenderingContext2D // hacky
 
     const pixelRatio = window.devicePixelRatio
     canvas.width = crop.width * pixelRatio * scaleX
@@ -222,7 +222,7 @@ export default function ContextMenuImage({
           <ContextMenuItem
             inset
             onClick={() => {
-              selectedImage && handleImageDelete(selectedImage)
+              selectedImage && handleImageDelete()
             }}
             className="text-[#F46567]/70 focus:text-[#f46567]/80"
           >
@@ -287,11 +287,11 @@ export default function ContextMenuImage({
 
 function ReplaceImage() {
   const { setImages, images } = useImageOptions()
-  const { selectedImage, setSelectedImage } = useSelectedLayers()
+  const { selectedImage } = useSelectedLayers()
 
   const { setImagesCheck, imagesCheck } = useColorExtractor()
 
-  const onDrop = async (file: any) => {
+  const onDrop = async (file: File | undefined) => {
     const analyze = (await import('rgbaster')).default
     if (file) {
       const imageUrl = URL.createObjectURL(file)
