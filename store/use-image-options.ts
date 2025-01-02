@@ -248,7 +248,7 @@ export const useImageOptions = create(
   )
 )
 
-export const useTemporalStore = <T extends unknown>(
+export const useTemporalStore = <T>(
   selector: (state: TemporalState<ImageOptionsState>) => T,
   equality?: (a: T, b: T) => boolean
 ) => useStore(useImageOptions.temporal, selector, equality)
