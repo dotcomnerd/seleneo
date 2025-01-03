@@ -1,35 +1,55 @@
-"use client"
+'use client'
 
 import { useState } from 'react'
-import { Label } from "@/components/ui/label"
-import { Input } from "@/components/ui/input"
+import {
+  HexAlphaColorPicker,
+  HexColorInput,
+  HexColorPicker,
+} from 'react-colorful'
 
-export function ColorPicker() {
-  const [color, setColor] = useState('#000000')
+export default function ColorPicker({
+  onChange,
+  colorState,
+  shouldShowAlpha = true,
+}: {
+  onChange: (color: string) => void
+  colorState: string
+  shouldShowAlpha?: boolean
+}) {
+  const [color, setColor] = useState(colorState)
 
   return (
-    <div className="flex items-center gap-2">
-      <div
-        className="w-10 h-10 rounded-md border"
-        style={{ backgroundColor: color }}
-      />
-      <div>
-        <Label className="sr-only" htmlFor="color-input">Choose color</Label>
-        <Input
-          id="color-input"
-          type="color"
-          value={color}
-          onChange={(e) => setColor(e.target.value)}
-          className="w-full h-10"
-        />
+    <>
+      <div className="flex-center flex-col gap-2">
+        {shouldShowAlpha ? (
+          <HexAlphaColorPicker
+            color={color}
+            onChange={(color) => {
+              setColor(color)
+              onChange(color)
+            }}
+          />
+        ) : (
+          <HexColorPicker
+            color={color}
+            onChange={(color) => {
+              setColor(color)
+              onChange(color)
+            }}
+          />
+        )}
+        <div className="flex-center relative h-full w-full rounded-md border border-[#22262b] bg-formDark text-center text-sm uppercase text-gray-100 md:text-sm">
+          <span className="absolute left-2 font-medium text-gray-400">#</span>
+          <HexColorInput
+            color={color}
+            onChange={(color) => {
+              setColor(color)
+              onChange(color)
+            }}
+            className="h-full w-full rounded-md border-[#22262b] bg-formDark px-3 py-3 text-center text-gray-100 focus:border-[#8e8ece] focus:outline-none focus:ring-1 focus:ring-[#8e8ece] md:text-sm"
+          />
+        </div>
       </div>
-      <Input
-        type="text"
-        value={color}
-        onChange={(e) => setColor(e.target.value)}
-        className="w-24"
-      />
-    </div>
+    </>
   )
 }
-
