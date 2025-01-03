@@ -1,18 +1,18 @@
-import RoundnessOption from '../image-options/roundness-option'
-import FramePicker from './frame-picker'
-import AdditionalFrameOptions from './additional-frame-options'
 import { Separator } from '@/components/ui/separator'
+import RoundnessOption from '../image-options/roundness-option'
+import AdditionalFrameOptions from './additional-frame-options'
+import FramePicker from './frame-picker'
 
 export default function FrameOptions() {
-  return (
-    <>
-      <FramePicker />
+    return (
+        <>
+            <FramePicker />
 
-      <RoundnessOption />
+            <RoundnessOption />
 
-      <Separator className="mt-8 h-[0.1rem] w-full" />
+            <Separator className="mt-8 h-[0.1rem] w-full" />
 
-      <AdditionalFrameOptions />
-    </>
-  )
+            <AdditionalFrameOptions />
+        </>
+    )
 }
