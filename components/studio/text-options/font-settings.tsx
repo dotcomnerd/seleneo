@@ -1,7 +1,16 @@
 'use client'
 
-import PopupColorPicker from '@/components/popup-color-picker'
 import { Button } from '@/components/ui/button'
+import {
+    Card,
+    CardContent
+} from '@/components/ui/card'
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from '@/components/ui/popover'
+import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import {
     Tooltip,
@@ -11,24 +20,17 @@ import {
 } from '@/components/ui/tooltip'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
-import { Font } from '@samuelmeuli/font-manager'
 import {
     AlignHorizontalJustifyCenter,
     AlignLeft,
     AlignRight,
     GalleryVerticalEnd,
     Minus,
+    Palette,
     Plus,
 } from 'lucide-react'
-import dynamic from 'next/dynamic'
-
-const FontPicker = dynamic(
-    // @ts-expect-error - font-picker doesnt like lazyload.. :(
-    () => import('font-picker-react').then((mod) => mod.default),
-    {
-        ssr: false,
-    }
-)
+import { HexColorInput, HexColorPicker } from 'react-colorful'
+import FontPicker from './font-picker'
 
 export default function FontSettings() {
     const { setTexts, texts } = useImageOptions()
@@ -104,320 +106,272 @@ export default function FontSettings() {
     }
 
     return (
-        <div className="relative h-full w-full">
-            <div className="mb-3 mt-2 flex items-center px-1 md:max-w-full">
-                <h1 className="text-[0.85rem]">Font family</h1>
-            </div>
-            <FontPicker
-                apiKey={process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY!}
-                activeFontFamily={selectedText ? texts[selectedText - 1]?.style.fontFamily : 'Inter'}
-                variants={['200', '300', 'regular', '500', '600', '700', '800']}
-                onChange={(font) => {
-                    selectedText &&
-                        setTexts(
-                            texts.map((text, index) => index === selectedText - 1
-                                ? {
-                                    ...text,
-                                    style: {
-                                        ...text.style,
-                                        fontFamily: font.family,
-                                    },
-                                }
-                                : text
-                            )
-                        )
-                }}
-                pickerId={''}
-                families={[]}
-                categories={[]}
-                scripts={[]}
-                filter={() => true }
-                limit={0}
-                sort={'popularity'} />
-
-            <div className={`mt-8 flex flex-col gap-3 px-1`}>
-                <h1 className="text-[0.85rem]">Weight</h1>
-                <span className="inline-flex rounded-md shadow-sm">
-                    <button
-                        type="button"
-                        className="relative -ml-px inline-flex items-center rounded-l-md bg-formDark px-2 py-2 text-dark ring-1 ring-inset ring-border focus:z-10 disabled:cursor-not-allowed"
-                        onClick={
-                            selectedText && texts[selectedText - 1]?.style.fontWeight > 200
-                                ? () =>
-                                    handleFontWeight(
-                                        texts[selectedText - 1]?.style.fontWeight - 100
+        <Card className="border-none shadow-none">
+            <CardContent className="p-4">
+                <div className="space-y-6">
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Font Family</h3>
+                        <FontPicker
+                            apiKey={process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY!}
+                            activeFontFamily={selectedText ? texts[selectedText - 1]?.style.fontFamily : 'Inter'}
+                            variants={['200', '300', 'regular', '500', '600', '700', '800']}
+                            onChange={(font) => {
+                                selectedText &&
+                                    setTexts(
+                                        texts.map((text, index) =>
+                                            index === selectedText - 1
+                                                ? {
+                                                    ...text,
+                                                    style: {
+                                                        ...text.style,
+                                                        fontFamily: font.family,
+                                                    },
+                                                }
+                                                : text
+                                        )
                                     )
-                                : () => handleFontWeight(200)
-                        }
-                    >
-                        <span className="sr-only">Decrease font weight</span>
-                        <Minus className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                    <div className="flex-center border-b border-t border-border bg-formDark px-4">
-                        <p className="text-[0.85rem] font-medium text-dark/80">
-                            {selectedText ? texts[selectedText - 1]?.style.fontWeight : 400}
-                        </p>
+                            }}
+                        />
                     </div>
-                    <button
-                        type="button"
-                        className="relative inline-flex items-center rounded-r-md bg-formDark px-2 py-2 text-dark ring-1 ring-inset ring-border focus:z-10 disabled:cursor-not-allowed"
-                        onClick={
-                            selectedText && texts[selectedText - 1]?.style.fontWeight < 800
-                                ? () =>
-                                    handleFontWeight(
-                                        texts[selectedText - 1]?.style.fontWeight + 100
+
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Weight</h3>
+                        <div className="flex h-9 items-center rounded-md border border-border bg-transparent">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-none rounded-l-md border-r px-2"
+                                onClick={() =>
+                                    selectedText && texts[selectedText - 1]?.style.fontWeight > 200
+                                        ? handleFontWeight(texts[selectedText - 1]?.style.fontWeight - 100)
+                                        : handleFontWeight(200)
+                                }
+                            >
+                                <Minus className="h-4 w-4" />
+                            </Button>
+                            <div className="flex-1 text-center text-sm">
+                                {selectedText ? texts[selectedText - 1]?.style.fontWeight : 400}
+                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="rounded-none rounded-r-md border-l px-2"
+                                onClick={() =>
+                                    selectedText && texts[selectedText - 1]?.style.fontWeight < 800
+                                        ? handleFontWeight(texts[selectedText - 1]?.style.fontWeight + 100)
+                                        : handleFontWeight(800)
+                                }
+                            >
+                                <Plus className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Color</h3>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    className="w-full justify-start gap-2"
+                                    style={{
+                                        color: selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'
+                                    }}
+                                >
+                                    <Palette className="h-4 w-4" />
+                                    {selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-64">
+                                <HexColorPicker
+                                    color={selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                    onChange={handleColorChange}
+                                />
+                                <div className="mt-4">
+                                    <HexColorInput
+                                        color={selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                        onChange={handleColorChange}
+                                        className="w-full rounded-md border px-2 py-1"
+                                    />
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-sm font-medium">Letter Spacing</h3>
+                            <span className="text-sm text-muted-foreground">
+                                {selectedText
+                                    ? Math.round(texts[selectedText - 1]?.style.letterSpacing * 100) / 100
+                                    : 0}
+                            </span>
+                        </div>
+                        <Slider
+                            defaultValue={[0]}
+                            max={0.2}
+                            min={-0.05}
+                            step={0.001}
+                            onIncrement={()=>{}}
+                            onDecrement={()=>{}}
+                            value={
+                                texts.length !== 0 && selectedText
+                                    ? [+texts[selectedText - 1]?.style.letterSpacing]
+                                    : [0]
+                            }
+                            onValueChange={(value: number[]) => {
+                                setShowTextControls(false)
+                                selectedText &&
+                                    setTexts(
+                                        texts.map((text, index) =>
+                                            index === selectedText - 1
+                                                ? {
+                                                    ...text,
+                                                    style: {
+                                                        ...text.style,
+                                                        letterSpacing: value[0],
+                                                    },
+                                                }
+                                                : text
+                                        )
                                     )
-                                : () => handleFontWeight(800)
-                        }
-                    >
-                        <span className="sr-only">Increase font weight</span>
-                        <Plus className="h-5 w-5" aria-hidden="true" />
-                    </button>
-                </span>
-            </div>
+                            }}
+                            onValueCommit={() => setShowTextControls(true)}
+                        />
+                    </div>
 
-            <div className={`mt-8 flex flex-col gap-3 px-1`}>
-                <h1 className="text-[0.85rem]">Color</h1>
-                <PopupColorPicker
-                    color={
-                        selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'
-                    }
-                    onChange={handleColorChange}
-                />
-            </div>
+                    <div className="space-y-2">
+                        <h3 className="text-sm font-medium">Alignment</h3>
+                        <div className="flex gap-2">
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleAlignmentChange('left')}
+                                        >
+                                            <AlignLeft className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Left align</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
 
-            <div className={`mt-8 flex flex-col gap-3 px-1 md:max-w-full`}>
-                <h1 className="text-[0.85rem]">Letter spacing</h1>
-                <Slider
-                    defaultValue={[0]}
-                    max={0.2}
-                    min={-0.05}
-                    step={0.001}
-                    value={
-                        texts.length !== 0 && selectedText
-                            ? [+texts[selectedText - 1]?.style.letterSpacing]
-                            : [0]
-                    }
-                    onValueChange={(value: number[]) => {
-                        setShowTextControls(false)
-                        selectedText &&
-                            setTexts(
-                                texts.map((text, index) =>
-                                    index === selectedText - 1
-                                        ? {
-                                            ...text,
-                                            style: {
-                                                ...text.style,
-                                                letterSpacing: value[0],
-                                            },
-                                        }
-                                        : text
-                                )
-                            )
-                    }}
-                    onValueCommit={() => setShowTextControls(true)}
-                    onIncrement={() => {
-                        if (!selectedText) return
-                        if (
-                            Number(texts[selectedText - 1]?.style.letterSpacing) >= 0.2 ||
-                            texts.length === 0
-                        )
-                            return
-                        setTexts(
-                            texts.map((text, index) =>
-                                index === selectedText - 1
-                                    ? {
-                                        ...text,
-                                        style: {
-                                            ...text.style,
-                                            letterSpacing: Number(text.style.letterSpacing) + 0.001,
-                                        },
-                                    }
-                                    : text
-                            )
-                        )
-                    }}
-                    onDecrement={() => {
-                        if (!selectedText) return
-                        if (
-                            Number(texts[selectedText - 1]?.style.letterSpacing) <= -0.05 ||
-                            texts.length === 0
-                        )
-                            return
-                        setTexts(
-                            texts.map((text, index) =>
-                                index === selectedText - 1
-                                    ? {
-                                        ...text,
-                                        style: {
-                                            ...text.style,
-                                            letterSpacing: Number(text.style.letterSpacing) - 0.001,
-                                        },
-                                    }
-                                    : text
-                            )
-                        )
-                    }}
-                />
-            </div>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleAlignmentChange('center')}
+                                        >
+                                            <AlignHorizontalJustifyCenter className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Center align</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
 
-            <div className={`mt-8 flex flex-col gap-3 px-1`}>
-                <h1 className="text-[0.85rem]">Alignment</h1>
-                <div className="flex flex-wrap gap-4">
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size={'x-sm'}
-                                    className="h-9 w-9 rounded-lg p-0"
-                                    variant="icon"
-                                    onClick={() => handleAlignmentChange('left')}
-                                >
-                                    <AlignLeft size={19} />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Left</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => handleAlignmentChange('right')}
+                                        >
+                                            <AlignRight className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>Right align</TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
+                    </div>
 
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size={'x-sm'}
-                                    className="h-9 w-9 rounded-lg p-0"
-                                    variant="icon"
-                                    onClick={() => handleAlignmentChange('center')}
-                                >
-                                    <AlignHorizontalJustifyCenter size={19} />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Center</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <Separator />
 
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    size={'x-sm'}
-                                    className="h-9 w-9 rounded-lg p-0"
-                                    variant="icon"
-                                    onClick={() => handleAlignmentChange('right')}
-                                >
-                                    <AlignRight size={19} />
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>Right</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                            <GalleryVerticalEnd className="rotate-90 h-4 w-4" />
+                            <h3 className="text-sm font-medium uppercase">Text Shadow</h3>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-sm font-medium">Opacity</h3>
+                                <span className="text-sm text-muted-foreground">
+                                    {Math.round(
+                                        Number(selectedText ? texts[selectedText - 1]?.style.shadowOpacity : 0.1) * 100
+                                    )}
+                                    %
+                                </span>
+                            </div>
+                            <Slider
+                                defaultValue={[0.1]}
+                                min={0}
+                                max={1}
+                                step={0.01}
+                                onIncrement={()=>{}}
+                                onDecrement={()=>{}}
+                                value={
+                                    texts.length !== 0 && selectedText
+                                        ? [texts[selectedText - 1]?.style.shadowOpacity]
+                                        : [0.1]
+                                }
+                                onValueChange={(value) => {
+                                    selectedText &&
+                                        setTexts(
+                                            texts.map((text, index) =>
+                                                index === selectedText - 1
+                                                    ? {
+                                                        ...text,
+                                                        style: {
+                                                            ...text.style,
+                                                            shadowOpacity: value[0],
+                                                        },
+                                                    }
+                                                    : text
+                                            )
+                                        )
+                                }}
+                            />
+                        </div>
+
+                        <div className="space-y-2">
+                            <h3 className="text-sm font-medium">Shadow Color</h3>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        className="w-full justify-start gap-2"
+                                        style={{
+                                            color: selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'
+                                        }}
+                                    >
+                                        <Palette className="h-4 w-4" />
+                                        {selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64">
+                                    <HexColorPicker
+                                        color={selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                        onChange={handleShadowColorChange}
+                                    />
+                                    <div className="mt-4">
+                                        <HexColorInput
+                                            color={selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                            onChange={handleShadowColorChange}
+                                            className="w-full rounded-md border px-2 py-1"
+                                        />
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                        </div>
+                    </div>
                 </div>
-            </div>
-
-            <hr className="my-8" />
-
-            <h3 className="flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
-                <GalleryVerticalEnd className="rotate-90" size={20} />
-                <span>Text shadow</span>
-            </h3>
-
-            <div className="mb-3 mt-8 flex items-center px-1">
-                <h1 className="text-[0.85rem]">Opacity</h1>
-                <p className="ml-2 rounded-md bg-formDark p-[0.4rem] text-[0.8rem] text-dark/70">
-                    {Math.round(
-                        Number(selectedText ? texts[selectedText - 1]?.style.shadowOpacity : 0.1) * 100
-                    )}
-                    %
-                </p>
-            </div>
-
-            <div className="flex gap-4 text-[0.85rem] md:max-w-full">
-                <Slider
-                    defaultValue={[0.1]}
-                    min={0}
-                    max={1}
-                    step={0.01}
-                    onValueChange={(value) => {
-                        selectedText &&
-                            setTexts(
-                                texts.map((text, index) =>
-                                    index === selectedText - 1
-                                        ? {
-                                            ...text,
-                                            style: {
-                                                ...text.style,
-                                                shadowOpacity: value[0],
-                                            },
-                                        }
-                                        : text
-                                )
-                            )
-                    }}
-                    value={
-                        texts.length !== 0 && selectedText
-                            ? [texts[selectedText - 1]?.style.shadowOpacity]
-                            : [0.1]
-                    }
-                    onIncrement={() => {
-                        if (!selectedText) return
-                        if (
-                            Number(texts[selectedText - 1]?.style.shadowOpacity) >= 1 ||
-                            texts.length === 0
-                        )
-                            return
-                        setTexts(
-                            texts.map((text, index) =>
-                                index === selectedText - 1
-                                    ? {
-                                        ...text,
-                                        style: {
-                                            ...text.style,
-                                            shadowOpacity: Number(text.style.shadowOpacity) + 0.01,
-                                        },
-                                    }
-                                    : text
-                            )
-                        )
-                    }}
-                    onDecrement={() => {
-                        if (!selectedText) return
-                        if (
-                            Number(texts[selectedText - 1]?.style.shadowOpacity) <= 0 ||
-                            texts.length === 0
-                        )
-                            return
-                        setTexts(
-                            texts.map((text, index) =>
-                                index === selectedText - 1
-                                    ? {
-                                        ...text,
-                                        style: {
-                                            ...text.style,
-                                            shadowOpacity: Number(text.style.shadowOpacity) - 0.01,
-                                        },
-                                    }
-                                    : text
-                            )
-                        )
-                    }}
-                />
-            </div>
-
-            <div className="mb-3 mt-8 flex items-center px-1">
-                <h1 className="text-[0.85rem]">Shadow color</h1>
-            </div>
-
-            <PopupColorPicker
-                shouldShowAlpha={false}
-                color={selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
-                onChange={handleShadowColorChange}
-            />
-        </div>
+            </CardContent>
+        </Card>
     )
 }
