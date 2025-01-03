@@ -2,7 +2,7 @@
 'use client'
 
 import { useOnClickOutside } from '@/hooks/use-on-click-outside'
-import demoImage from '@/public/demo-tweet.png'
+import demoImage from '@/public/demo.png'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useColorExtractor } from '@/store/use-color-extractor'
 import { useFrameOptions } from '@/store/use-frame-options'
