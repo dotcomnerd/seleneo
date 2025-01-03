@@ -1,115 +1,230 @@
-import React, { useEffect, useState } from 'react';
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import React, { PureComponent } from 'react'
+import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import {
     Command,
     CommandEmpty,
     CommandGroup,
     CommandInput,
     CommandItem,
-} from "@/components/ui/command";
+    CommandList,
+} from '@/components/ui/command'
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/popover'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import {
+    Category,
+    Font,
+    FONT_FAMILY_DEFAULT,
+    FontManager,
+    Options,
+    OPTIONS_DEFAULTS,
+    Script,
+    SortOption,
+    Variant,
+} from "@samuelmeuli/font-manager"
 
-interface Font {
-    family: string;
-    variants: string[];
-    category: string;
+interface Props {
+    apiKey: string
+    activeFontFamily: string
+    onChange: (font: Font) => void
+    pickerId: string
+    families: string[]
+    categories: Category[]
+    scripts: Script[]
+    variants: Variant[]
+    filter: (font: Font) => boolean
+    limit: number
+    sort: SortOption
 }
 
-interface FontPickerProps {
-    apiKey: string;
-    activeFontFamily: string;
-    onChange: (font: { family: string }) => void;
+interface State {
+    isOpen: boolean
+    loadingStatus: "loading" | "finished" | "error"
+    fonts: Font[]
+    searchQuery: string
 }
 
-export default function FontPicker({
-    apiKey,
-    activeFontFamily,
-    onChange
-}: FontPickerProps) {
-    const [open, setOpen] = useState(false);
-    const [fonts, setFonts] = useState<Font[]>([]);
-    const [loading, setLoading] = useState(true);
+function getFontId(fontFamily: string): string {
+    return fontFamily.replace(/\s+/g, "-").toLowerCase()
+}
 
-    useEffect(() => {
-        const fetchFonts = async () => {
-            try {
-                const response = await fetch(
-                    `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`
-                );
-                const data = await response.json();
+export default class FontPicker extends PureComponent<Props, State> {
+    private fontManager: FontManager
 
-                // Get the most popular 100 fonts
-                const popularFonts = data.items.slice(0, 100).map((font: any) => ({
-                    family: font.family,
-                    variants: font.variants,
-                    category: font.category
-                }));
+    static defaultProps = {
+        activeFontFamily: FONT_FAMILY_DEFAULT,
+        onChange: () => { },
+        pickerId: OPTIONS_DEFAULTS.pickerId,
+        families: OPTIONS_DEFAULTS.families,
+        categories: OPTIONS_DEFAULTS.categories,
+        scripts: OPTIONS_DEFAULTS.scripts,
+        variants: OPTIONS_DEFAULTS.variants,
+        filter: OPTIONS_DEFAULTS.filter,
+        limit: OPTIONS_DEFAULTS.limit,
+        sort: OPTIONS_DEFAULTS.sort,
+    }
 
-                setFonts(popularFonts);
+    state: State = {
+        isOpen: false,
+        loadingStatus: "loading",
+        fonts: [],
+        searchQuery: ""
+    }
 
-                // Preload fonts
-                popularFonts.forEach((font: Font) => {
-                    const link = document.createElement('link');
-                    link.href = `https://fonts.googleapis.com/css2?family=${font.family.replace(/ /g, '+')}:wght@400;700&display=swap`;
-                    link.rel = 'stylesheet';
-                    document.head.appendChild(link);
-                });
-            } catch (error) {
-                console.error('Error fetching fonts:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    constructor(props: Props) {
+        super(props)
 
-        fetchFonts();
-    }, [apiKey]);
+        const {
+            apiKey,
+            activeFontFamily,
+            pickerId,
+            families,
+            categories,
+            scripts,
+            variants,
+            filter,
+            limit,
+            sort,
+            onChange,
+        } = this.props
 
-    return (
-        <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-                <Button
-                    variant="outline"
-                    role="combobox"
-                    aria-expanded={open}
-                    className="w-full justify-between"
-                    style={{ fontFamily: activeFontFamily }}
-                >
-                    {loading ? "Loading fonts..." : activeFontFamily}
-                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-[300px] p-0">
-                <Command>
-                    <CommandInput placeholder="Search fonts..." />
-                    <CommandEmpty>No font found.</CommandEmpty>
-                    <CommandGroup className="max-h-[300px] overflow-auto">
-                        {fonts.map((font) => (
-                            <CommandItem
-                                key={font.family}
-                                value={font.family}
-                                onSelect={() => {
-                                    onChange({ family: font.family });
-                                    setOpen(false);
-                                }}
-                            >
-                                <Check
-                                    className={cn(
-                                        "mr-2 h-4 w-4",
-                                        activeFontFamily === font.family ? "opacity-100" : "opacity-0"
-                                    )}
-                                />
-                                <span style={{ fontFamily: font.family }}>{font.family}</span>
-                            </CommandItem>
-                        ))}
-                    </CommandGroup>
-                </Command>
-            </PopoverContent>
-        </Popover>
-    );
+        const options: Options = {
+            pickerId,
+            families,
+            categories,
+            scripts,
+            variants,
+            filter,
+            limit,
+            sort,
+        }
+
+        this.fontManager = new FontManager(apiKey, activeFontFamily, options, onChange)
+    }
+
+    componentDidMount(): void {
+        this.fontManager
+            .init()
+            .then(() => {
+                const fonts = Array.from(this.fontManager.getFonts().values())
+                if (this.props.sort === "alphabet") {
+                    fonts.sort((a, b) => a.family.localeCompare(b.family))
+                }
+                this.setState({
+                    loadingStatus: "finished",
+                    fonts
+                })
+            })
+            .catch((err: Error) => {
+                this.setState({
+                    loadingStatus: "error"
+                })
+                console.error("Error trying to fetch the list of available fonts")
+                console.error(err)
+            })
+    }
+
+    componentDidUpdate(prevProps: Props): void {
+        const { activeFontFamily, onChange } = this.props
+
+        if (activeFontFamily !== prevProps.activeFontFamily) {
+            this.setActiveFontFamily(activeFontFamily)
+        }
+
+        if (onChange !== prevProps.onChange) {
+            this.fontManager.setOnChange(onChange)
+        }
+    }
+
+    setActiveFontFamily = (fontFamily: string): void => {
+        this.fontManager.setActiveFont(fontFamily)
+    }
+
+    handleSelect = (fontFamily: string): void => {
+        this.setActiveFontFamily(fontFamily)
+        this.setState({ isOpen: false })
+    }
+
+    setOpen = (isOpen: boolean): void => {
+        this.setState({ isOpen })
+    }
+
+    handleSearch = (value: string): void => {
+        this.setState({ searchQuery: value })
+    }
+
+    getFilteredFonts = (): Font[] => {
+        const { fonts, searchQuery } = this.state
+        if (!searchQuery) return fonts
+
+        return fonts.filter(font =>
+            font.family.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+    }
+
+    render() {
+        const { activeFontFamily } = this.props
+        const { isOpen, loadingStatus, searchQuery } = this.state
+        const filteredFonts = this.getFilteredFonts()
+
+        return (
+            <Popover open={isOpen} onOpenChange={this.setOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={isOpen}
+                        className="w-full justify-between"
+                    >
+                        {loadingStatus === "loading" ? (
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                            <span style={{ fontFamily: activeFontFamily }}>
+                                {activeFontFamily}
+                            </span>
+                        )}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-full p-0" align="start">
+                    <Command shouldFilter={false}>
+                        <CommandInput
+                            placeholder="Search fonts..."
+                            value={searchQuery}
+                            onValueChange={this.handleSearch}
+                            className="h-9"
+                        />
+                        <CommandList>
+                            <CommandEmpty>No fonts found.</CommandEmpty>
+                            <CommandGroup>
+                                <ScrollArea className="h-72">
+                                    {filteredFonts.map((font) => (
+                                        <CommandItem
+                                            key={getFontId(font.family)}
+                                            onSelect={() => this.handleSelect(font.family)}
+                                            className="cursor-pointer"
+                                        >
+                                            <span
+                                                className="flex w-full items-center"
+                                                style={{ fontFamily: font.family }}
+                                            >
+                                                {font.family}
+                                            </span>
+                                            {activeFontFamily === font.family && (
+                                                <Check className="ml-auto h-4 w-4" />
+                                            )}
+                                        </CommandItem>
+                                    ))}
+                                </ScrollArea>
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
+        )
+    }
 }
