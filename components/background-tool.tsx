@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label"
 import { Slider } from "@/components/ui/slider"
 import { Switch } from "@/components/ui/switch"
 import { RotateCcw, RotateCw } from 'lucide-react'
-import { ColorPicker } from "@/components/color-picker"
+import ColorPicker  from "@/components/color-picker"
 
 export function BackgroundTool() {
   return (
@@ -58,4 +58,3 @@ export function BackgroundTool() {
     </div>
   )
 }
-
