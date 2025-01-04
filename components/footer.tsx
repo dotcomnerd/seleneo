@@ -11,7 +11,7 @@ export function Footer() {
                     </div>
                     <nav className="flex flex-wrap justify-center md:justify-end gap-4">
                         <Link href="#features" className="text-sm hover:text-primary">Features</Link>
-                        <Link href="#cta" className="text-sm hover:text-primary">Pricing</Link>
+                        <Link href="#how-it-works" className="text-sm hover:text-primary">How To</Link>
                         <Link href="#faq" className="text-sm hover:text-primary">FAQ</Link>
                         <a href="#" className="text-sm hover:text-primary">Privacy Policy</a>
                         <a href="#" className="text-sm hover:text-primary">Terms of Service</a>
