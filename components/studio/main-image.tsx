@@ -428,67 +428,67 @@ function LoadAImage() {
 
   return (
     <Dropzone
-      multiple={false}
-      onDrop={(acceptedFiles) => {
-        handleImageChange(acceptedFiles[0])
-      }}
-      onDragEnter={() => setIsDragging(true)}
-      onDragLeave={() => setIsDragging(false)}
-      noClick
-    >
-      {({ getRootProps, getInputProps }) => (
-        <div
-          {...getRootProps()}
-          className="h-25 absolute-center w-4/5 xl:w-2/5"
-        >
-          <div className="flex flex-col gap-4 rounded-xl  text-center  md:shadow-2xl">
-            <div className="flex-center flex-col rounded-xl px-4 py-10 md:bg-[#f1f1f1]">
-              <Upload
-                style={{
-                  transition: 'all 0.8s cubic-bezier(0.6, 0.6, 0, 1)',
-                }}
-                className={`mx-auto mb-2 hidden h-10 w-10 text-[#332]/80 sm:block ${
-                  isDragging ? 'rotate-180' : 'rotate-0'
-                }`}
-                aria-hidden="true"
-              />
-              <div className="flex-center mt-4 text-base leading-6 text-gray-400">
-                <label
-                  htmlFor="file-upload"
-                  className="focus-within:ring-purple relative cursor-pointer rounded-md font-bold text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 hover:text-purple"
-                >
-                  <span>Load a image</span>
-                </label>
-                <input {...getInputProps()} />
-                <input
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  onChange={handleImageLoad}
-                  accept="image/*"
-                  className="sr-only"
-                />
-                <p className="hidden pl-1 font-medium text-[#333]/80 lg:block">
-                  or drag and drop
-                </p>
-              </div>
-
-              <p className="mt-4 hidden text-sm font-extrabold leading-5 text-[#555]/80 sm:block">
-                OR
-              </p>
-
-              <Button
-                onClick={loadDemoImage}
-                className="z-[120] mt-4 hidden rounded-md border-[#898aeb]/40 bg-[#898aeb]/30 font-semibold text-[#6264aa] shadow-sm sm:inline-flex"
-                variant="stylish"
+    multiple={false}
+    onDrop={(acceptedFiles) => {
+      handleImageChange(acceptedFiles[0])
+    }}
+    onDragEnter={() => setIsDragging(true)}
+    onDragLeave={() => setIsDragging(false)}
+    noClick
+  >
+    {({ getRootProps, getInputProps }) => (
+      <div
+        {...getRootProps()}
+        className="absolute-center h-25 w-4/5 xl:w-2/5"
+      >
+        <div className="flex flex-col gap-4 rounded-xl text-center">
+          <div className="flex-center flex-col rounded-xl border-2 border-dashed border-border/50 backdrop-blur-md bg-background/60 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
+            <Upload
+              style={{
+                transition: 'all 0.8s cubic-bezier(0.6, 0.6, 0, 1)',
+              }}
+              className={`mx-auto mb-2 hidden h-10 w-10 text-muted-foreground sm:block ${
+                isDragging ? 'rotate-180' : 'rotate-0'
+              }`}
+              aria-hidden="true"
+            />
+            <div className="flex-center mt-4 text-base leading-6 text-muted-foreground">
+              <label
+                htmlFor="file-upload"
+                className="relative cursor-pointer rounded-md font-bold text-primary focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 hover:underline dark:hover:text-primary hover:text-primary"
               >
-                Try with a demo image
-                <ImageIcon className="ml-2" size={19} />
-              </Button>
+                <span>Load a image</span>
+              </label>
+              <input {...getInputProps()} />
+              <input
+                id="file-upload"
+                name="file-upload"
+                type="file"
+                onChange={handleImageLoad}
+                accept="image/*"
+                className="sr-only"
+              />
+              <p className="hidden pl-1 font-medium text-muted-foreground lg:block">
+                or drag and drop
+              </p>
             </div>
+  
+            <p className="mt-4 hidden text-sm font-extrabold leading-5 text-muted-foreground sm:block">
+              OR
+            </p>
+  
+            <Button
+              onClick={loadDemoImage}
+              className="z-[120] mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
+              variant="outline"
+            >
+              Try with a demo image
+              <ImageIcon className="ml-2" size={19} />
+            </Button>
           </div>
         </div>
-      )}
-    </Dropzone>
+      </div>
+    )}
+  </Dropzone>
   )
 }
