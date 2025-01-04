@@ -69,7 +69,7 @@ export const resolutions: Resolution[] = [
     color: '#d62976',
   },
   {
-    name: 'Twitter',
+    name: 'X',
     resolutions: [
       {
         preset: 'Post',
@@ -80,7 +80,7 @@ export const resolutions: Resolution[] = [
         resolution: '1500x500',
       },
     ],
-    icon: 'Twitter',
+    icon: 'X',
     color: '#2E9DEA',
   },
   {
