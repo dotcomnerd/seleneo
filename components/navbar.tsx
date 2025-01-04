@@ -8,20 +8,17 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { ChevronDown, Copy, Download } from 'lucide-react'
 import Link from "next/link"
+import logo from "@/public/logo.svg"
 
 export function Navbar() {
     return (
         <header className="flex h-14 items-center border-b px-4 shrink-0">
             <div className="flex items-center gap-4">
                 <Link href="/" className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded bg-primary/20">
-                        <div className="h-full w-full rounded-[6px] bg-primary/30 p-2">
-                            <div className="h-full w-full rounded bg-primary"></div>
-                        </div>
-                    </div>
+                    <img src={logo.src} className="size-8" />
                     <span className="text-xl font-semibold">Seleneo</span>
                     <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        Beta
+                        Pre-release
                     </span>
                 </Link>
                 <DropdownMenu>
