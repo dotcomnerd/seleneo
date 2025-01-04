@@ -1,3 +1,5 @@
+"use client";
+
 import React, { PureComponent } from 'react'
 import { Check, ChevronsUpDown, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
