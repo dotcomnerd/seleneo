@@ -31,7 +31,7 @@ export function Header() {
                     <div className="flex items-center space-x-4">
                         <ThemeToggle />
                         <Button asChild variant="outline">
-                            <a href="https://github.com/yourusername/Seleneo" target="_blank" rel="noopener noreferrer">GitHub</a>
+                            <a href="https://github.com/nyumat" target="_blank" rel="noopener noreferrer">GitHub</a>
                         </Button>
                         <Button asChild>
                             <Link href="/studio">Get Started</Link>

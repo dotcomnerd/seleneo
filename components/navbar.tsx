@@ -32,11 +32,19 @@ export function Navbar() {
                         </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem>Documentation</DropdownMenuItem>
-                        <DropdownMenuItem>Examples</DropdownMenuItem>
-                    </DropdownMenuContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/about">
+                    About
+                    </Link>
+                    </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/examples">
+                    Examples
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="ghost">Contact</Button>
+                <Button variant="ghost">About</Button>
             </div>
             <div className="ml-auto flex items-center gap-2">
                 <Button variant="ghost" size="icon">
