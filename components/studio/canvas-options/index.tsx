@@ -10,6 +10,8 @@ import {
   Twitter,
   Youtube,
   ArrowRight,
+  InfoIcon,
+  XIcon,
 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { resolutions } from '@/presets/resolutions'
@@ -26,6 +28,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from '@/components/ui/tooltip'
+import { FaXTwitter } from 'react-icons/fa6';
 import Icon from '@/components/icons'
 
 const icons = {
@@ -33,7 +36,7 @@ const icons = {
   Instagram: <Instagram size={18} />,
   Facebook: <Facebook size={18} />,
   LinkedIn: <Linkedin size={18} />,
-  Twitter: <Twitter size={18} />,
+  X: <FaXTwitter size={18} />,
   Dribble: <Dribbble size={18} />,
   ProductHunt: (
     <div className="flex-center h-6 w-6 rounded-full bg-[#898aeb]/5">P</div>
@@ -76,12 +79,12 @@ export default function CanvasOptions() {
   return (
     <>
       <div className="mt-4 flex w-full justify-between px-1">
-        <div className="flex-center">
-          <h1 className="mr-1 text-[0.85rem]">Auto resolution</h1>
+        <div className="justify-center items-center gap-2 flex">
+          <h1 className="text-[0.85rem]">Auto resolution</h1>
           <TooltipProvider>
             <Tooltip delayDuration={100}>
               <TooltipTrigger>
-                <Icon variant="duotone" name="info" color="none" />
+              <InfoIcon className="size-4 stroke-primary/70"/>
               </TooltipTrigger>
               <TooltipContent className="max-w-[12rem]">
                 <p>
