@@ -1,15 +1,13 @@
 "use client"
 
 import { useCanvas } from "@/hooks/useCanvas"
-import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { Upload, ImageIcon } from 'lucide-react'
 
 export function Canvas() {
-  const { canvasRef, canvasState, updateCanvasSize, updateGridSize, toggleSnapToGrid } = useCanvas()
+  const { canvasRef, canvasState, updateCanvasSize, toggleSnapToGrid } = useCanvas()
 
   return (
     <div className="flex flex-col h-full">
