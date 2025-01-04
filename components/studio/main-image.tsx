@@ -1,5 +1,5 @@
-/* eslint-disable @next/next/no-img-element */
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import { useOnClickOutside } from '@/hooks/use-on-click-outside'
 import demoImage from '@/public/demo.png'
@@ -402,7 +402,7 @@ function LoadAImage() {
   )
 
   const loadDemoImage = () => {
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined') return;
     setBackground('linear-gradient(var(--gradient-angle), #898aeb, #d8b9e3)')
     document?.documentElement.style.setProperty(
       '--gradient-bg',

@@ -1,6 +1,5 @@
+"use client"
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
-'use client'
 
 import useTiptapEditor from '@/hooks/use-editor'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
@@ -65,7 +64,7 @@ const BubbleMenuComp = ({ editor }: MenuBarProps) => {
 
         <input
           type="color"
-          onInput={(event) => {
+          onInput={(event: React.ChangeEvent<HTMLInputElement>) => {
             editor.chain().focus().setColor(event.target.value).run()
           }}
           value={editor.getAttributes('textStyle').color}

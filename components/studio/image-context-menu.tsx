@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from '@/components/ui/button'
 import {
   ContextMenu,
@@ -113,7 +115,8 @@ export default function ContextMenuImage({
   })
 
   const cropImageNow = () => {
-    const canvas = document.createElement('canvas')
+    if (typeof window === 'undefined') return;
+    const canvas = document?.createElement('canvas')
     const image = imgRef.current
     if (!image) return
     const scaleX = image.naturalWidth / image.width

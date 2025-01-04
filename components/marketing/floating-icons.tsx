@@ -1,5 +1,5 @@
 import React from 'react';
-import { Command, Sparkles, Zap, Image } from 'lucide-react';
+import { Command, Sparkles } from 'lucide-react';
 
 export function FloatingElements() {
   return (

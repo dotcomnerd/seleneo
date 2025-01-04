@@ -67,7 +67,7 @@ export default function NormalGradientPicker() {
     const image = new Image()
     image.crossOrigin = 'Anonymous'
     image.src =
-      document.getElementById(`img-${selectedImage}`)?.getAttribute('src') ?? ''
+      document?.getElementById(`img-${selectedImage}`)?.getAttribute('src') ?? ''
 
     image.onload = function () {
       const palletes = colorThief.getPalette(image, 8)

@@ -1,8 +1,6 @@
-import { MoveRight, PhoneCall } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "./hero/blur-fade";
-import { GradientBlobTwo } from "./gradient-blob";
 import { AnimatedGridPattern } from "./grid-pattern";
 import { cn } from "@/lib/utils";
 

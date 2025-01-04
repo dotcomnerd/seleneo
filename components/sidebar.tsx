@@ -21,17 +21,6 @@ import PositionOptions from './studio/position-options/index'
 import SidebarButton from './studio/sidebar-buttons'
 import TextOptions from './studio/text-options/index'
 import { UndoRedoButtons, useUndoRedoHotkeys } from './undo-redo-buttons'
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Monitor, ImageIcon, Square, Type, CuboidIcon as Cube, Move } from 'lucide-react'
-import { CanvasTool } from "./canvas-tool"
-import { ImageTool } from "./image-tool"
-import { BackgroundTool } from "./background-tool"
-import { FrameTool } from "./frame-tool"
-import { TextTool } from "./text-tool"
-import { ThreeDTool } from "./three-d-tool"
-import { PositionTool } from "./position-tool"
-import { BottomNav } from "./bottom-nav"
 
 type SidebarSection =
     | 'canvas'
@@ -79,16 +68,6 @@ function useSidebarButtons() {
         []
     )
 }
-
-const tools = [
-  { icon: Monitor, label: "Canvas", component: CanvasTool },
-  { icon: ImageIcon, label: "Image", component: ImageTool },
-  { icon: Palette, label: "Background", component: BackgroundTool },
-  { icon: Square, label: "Frame", component: FrameTool },
-  { icon: Type, label: "Text", component: TextTool },
-  { icon: Cube, label: "3D", component: ThreeDTool },
-  { icon: Move, label: "Position", component: PositionTool },
-]
 
 interface SidebarImageSettingsProps {
   sidebarButtons: SidebarButton[]

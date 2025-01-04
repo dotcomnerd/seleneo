@@ -26,20 +26,21 @@ export function WordRotate({
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(0);
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     if (!containerRef.current) return;
-    const span = document.createElement('span');
+    const span = document?.createElement('span');
     span.style.visibility = 'hidden';
     span.style.position = 'absolute';
     span.style.whiteSpace = 'nowrap';
     const styles = window.getComputedStyle(containerRef.current);
     span.style.font = styles.font;
-    document.body.appendChild(span);
+    document?.body.appendChild(span);
     let maxWidth = 0;
     words.forEach(word => {
       span.textContent = word;
       maxWidth = Math.max(maxWidth, span.offsetWidth);
     });
-    document.body.removeChild(span);
+    document?.body.removeChild(span);
     setContainerWidth(maxWidth);
   }, [words]);
 

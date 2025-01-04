@@ -1,3 +1,5 @@
+"use client";
+
 import React from 'react'
 import { useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'

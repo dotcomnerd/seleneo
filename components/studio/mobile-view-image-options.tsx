@@ -1,3 +1,5 @@
+"use client";
+
 import { ScrollArea } from '@/components/ui/scroll-area'
 import BackgroundOptions from '@/components/studio/background-options'
 import CanvasOptions from '@/components/studio/canvas-options'

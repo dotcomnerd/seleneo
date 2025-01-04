@@ -1,5 +1,5 @@
+"use client";
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-'use client'
 
 import React from 'react'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'

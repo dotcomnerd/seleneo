@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils';
 import React from 'react';
-import { BlurFade, FadeIn } from './hero/blur-fade';
+import { FadeIn } from './hero/blur-fade';
 
 interface GradientBlobOneProps {
   className?: string;

@@ -1,3 +1,4 @@
+"use client";
 
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { Noise } from "@/components/noise"

@@ -12,16 +12,30 @@ import dynamic from 'next/dynamic'
 import React, { CSSProperties, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BackgroundImageCanvas } from './bg-image'
-import ImageUpload from './main-image'
-import MobileViewImageOptions from './mobile-view-image-options'
-import SelectoComponent from './selecto-component'
-import TextLayers from './text-layers'
-import TiptapMoveable from './tiptap-moveable'
 
-const MoveableComponent = dynamic(
-    () => import('./moveable-component').then((mod) => mod.default),
-    { ssr: false }
-)
+const MoveableComponent = dynamic(() => import('./moveable-component'), { 
+    ssr: false 
+})
+
+const ImageUpload = dynamic(() => import('./main-image'), { 
+    ssr: false 
+})
+
+const MobileViewImageOptions = dynamic(() => import('./mobile-view-image-options'), { 
+    ssr: false 
+})
+
+const SelectoComponent = dynamic(() => import('./selecto-component'), { 
+    ssr: false 
+})
+
+const TextLayers = dynamic(() => import('./text-layers'), { 
+    ssr: false 
+})
+
+const TiptapMoveable = dynamic(() => import('./tiptap-moveable'), { 
+    ssr: false 
+})
 
 export default function Canvas() {
     const { backgroundType } = useBackgroundOptions()
@@ -52,12 +66,8 @@ export default function Canvas() {
         setIsEditable,
         isSelecting,
     } = useMoveable()
-
     const [width, height]: number[] = resolution.split('x').map(Number)
-
     const aspectRatio = width / height
-
-    console.log(`Current DOM resoltion: ${exactDomResolution}`)
 
     let style: CSSProperties = {
         aspectRatio,
@@ -79,16 +89,11 @@ export default function Canvas() {
         }
     }
 
-    // encapsulates the logic for observing changes in the size of the screenshot element & automatically sets the DOM resolution and scale factor based on the size changes of a provided ref element.
     useCanvasResizeObserver(screenshotRef)
-
-    //encapsulates the logic used to automatically switch the aspect ratio of a screenshot within a container. If the screenshot overflows the container, the aspect ratio is adjusted to fit within the container.
     useAutomaticAspectRatioSwitcher({
         containerRef: parentRef,
         screenshotRef,
     })
-
-    // shows a warning toast if the screen size is less than 768px.
     useScreenSizeWarningToast()
 
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
@@ -97,13 +102,11 @@ export default function Canvas() {
         }
         if (enableCrop) return
         if (e.deltaY < 0) {
-            // Scrolling up
             if (scrollScale === 1) return
-            setScrollScale(scrollScale + 0.1) // Increment the scroll scale by 0.1
+            setScrollScale(scrollScale + 0.1)
         } else if (e.deltaY > 0) {
-            // Scrolling down
             if (scrollScale <= 0.4) return
-            setScrollScale(scrollScale - 0.1) // Decrement the scroll scale by 0.1
+            setScrollScale(scrollScale - 0.1)
         }
     }
 
@@ -111,7 +114,6 @@ export default function Canvas() {
         scale: `${scrollScale}`,
     }
 
-    // Close the image controls when the escape key is pressed
     useHotkeys('Escape', () => {
         if (showControls) {
             setShowControls(false)
@@ -119,10 +121,8 @@ export default function Canvas() {
         }
     })
 
-    // listens for a click event on the canvas and hides the image controls/text controls if the user clicks outside the image or text area
     useEventListener(
         'click',
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (e: any) => {
             const isCanvasArea =
                 e?.target?.classList?.contains('canvas-container') ||
@@ -150,17 +150,12 @@ export default function Canvas() {
         <>
             <section
                 ref={parentRef}
-                className={`relative flex h-full w-full flex-col overflow-hidden bg-[#111] md:grid md:place-items-center ${aspectRatio <= 1 ? 'p-4 md:p-8' : 'p-4 md:p-8'
-                    }
-        `}
+                className={`relative flex h-full w-full flex-col overflow-hidden bg-[#111] md:grid md:place-items-center ${aspectRatio <= 1 ? 'p-4 md:p-8' : 'p-4 md:p-8'}`}
                 style={parentScaleStyle}
                 onWheel={handleScroll}
             >
                 <div
-                    className={`canvas-container relative flex items-center justify-center overflow-hidden ${aspectRatio <= 1
-                            ? 'h-auto w-full lg:h-full lg:w-auto'
-                            : 'h-auto w-full'
-                        }`}
+                    className={`canvas-container relative flex items-center justify-center overflow-hidden ${aspectRatio <= 1 ? 'h-auto w-full lg:h-full lg:w-auto' : 'h-auto w-full'}`}
                     ref={screenshotRef}
                     id="canvas-container"
                     style={style}
@@ -183,7 +178,6 @@ export default function Canvas() {
                 </div>
                 <MobileViewImageOptions />
             </section>
-
             <SelectoComponent />
         </>
     )
