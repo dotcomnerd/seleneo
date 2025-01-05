@@ -21,7 +21,7 @@ import logo from "@/public/logo.svg"
 
 export function Navbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 bg-white/80 dark:bg-background/80 backdrop-blur-md z-50 border-b">
+    <nav className="fixed top-0 left-0 right-0 bg-white/5 dark:bg-transparent backdrop-blur-md z-50 border-b">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-4">
@@ -41,12 +41,12 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild disabled>
                     <Link href="/about">
                     About
                     </Link>
                     </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild disabled>
                     <Link href="/examples">
                     Examples
                     </Link>
@@ -57,6 +57,11 @@ export function Navbar() {
                 <Link href="#features">
                 Features
                 </Link>
+                </Button>
+                <Button variant="ghost" asChild>
+                    <Link href="#use-cases">
+                        Use Cases
+                    </Link>
                 </Button>
               <Button variant="ghost" asChild>
                 <Link href="#how-it-works">
