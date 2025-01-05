@@ -38,7 +38,7 @@ export const metadata: Metadata = {
         siteName: 'Seleneo',
         images: [
             {
-                url: 'http://freedesign.fyi/api/og?title=About',
+                url: 'https://freedesign.fyi/api/og?title=About',
                 width: 1800,
                 height: 1600,
                 alt: 'Seleneo Open Graph Image',

@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     generator: 'Next.js Baby!',
     applicationName: 'Seleneo',
     title: 'Studio - Seleneo',
-    description: 'The Free Design Tooling Built for Humans',
+    description: 'Welcome to Seleneo Studio, where all the magic happens.',
     robots: 'index, follow',
     referrer: 'origin-when-cross-origin',
     keywords: ['design', 'tooling', 'open-source', 'digital assets', 'social media', 'images',
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     },
     openGraph: {
         title: 'Studio - Seleneo',
-        description: 'The Free Design Tooling Built for Humans',
+        description: 'Welcome to Seleneo Studio, where all the magic happens.',
         url: 'https://freedesign.fyi',
         siteName: 'Seleneo',
         images: [
