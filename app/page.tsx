@@ -16,6 +16,7 @@ export default function LandingPage() {
     const router = useRouter();
     useEffect(() => {
         router.prefetch("/studio");
+        router.prefetch("/about");
     }, [router]);
     return (
         <>
