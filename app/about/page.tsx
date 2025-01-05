@@ -1,7 +1,14 @@
+import { Navbar } from "@/components/navbar"
+import { Button } from '@/components/ui/button'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { ArrowRight } from "lucide-react"
 import { Metadata } from "next"
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Navbar } from "@/components/navbar"
 import { ProjectShowcase } from "./showcase"
 
 export const metadata: Metadata = {
@@ -65,7 +72,9 @@ export default function AboutPage() {
                         I was on a different team working on software for university clubs,
                         but when the holidays and life got in the way, I decided to pivot and go solo. <br /><br />
                         During my ideation, I realized something. Figma and Sketch are great tools, but they're
-                        often overkill for simple tasks. I wanted to build a tool that stripped away the
+                        often overkill for simple tasks.
+                        <br/><br/>
+                        I wanted to build a tool that stripped away the
                         complexity while maintaining the power to create beautiful visuals, especially for
                         me, a developer building websites, crafting marketing pages, and creating blog content.
                     </p>
@@ -75,7 +84,7 @@ export default function AboutPage() {
                     </h2>
 
                     <p className="text-base font-light leading-relaxed mb-8">
-                        As a developer, I spend a lot of time doing things that aren't writing code.
+                        As a developer, I spend a lot of time doing things that aren't writing code. Building landing pages, crafting marketing materials, and creating blog content are all part of the job. <br/><br/>
                         Each piece of content calls for visuals that enhance the user experience and effectively communicate ideas.
                         Traditionally, we'd turn to tools like Figma or Sketch, but these professional-grade tools often bring
                         unnecessary complexity for simple tasks.
@@ -102,22 +111,33 @@ export default function AboutPage() {
                     </h2>
 
                     <p className="text-base font-light leading-relaxed mb-8">
-                        While Seleneo started as a hackathon project, the vision extends far beyond. The roadmap includes features
+                        While Seleneo started as a hackathon project, my vision extends far beyond. The roadmap includes features
                         like team collaboration, template sharing, and integration with popular development workflows. The goal is
                         to create a community-driven platform where developers can share their designs and inspire others.
                     </p>
 
                     <div className="mt-12 flex flex-col sm:flex-row gap-4">
-                        <Button asChild variant="default">
-                            <Link href="/studio">
-                                Try Seleneo Studio
-                            </Link>
-                        </Button>
-                        <Button asChild variant="outline">
-                            <Link href="https://github.com/nyumat/seleneo" target="_blank" rel="noopener noreferrer">
-                                View on GitHub
-                            </Link>
-                        </Button>
+                        <TooltipProvider>
+                            <Tooltip delayDuration={0}>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        className="group px-8 py-4 text-white rounded-lg font-semibold transition-all hover:cursor-not-allowed">
+                                        <span className="flex items-center justify-center gap-2">
+                                            Try the Alpha Version
+                                            <ArrowRight className="w-4 h-4 animate-pulse" />
+                                        </span>
+                                    </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    Coming soon ;)
+                                </TooltipContent>
+                            </Tooltip>
+                            <Button asChild variant="outline">
+                                <Link href="https://github.com/dotcomnerd/seleneo" target="_blank" rel="noopener noreferrer">
+                                    View on GitHub
+                                </Link>
+                            </Button>
+                        </TooltipProvider>
                     </div>
                     <ProjectShowcase />
                 </article>
