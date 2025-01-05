@@ -1,8 +1,8 @@
 "use client";
 
-import React, { type RefObject } from 'react';
-import { LucideIcon } from 'lucide-react';
 import { useInView } from '@/hooks/use-in-view';
+import { LucideIcon } from 'lucide-react';
+import { type RefObject } from 'react';
 
 interface TimelineStepProps {
   icon: LucideIcon;
@@ -13,10 +13,10 @@ interface TimelineStepProps {
 }
 
 export function TimelineStep({ icon: Icon, title, description, imageUrl, index }: TimelineStepProps) {
-  const [ref, isInView] = useInView({ threshold: 0.2, once: true });
+  const [ref, isInView] = useInView({ threshold: 0, once: true });
 
   return (
-    <div 
+    <div
       ref={ref as RefObject<HTMLDivElement>}
       className={`group relative flex gap-8 items-center transition-all duration-700 ${
         isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
@@ -39,9 +39,10 @@ export function TimelineStep({ icon: Icon, title, description, imageUrl, index }
           </div>
           <div className="relative rounded-xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20" />
-            <img 
-              src={imageUrl} 
+            <img
+              src={imageUrl}
               alt={title}
+              loading="eager"
               className="w-full h-48 object-cover"
             />
           </div>
