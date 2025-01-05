@@ -32,7 +32,7 @@ interface AlternateFeatureCardProps {
 export const FeatureCardAlernate = ({ title, description, icon }: AlternateFeatureCardProps) => {
 return (
   <>
-    <div className="grow flex flex-col gap-5 border border-white border-opacity-10 p-4  bg-zinc-950 rounded-md max-w-[17rem] min-h-[15rem]  w-full justify-center ">
+        <div className="grow flex flex-col gap-5 border border-white border-opacity-10 p-4 bg-white dark:bg-background/20 rounded-xl shadow-xl border-gray-200/50 dark:border-gray-700/50 backdrop-blur-xl max-w-[17rem] min-h-[15rem]  w-full justify-center ">
       <div className="p-4 bg-primary w-fit flex items-center justify-center rounded-md border-t border-t-white border-opacity-10 border-r border-r-white">
         {icon}
       </div>
