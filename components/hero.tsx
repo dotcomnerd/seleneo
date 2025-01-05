@@ -45,7 +45,7 @@ export function Hero() {
     }
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden max-w-screen">
             <motion.div
                 ref={ref}
                 className="relative z-10 text-center"
