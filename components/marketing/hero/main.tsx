@@ -36,7 +36,7 @@ export const Cover = ({
                         className
                     )}
                 >
-                    <WordRotate duration={2000} className='w-max' words={words} />
+                    <WordRotate duration={3000} className='w-max' words={words} />
                 </motion.span>
                 {/* dots */}
                 <motion.div
@@ -143,7 +143,13 @@ export function Hero() {
                 <div className="relative inline-block mb-6 max-w-3xl">
                     <h1 className="relative text-3xl md:text-5xl font-regular tracking-tighter">
                         The easiest way to make your product
-                        <Cover words={["look incredible.", "convert users.", "feel amazing.", "turn more heads.", "land real clients."]} />
+                        <Cover words={[
+                            "turn more heads.",
+                            "look incredible.",
+                            "feel amazing.",
+                            "convert users.",
+                            "land real clients.",
+                        ]} />
                     </h1>
                 </div>
             </FadeIn>
