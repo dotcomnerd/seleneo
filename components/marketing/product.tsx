@@ -8,6 +8,12 @@ import { StatsBar } from './hero/stats-bar';
 
 const screenshots = [
     {
+        url: "/instagram.png",
+        title: "Instagram Posts",
+        description: "Design Instagram-perfect posts in Seleneo's square frame. No resizing or cropping—just great content ready to share.",
+        aspect: "aspect-square",
+    },
+    {
         url: "/yt-thumbnail.png",
         title: "YouTube Thumbnails",
         description: "Build both simple and complex YouTube thumbnails possibly using our multi-format imports, 3D transformations, and object layering."
@@ -23,12 +29,6 @@ const screenshots = [
         title: "Website Open Graph and SEO Content",
         description: "Use Seleneo's built-in canvas and browser frames to show off your services, product, or portfolio easily.",
         aspect: "aspect-video"
-    },
-    {
-        url: "/instagram.png",
-        title: "Instagram Posts",
-        description: "Design Instagram-perfect posts in Seleneo's square frame. No resizing or cropping—just great content ready to share.",
-        aspect: "aspect-square",
     },
 ];
 
@@ -54,7 +54,8 @@ export function ProductShowcase() {
                         {screenshots.map((item, index) => (
                             <motion.div
                                 key={index}
-                                className={`p-6 rounded-xl cursor-pointer transition-all backdrop-blur-sm ${selected === index
+                                className={`p-6 rounded-xl cursor-pointer transition-all backdrop-blur-sm border border-border/60 bg-background/50 border-opacity-10
+                                    ${selected === index
                                         ? 'bg-primary/10 shadow-lg'
                                         : 'hover:bg-muted/50'
                                     }`}
@@ -67,10 +68,13 @@ export function ProductShowcase() {
                                 transition={{ delay: index * 0.1 }}
                             >
                                 <div className="flex items-center gap-4">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md ${selected === index
-                                            ? 'bg-primary text-primary-foreground'
-                                            : 'bg-muted/80 text-muted-foreground'
-                                        }`}>
+                                    <div
+                                        className={`w-8 h-8 flex items-center justify-center rounded-md backdrop-blur-md ${
+                                            selected === index
+                                                ? 'bg-primary text-primary-foreground shadow-md dark:bg-primary/70 dark:text-primary-foreground dark:shadow-none'
+                                                : 'bg-muted/80 text-muted-foreground shadow-md dark:bg-muted/70 dark:text-muted-foreground dark:shadow-none'
+                                        }`}
+                                    >
                                         {index + 1}
                                     </div>
                                     <div>
@@ -92,8 +96,8 @@ export function ProductShowcase() {
                                 transition={{ duration: 0.3 }}
                                 className="absolute inset-0 p-4"
                             >
-                                <div className="w-full h-full relative rounded-lg overflow-hidden bg-gradient-to-t from-background/80 to-muted/50 backdrop-blur-sm">
-                                    <div className={`w-full ${screenshots[selected].aspect} flex rounded-lg overflow-hidden shadow-2xl`}>
+                                <div className="w-full h-full relative rounded-lg overflow-hidden">
+                                    <div className={`w-full ${screenshots[selected].aspect} flex rounded-lg overflow-hidden`}>
                                         <img
                                             loading="eager"
                                             src={screenshots[selected].url}

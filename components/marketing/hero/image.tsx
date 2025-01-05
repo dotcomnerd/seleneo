@@ -1,7 +1,15 @@
+"use client";
+
 import { AspectRatio } from '@/components/ui/aspect-ratio';
+import { InfoIcon, Lock } from 'lucide-react';
 import { BouncingText } from './bouncing-text';
+import { useState } from 'react';
+import { Switch } from "@/components/ui/switch";
+import { BlueToggle } from './toggle';
 
 export function HeroImage() {
+    const [imageOrBounce, setImageOrBounce] = useState<'image' | 'bounce'>('image');
+
     return (
         <div className="md:block relative">
             <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 dark:opacity-50 opacity-30 dark:blur-2xl blur-3xl" />
@@ -13,17 +21,29 @@ export function HeroImage() {
                         <div className="w-3 h-3 rounded-full bg-green-500" />
                     </div>
                     <div className="flex-1 mx-4">
-                        <div className="w-full h-6 rounded bg-gray-100 dark:bg-gray-800 flex flex-row items-start justify-center">
-                            <div className="w-4 h-4 text-gray-400">🔒</div>
+                        <div className="w-full h-6 rounded bg-gray-100 dark:bg-gray-800 flex flex-row items-center justify-start pl-2 space-x-1">
                             <div>
-                                <span className="text-sm text-gray-400 ml-1">coming-soon.io</span>
+                                <Lock className="w-4 h-4 text-gray-400" />
+                            </div>
+                            <div>
+                                <InfoIcon className="w-4 h-4 text-gray-400" />
+                            </div>
+                            <div>
+                                <span className="text-sm text-gray-400 ml-1 tracking-tight font-mono">https://freedesign.fyi/platform</span>
                             </div>
                         </div>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                        <label className="-ml-4 text-sm text-gray-500">click me 🥚</label>
+                        <BlueToggle
+                            checked={imageOrBounce === 'bounce'}
+                            onChange={(e) => setImageOrBounce(e.target.checked ? 'bounce' : 'image')}
+                        />
                     </div>
                 </div>
                 <div className="relative">
                     <AspectRatio ratio={16 / 9} />
-                    <BouncingText speed={1.54} />
+                    <BouncingText speed={1.54} state={imageOrBounce} setState={setImageOrBounce} />
                 </div>
             </div>
         </div>

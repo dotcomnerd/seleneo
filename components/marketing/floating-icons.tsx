@@ -15,13 +15,13 @@ export function FloatingElements() {
                 </div>
             </div>
 
-            <div className="absolute translate-x-24 top-96 md:top-96 right-[10%] md:right-[15%] opacity-0 animate-fade-in-3">
+            <div className="invisible lg:visible absolute translate-x-24 top-96 md:top-96 right-[10%] md:right-[15%] opacity-0 animate-fade-in-3">
                 <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur p-3 rounded-2xl shadow-xl animate-float-slow">
                     <AppWindowMacIcon className="w-6 h-6 text-blue-500" />
                 </div>
             </div>
 
-            <div className="absolute top-[23rem] md:top-96 left-[10%] md:left-[20%] opacity-0 animate-fade-in-4">
+            <div className="invisible lg:visible absolute top-[23rem] md:top-96 left-[10%] md:left-[20%] opacity-0 animate-fade-in-4">
                 <div className="bg-white/80 dark:bg-gray-900/80 backdrop-blur p-3 rounded-2xl shadow-xl animate-float-slow">
                     <Frame className="w-6 h-6 text-blue-400" />
                 </div>

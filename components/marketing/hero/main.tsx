@@ -126,7 +126,7 @@ export function Hero() {
                 <div className="flex justify-center mb-8">
                     <div
                         className={cn(
-                            "group p-1 px-4 rounded-full border border-black/5 bg-indigo-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-indigo-200 dark:border-white/5 dark:bg-indigo-900/70 dark:hover:bg-indigo-900",
+                            "group p-1 px-4 rounded-full border border-black/5 bg-indigo-100 text-base dark:text-white transition-all ease-in hover:cursor-pointer hover:bg-indigo-200 dark:border-white/5 dark:bg-indigo-900/70 dark:hover:bg-indigo-900",
                         )}
                     >
                         <div className='flex flex-row justify-center items-center gap-2'>

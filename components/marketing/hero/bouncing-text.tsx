@@ -1,46 +1,22 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
 import { motion, useAnimationControls } from 'framer-motion';
+import { useTheme } from 'next-themes';
+import { useEffect, useRef, useState } from 'react';
 
 const getRandomColor = () => {
     const colors = [
-        'bg-blue-500',
-        'bg-green-500',
-        'bg-purple-500',
-        'bg-pink-500',
-        'bg-yellow-500',
-        'bg-red-500',
-        'bg-indigo-500',
-        'bg-orange-500',
-        'bg-teal-500',
-        'bg-cyan-500'
-    ];
-
-    const textColors = [
-        'text-blue-900',
-        'text-green-900',
-        'text-purple-900',
-        'text-pink-900',
-        'text-yellow-900',
-        'text-red-900',
-        'text-indigo-900',
-        'text-orange-900',
-        'text-teal-900',
-        'text-cyan-900'
+        'bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-fuchsia-700 dark:to-pink-700', // synthwave
+        'bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800',   // green terminal
+        'bg-gradient-to-r from-blue-500 to-teal-500 dark:from-blue-600 dark:to-teal-600',       // ocean
+        'bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600'// sunset
     ];
 
     const bgToTextMap: Record<string, string> = {
-        'bg-blue-500': 'text-blue-900',
-        'bg-green-500': 'text-green-900',
-        'bg-purple-500': 'text-purple-900',
-        'bg-pink-500': 'text-pink-900',
-        'bg-yellow-500': 'text-yellow-900',
-        'bg-red-500': 'text-red-900',
-        'bg-indigo-500': 'text-indigo-900',
-        'bg-orange-500': 'text-orange-900',
-        'bg-teal-500': 'text-teal-900',
-        'bg-cyan-500': 'text-cyan-900'
+        'bg-gradient-to-r from-fuchsia-500 to-pink-500 dark:from-fuchsia-700 dark:to-pink-700': 'text-white',
+        'bg-gradient-to-r from-green-600 to-green-700 dark:from-green-700 dark:to-green-800': 'text-white',
+        'bg-gradient-to-r from-blue-500 to-teal-500 dark:from-blue-600 dark:to-teal-600': 'text-white',
+        'bg-gradient-to-r from-yellow-400 to-orange-500 dark:from-yellow-500 dark:to-orange-600': 'text-white'
     };
 
     const randomBgColor = colors[Math.floor(Math.random() * colors.length)];
@@ -59,21 +35,51 @@ const getRandomVelocity = (currentVel: number) => {
 
 interface BouncingTextProps {
     speed?: number;
+    state: 'image' | 'bounce';
+    setState: (state: 'image' | 'bounce') => void;
 }
 
-export function BouncingText({ speed = 0.2 }: BouncingTextProps) {
+export function BouncingText({ speed = 0.2, state, setState }: BouncingTextProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
     const controls = useAnimationControls();
     const [colors, setColors] = useState(getRandomColor());
+    const animationRef = useRef<number>();
+    const positionRef = useRef({ x: 0, y: 0 });
+    const velocityRef = useRef({ x: speed, y: speed });
+    const lastCollisionRef = useRef(0);
+    const { resolvedTheme } = useTheme();
 
     useEffect(() => {
-        let animationFrameId: number;
-        let currentPos = { x: 0, y: 0 };
-        let currentVel = { x: speed, y: speed };
+        if (state === 'bounce') {
+            positionRef.current = { x: 0, y: 0 };
+            velocityRef.current = { x: speed, y: speed };
+            controls.set({ x: 0, y: 0 });
+            const initialPosition = () => {
+                if (!containerRef.current || !textRef.current) return;
+                const container = containerRef.current.getBoundingClientRect();
+                const text = textRef.current.getBoundingClientRect();
+                return {
+                    x: Math.random() * (container.width - text.width),
+                    y: Math.random() * (container.height - text.height)
+                };
+            };
+            const startPos = initialPosition();
+            if (startPos) {
+                positionRef.current = startPos;
+                controls.set(startPos);
+            }
+            setColors(getRandomColor());
+        }
+    }, [state, speed, controls]);
+
+    useEffect(() => {
+        if (!containerRef.current || !textRef.current || state !== 'bounce') {
+            return;
+        }
+
         let bounds = { width: 0, height: 0 };
         let textSize = { width: 0, height: 0 };
-        let lastCollision = 0;
 
         const updateBounds = () => {
             if (containerRef.current && textRef.current) {
@@ -87,83 +93,92 @@ export function BouncingText({ speed = 0.2 }: BouncingTextProps) {
                     width: textBounds.width,
                     height: textBounds.height
                 };
-                if (currentPos.x > bounds.width - textSize.width) currentPos.x = bounds.width - textSize.width;
-                if (currentPos.y > bounds.height - textSize.height) currentPos.y = bounds.height - textSize.height;
+
+                // adjust position if out of bounds after resize
+                positionRef.current.x = Math.min(positionRef.current.x, bounds.width - textSize.width);
+                positionRef.current.y = Math.min(positionRef.current.y, bounds.height - textSize.height);
             }
         };
 
-        updateBounds();
-
-        const resizeObserver = new ResizeObserver(updateBounds);
-        if (containerRef.current) {
-            resizeObserver.observe(containerRef.current);
-        }
-
         const handleCollision = () => {
             const now = Date.now();
-            if (now - lastCollision > 50) {
+            if (now - lastCollisionRef.current > 50) {
                 setColors(getRandomColor());
-                // OP: does this alter perf?
-                // randomize velocities on collision
-                currentVel.x = getRandomVelocity(currentVel.x);
-                currentVel.y = getRandomVelocity(currentVel.y);
-                lastCollision = now;
+                velocityRef.current.x = getRandomVelocity(velocityRef.current.x);
+                velocityRef.current.y = getRandomVelocity(velocityRef.current.y);
+                lastCollisionRef.current = now;
             }
         };
 
         const animate = () => {
             if (!bounds.width || !bounds.height) {
-                animationFrameId = requestAnimationFrame(animate);
+                updateBounds();
+                animationRef.current = requestAnimationFrame(animate);
                 return;
             }
 
-            currentPos.x += currentVel.x;
-            currentPos.y += currentVel.y;
+            positionRef.current.x += velocityRef.current.x;
+            positionRef.current.y += velocityRef.current.y;
 
-            const hitVertical = currentPos.x <= 0 || currentPos.x >= bounds.width - textSize.width;
-            const hitHorizontal = currentPos.y <= 0 || currentPos.y >= bounds.height - textSize.height;
+            const hitVertical = positionRef.current.x <= 0 || positionRef.current.x >= bounds.width - textSize.width;
+            const hitHorizontal = positionRef.current.y <= 0 || positionRef.current.y >= bounds.height - textSize.height;
 
             if (hitVertical) {
-                currentVel.x *= -1;
-                currentPos.x = Math.max(0, Math.min(currentPos.x, bounds.width - textSize.width));
+                velocityRef.current.x *= -1;
+                positionRef.current.x = Math.max(0, Math.min(positionRef.current.x, bounds.width - textSize.width));
                 handleCollision();
             }
             if (hitHorizontal) {
-                currentVel.y *= -1;
-                currentPos.y = Math.max(0, Math.min(currentPos.y, bounds.height - textSize.height));
+                velocityRef.current.y *= -1;
+                positionRef.current.y = Math.max(0, Math.min(positionRef.current.y, bounds.height - textSize.height));
                 handleCollision();
             }
 
             controls.set({
-                x: currentPos.x,
-                y: currentPos.y
+                x: positionRef.current.x,
+                y: positionRef.current.y
             });
 
-            animationFrameId = requestAnimationFrame(animate);
+            animationRef.current = requestAnimationFrame(animate);
         };
+
+        updateBounds();
+
+        const resizeObserver = new ResizeObserver(updateBounds);
+        resizeObserver.observe(containerRef.current);
 
         animate();
 
         return () => {
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
+            if (animationRef.current) {
+                cancelAnimationFrame(animationRef.current);
             }
             resizeObserver.disconnect();
         };
-    }, [speed]);
-
+    }, [state, speed, controls]);
+    
     return (
-        <div ref={containerRef} className="absolute inset-0 hidden md:block">
-            <motion.div
-                ref={textRef}
-                animate={controls}
-                initial={{ x: 0, y: 0 }}
-                className={`absolute whitespace-nowrap ${colors.background} backdrop-blur-sm px-4 py-2 rounded-lg transition-colors duration-200 bg-opacity-80`}
-            >
-                <span className={`${colors.text} transition-colors duration-200`}>
-                    preview coming soon. let's bounce around in the meantime...
-                </span>
-            </motion.div>
+        <div ref={containerRef} className="absolute inset-0">
+            {state === 'image' && (
+                <img
+                    src={typeof window !== 'undefined' && typeof document !== 'undefined' &&
+                        resolvedTheme === "light" ? "/studio-demo-light.webp" : "/studio-demo.webp"}
+                    alt="studio demo"
+                    className={`object-cover h-full ${resolvedTheme === "dark" ? 'w-full' : 'w-[150%]'}`}
+                />
+            )}
+            {state === 'bounce' && (
+                <motion.div
+                    ref={textRef}
+                    animate={controls}
+                    initial={{ x: 0, y: 0 }}
+                    className={`absolute whitespace-nowrap ${colors.background} backdrop-blur-sm px-4 py-2 rounded-lg transition-colors duration-200 bg-opacity-80`}
+                >
+                    <span className={`${colors.text} transition-colors duration-200`}>
+                        the web sure is a lot of fun, don't you think?
+                    </span>
+                </motion.div>
+            )}
         </div>
     );
 }
