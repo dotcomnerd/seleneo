@@ -6,23 +6,26 @@ import { useState } from "react"
 const faqs = [
     {
         question: "What is Seleneo?",
-        answer: "Some might call Seleneo a just a design tool, but we like to think of it as more than that. Seleneo is a tool kit that allows you to develop amazing visuals, layouts, and graphics for any type of use case. It's perfect for entrepreneurs, marketers, designers, and even web developers who want to create professional-looking content super quickly.",
+        answer: "Some might call Seleneo a just a design tool, but we like to think of it as more than that. Seleneo is a tool kit that allows you to develop visuals, layouts, and graphics for any type of use case. It's perfect for entrepreneurs, marketers, designers, and even web developers who want to create professional-looking content super quickly.",
     },
     {
         question: "Do I need design experience to use Seleneo?",
-        answer: "Not at all! I designed Seleneo to be extremely user-friendly and intuitive, even for design noobies. We offer background templates and examples if you need a more solid reference.",
-    },
-    {
-        question: "Can I use Seleneo for both web and print designs?",
-        answer: "Yes, Seleneo is versatile and can be used for a wide range of design projects, including web graphics, social media posts, print materials, and more.",
+        answer: "Not at all! I designed Seleneo to be extremely user-friendly and intuitive, even for design noobies. I plan to add templates and examples if you need a more solid reference.",
     },
     {
         question: "Why did you make this?",
-        answer: "I made Seleneo because when building content for my websites, blogs, and marketing, it's always been hard to get the designs EXACTLY how I want them, especially when not trying to use Figma. I wasn't an expert at the tool, so I decided to build one to help people like me, not have to face the same problem again. When the ColorStack hackathon came around, it was only right."
+        answer:
+            `Initially, I made Seleneo for people just like me. As developers, some of us build websites, marketing pages, and even write blog content.
+            In that content, graphic visuals are used to get across ideas and provide another layer of content for the reader/ viewer.
+            Traditionally, designers and developers would use something like Figma or Apple's Sketch to create these visuals.
+            However, with figma, you take on a slew of nuance, that for the average indie developer, is often times, too much.
+            For example, let's say you're a web developer looking to make a custom open graph for your websitee content.
+            You need—yet another "account"—a professsional plan to access the next-level features—and skills in proprietary software that takes a steep learning curve to master.
+            I wasn't an expert at the tool, so for the ColorStack hackathon, I decided to build one to ensure people just like me—never have to face the same problem again.`,
     },
     {
         question: "Can I collaborate with my team using Seleneo?",
-        answer: "I'm planning on adding thesse capabilities to Seleneo after (or during, if I have time) the ColorStack hackathon. This will be super fun to build!",
+        answer: "I have a huge laundry list of capabilities I'd love to add to Seleneo. I plan on adding these features (including this one) to Seleneo after (—or during, if I have time) the ColorStack hackathon. These will all be super fun to build! Maybe, just maybe, I can onboard new collaborators to help ensure Seleneo's posterity.",
     },
 ]
 
