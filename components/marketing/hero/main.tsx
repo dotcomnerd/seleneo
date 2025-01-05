@@ -194,6 +194,16 @@ export function Hero() {
                         </Tooltip>
                     </TooltipProvider>
                 </div>
+
+                <Button
+                    variant={"link"}
+                    className="font-semibold" asChild>
+                    <Link href="/about">
+                        Learn More About Seleneo
+                    </Link>
+                </Button>
+
+
             </FadeIn>
 
 
