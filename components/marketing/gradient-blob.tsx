@@ -9,7 +9,7 @@ interface GradientBlobOneProps {
 
 export function GradientBlob({ className = '', colors }: GradientBlobOneProps) {
   return (
-    <div 
+    <div
       className={cn(
         'absolute rounded-full mix-blend-multiply dark:mix-blend-soft-light filter blur-[128px] animate-blob',
         className

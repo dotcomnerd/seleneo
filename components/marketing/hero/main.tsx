@@ -44,7 +44,7 @@ export const Cover = ({
           <WordRotate duration={2000} className='w-max' words={words}/>
         </motion.span>
         {/* dots */}
-        <motion.div 
+        <motion.div
           className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-blue-500 opacity-60"
           animate={{
             scale: [1, 1.2, 1],
@@ -57,7 +57,7 @@ export const Cover = ({
             delay: 0
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute -bottom-1 -right-1 h-2 w-2 rounded-full bg-blue-500 opacity-60"
           animate={{
             scale: [1, 1.2, 1],
@@ -70,7 +70,7 @@ export const Cover = ({
             delay: 0.5
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute -left-1 -top-1 h-2 w-2 rounded-full bg-blue-500 opacity-60"
           animate={{
             scale: [1, 1.2, 1],
@@ -83,7 +83,7 @@ export const Cover = ({
             delay: 1
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute -bottom-1 -left-1 h-2 w-2 rounded-full bg-blue-500 opacity-60"
           animate={{
             scale: [1, 1.2, 1],
@@ -99,7 +99,7 @@ export const Cover = ({
         {/* border */}
         <div className="absolute inset-0 border border-blue-500 rounded-sm opacity-40" />
         {/* corners */}
-        <motion.div 
+        <motion.div
           className="absolute inset-0 border-2 border-transparent"
           animate={{
             scaleX: [1, 1.004, 0.996, 1],
@@ -134,7 +134,7 @@ export function Hero() {
           "group p-1 px-4 rounded-full border border-black/5 bg-indigo-100 text-base text-white transition-all ease-in hover:cursor-pointer hover:bg-indigo-200 dark:border-white/5 dark:bg-indigo-900/70 dark:hover:bg-indigo-900",
         )}
       >
-        <div className='flex flex-row justify-center items-center gap-2'> 
+        <div className='flex flex-row justify-center items-center gap-2'>
           <Link href="https://github.com/nyumat">
        <GithubIcon />
           </Link>
@@ -143,30 +143,30 @@ export function Hero() {
         </div>
         </div>
       </FadeIn>
-      
+
       <FadeIn delay={200}>
         <div className="relative inline-block mb-6 max-w-3xl">
           <h1 className="relative text-3xl md:text-5xl font-regular tracking-tighter">
-            The easiest way to make your product 
+            The easiest way to make your product
             <Cover words={["look incredible.", "convert users.", "feel amazing.", "turn more heads.", "land real clients."]}/>
           </h1>
         </div>
       </FadeIn>
 
-      <GradientBlobTwo/>
-      
+      {/*TODO: maybe add in the future (figure out perf miss) <GradientBlobTwo/> */}
+
       <FadeIn delay={400}>
         <p className="md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
          With Seleneo, you can create product screenshots for all your marketing needs in an instant—and yeah, no design or figma skills needed.
         </p>
       </FadeIn>
-      
+
       <FadeIn delay={600}>
       <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
       <TooltipProvider>
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>
-            <button 
+            <button
               disabled
               className="group px-8 py-3 bg-indigo-600/50 dark:bg-indigo-500/50 text-white rounded-lg font-semibold transition-all hover:cursor-not-allowed">
               <span className="flex items-center justify-center gap-2">
@@ -182,8 +182,8 @@ export function Hero() {
 
    <Tooltip delayDuration={0}>
      <TooltipTrigger asChild>
-       <button 
-         disabled 
+       <button
+         disabled
          className="group px-8 py-3 bg-white/50 dark:bg-gray-800/50 text-indigo-600/50 dark:text-indigo-400/50 rounded-lg font-semibold border border-indigo-200/50 dark:border-gray-700/50 hover:cursor-not-allowed">
          View Examples
        </button>
@@ -196,7 +196,7 @@ export function Hero() {
 </div>
       </FadeIn>
 
-      
+
       <FadeIn delay={800}>
         <div className="relative mx-auto max-w-5xl">
           <HeroImage />
