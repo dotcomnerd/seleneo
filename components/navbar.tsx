@@ -6,16 +6,16 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import logo from "@/public/logo.svg"
 import { ChevronDown, Copy, Download } from 'lucide-react'
 import Link from "next/link"
-import logo from "@/public/logo.svg"
 
 export function Navbar() {
     return (
         <header className="flex h-14 items-center border-b px-4 shrink-0">
             <div className="flex items-center gap-4">
                 <Link href="/" className="flex items-center gap-2">
-                    <img src={logo.src} className="size-8" />
+                    <img src={logo.src} className="size-8" alt="Seleneo Logo" />
                     <span className="text-xl font-semibold">Seleneo</span>
                     <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                         Pre-release

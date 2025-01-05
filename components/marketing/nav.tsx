@@ -1,7 +1,10 @@
-import React from 'react';
-import { Menu } from 'lucide-react';
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
     Sheet,
     SheetContent,
@@ -9,15 +12,10 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ChevronDown } from 'lucide-react';
+import logo from "@/public/logo.svg";
+import { ChevronDown, Menu } from 'lucide-react';
+import Link from "next/link";
 import { ThemeToggle } from '../theme-toggle';
-import logo from "@/public/logo.svg"
 
 export function Navbar() {
   return (
@@ -26,7 +24,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-4">
             <Link href="/" className="flex items-center gap-2">
-              <img src={logo.src} className="size-8" />
+              <img src={logo.src} className="size-8" alt='Seleneo Logo' />
               <span className="text-xl font-semibold">Seleneo</span>
               <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                 Pre-release

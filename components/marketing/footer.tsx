@@ -30,7 +30,7 @@ export function Footer() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div className="col-span-2">
                         <div className="flex items-center gap-2 mb-4">
-                            <img src={logo.src} className='size-6' />
+                            <img src={logo.src} className='size-6' alt="Seleneo Logo" />
                             <span className="font-bold text-xl">Seleneo</span>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">
