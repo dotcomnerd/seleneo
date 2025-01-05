@@ -13,28 +13,28 @@ import React, { CSSProperties, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BackgroundImageCanvas } from './bg-image'
 
-const MoveableComponent = dynamic(() => import('./moveable-component'), { 
-    ssr: false 
+const MoveableComponent = dynamic(() => import('./moveable-component'), {
+    ssr: false
 })
 
-const ImageUpload = dynamic(() => import('./main-image'), { 
-    ssr: false 
+const ImageUpload = dynamic(() => import('./main-image'), {
+    ssr: false
 })
 
-const MobileViewImageOptions = dynamic(() => import('./mobile-view-image-options'), { 
-    ssr: false 
+const MobileViewImageOptions = dynamic(() => import('./mobile-view-image-options'), {
+    ssr: false
 })
 
-const SelectoComponent = dynamic(() => import('./selecto-component'), { 
-    ssr: false 
+const SelectoComponent = dynamic(() => import('./selecto-component'), {
+    ssr: false
 })
 
-const TextLayers = dynamic(() => import('./text-layers'), { 
-    ssr: false 
+const TextLayers = dynamic(() => import('./text-layers'), {
+    ssr: false
 })
 
-const TiptapMoveable = dynamic(() => import('./tiptap-moveable'), { 
-    ssr: false 
+const TiptapMoveable = dynamic(() => import('./tiptap-moveable'), {
+    ssr: false
 })
 
 export default function Canvas() {
@@ -150,7 +150,7 @@ export default function Canvas() {
         <>
             <section
                 ref={parentRef}
-                className={`relative flex h-full w-full flex-col overflow-hidden bg-[#111] md:grid md:place-items-center ${aspectRatio <= 1 ? 'p-4 md:p-8' : 'p-4 md:p-8'}`}
+                className={`relative flex h-full w-full flex-col overflow-hidden dark:bg-zinc-950 bg-gray-200 md:grid md:place-items-center ${aspectRatio <= 1 ? 'p-4 md:p-8' : 'p-4 md:p-8'}`}
                 style={parentScaleStyle}
                 onWheel={handleScroll}
             >
