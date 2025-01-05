@@ -18,7 +18,7 @@ interface FadeInProps {
 }
 
 export function FadeIn({ children, delay = 0, className = '' }: FadeInProps) {
-  const [ref, isInView] = useInViewInternal({ threshold: 0.1 });
+  const [ref, isInView] = useInViewInternal({ threshold: 0, once: true });
   const [hasAnimated, setHasAnimated] = useState(false);
 
   useEffect(() => {
