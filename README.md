@@ -1,5 +1,5 @@
 # [freedesign.fyi](https://freedesign.fyi)
-![freedesign.fyi](/public/studio-demo.png)
+![freedesign.fyi](/public/studio-demo.webp)
 
 ### Seleneo (freedesign.fyi) helps you easily create all types of visuals for free. Developed for the [ColorStack Hackathon](https://colorstack-winter-break-hack.devpost.com/).
 

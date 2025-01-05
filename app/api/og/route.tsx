@@ -1,8 +1,11 @@
-import { ImageResponse } from 'next/og'
+import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge'
 
-export async function GET() {
+export async function GET(request: Request) {
+    const url = new URL(request.url);
+    const path = url.searchParams.get('title') || '';
+    // I wonder which witty person will exploit this ;)
     try {
         return new ImageResponse(
             (
@@ -17,10 +20,11 @@ export async function GET() {
                         position: 'relative',
                     }}
                 >
-                    {/* Background Image */}
                     <img
-                        src={"https://freedesign.fyi/studio-demo.png"}
+                        src={"https://freedesign.fyi/studio-demo.webp"}
                         alt="Background"
+                        width={1200}
+                        height={630}
                         style={{
                             position: 'absolute',
                             top: 0,
@@ -30,8 +34,6 @@ export async function GET() {
                             objectFit: 'cover',
                         }}
                     />
-
-                    {/* Dark Overlay */}
                     <div
                         style={{
                             position: 'absolute',
@@ -39,11 +41,9 @@ export async function GET() {
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         }}
                     />
-
-                    {/* Content Container */}
                     <div
                         style={{
                             display: 'flex',
@@ -54,22 +54,19 @@ export async function GET() {
                             padding: '40px',
                         }}
                     >
-
                         <img
-                            src={"https://freedesign.fyi/icon.svg"}
+                            src={"https://freedesign.fyi/logo.webp"}
                             alt="Logo"
-                            width={64}
-                            height={64}
+                            width={84}
+                            height={84}
                             style={{
-                                width: '64px',
-                                height: '64px',
+                                width: '84px',
+                                height: '84px',
                                 borderRadius: '12px',
                                 objectFit: 'cover',
                             }}
-                            
-                        />
 
-                        {/* Text */}
+                        />
                         <div
                             style={{
                                 display: 'flex',
@@ -79,16 +76,17 @@ export async function GET() {
                         >
                             <span
                                 style={{
-                                    fontSize: '68px',
+                                    fontSize: '98px',
                                     fontWeight: 700,
                                     color: '#ffffff',
+                                    textDecoration: 'underline',
                                 }}
                             >
-                                Seleneo
+                                {path === '' ? 'Seleneo' : path}
                             </span>
                             <span
                                 style={{
-                                    fontSize: '32px',
+                                    fontSize: '42px',
                                     color: '#ffffff',
                                     opacity: 0.8,
                                 }}
