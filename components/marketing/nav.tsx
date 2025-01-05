@@ -39,7 +39,7 @@ export function Navbar() {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
-                  <DropdownMenuItem asChild disabled>
+                  <DropdownMenuItem asChild>
                     <Link href="/about">
                     About
                     </Link>

@@ -30,18 +30,22 @@ export function Navbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                   <DropdownMenuItem asChild>
-                    <Link href="/about">
-                    About
+                    <Link href="https://github.com/dotcomnerd/seleneo">
+                    GitHub
                     </Link>
                     </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild disabled>
                     <Link href="/examples">
                     Examples
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
                 </DropdownMenu>
-                <Button variant="ghost">About</Button>
+                <Button variant="ghost" asChild>
+                    <Link href="/about">
+                        About
+                    </Link>
+                </Button>
             </div>
             <div className="ml-auto flex items-center gap-2">
                 <Button variant="ghost" size="icon">
