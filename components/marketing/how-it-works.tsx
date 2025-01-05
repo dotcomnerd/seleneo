@@ -1,6 +1,5 @@
 import React from 'react';
 import { Upload, Palette, Share, Sparkles } from 'lucide-react';
-import { GradientBlob, GradientBlobTwo } from './gradient-blob';
 import { TimelineStep } from './timeline-step';
 import { Badge } from '../ui/badge';
 
