@@ -62,9 +62,11 @@ export default function RootLayout({
                 <Providers>
                     <ThemeProvider
                         attribute="class"
-                        defaultTheme="dark"
+                        defaultTheme="light"
+                        enableColorScheme
                         enableSystem
                         disableTransitionOnChange
+                        storageKey="--geist-theme"
                     >
                         {children}
                     </ThemeProvider>
