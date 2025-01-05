@@ -2,6 +2,7 @@
 
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { useState } from "react"
+import { Badge } from "../ui/badge"
 
 const faqs = [
     {
@@ -33,9 +34,15 @@ export function FAQ() {
     const [openItem, setOpenItem] = useState<string | null>("item-0")
 
     return (
-        <section id="faq" className="py-20">
+        <section id="faq" className="py-16 my-32">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-center mb-12 m-auto">Frequently Asked Questions</h2>
+                <div className="flex flex-col text-center rounded-md p-4 gap-3 items-center">
+                    <div className="mb-4">
+                        <Badge className='py-1 rounded-2xl px-4 text-lg bg-primary/70'>FAQ</Badge>
+                    </div>
+                    <h2 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular text-center mb-4 m-auto">Frequently Asked Questions</h2>
+                    <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">Here are some of the most common questions I've received about Seleneo. If you have a question that isn't answered here, feel free to reach out to me directly.</p>
+                    </div>
                 <Accordion type="single" collapsible className="w-full max-w-2xl mx-auto" value={openItem as string} onValueChange={setOpenItem}>
                     {faqs.map((faq, index) => (
                         <AccordionItem key={index} value={`item-${index}`}>
