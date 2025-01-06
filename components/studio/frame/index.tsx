@@ -1,5 +1,5 @@
 import { Separator } from '@/components/ui/separator'
-import RoundnessOption from '../image-options/roundness-option'
+import RoundnessOption from '../image/roundness-option'
 import AdditionalFrameOptions from './additional-frame-options'
 import FramePicker from './frame-picker'
 

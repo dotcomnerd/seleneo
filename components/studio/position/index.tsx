@@ -1,6 +1,6 @@
 'use client'
 
-import SizeOption from '../image-options/scale-options'
+import SizeOption from '../image/scale-options'
 import PositionControl from './position-control'
 import TranslateOption from './translate-control'
 
