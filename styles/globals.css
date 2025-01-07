@@ -78,6 +78,59 @@
   }
 }
 
+@layer components {
+    .flex-center {
+        @apply flex items-center justify-center;
+    }
+}
+
+@layer utilities {
+  .add-focus {
+    @apply focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-4 focus:ring-offset-background;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+   }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+#canvas-container img {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+}
+
+#canvas-container > div > div > img {
+  cursor: pointer;
+}
+
+#canvas-container > div > div > img:active {
+  cursor: grabbing;
+}
+
+.moveable-control-box {
+  --moveable-color: var(--accent-foreground) !important;
+}
+
+.circular-slider > div {
+  transition: opacity 0s ease-in 0s !important;
+  font-weight: 600;
+}
+
+.ProseMirror {
+  outline: none !important;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
@@ -122,4 +175,77 @@
 
 .error-bg {
   background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%201600%20900%22%3E%3Cpath%20fill%3D%22%230066cc%22%20d%3D%22M957%20450%20539%20900h857z%22%2F%3E%3Cpath%20fill%3D%22%230052a3%22%20d%3D%22m957%20450-84.1%20450H1396zM-60%20900l458-238%20418%20238z%22%2F%3E%3Cpath%20fill%3D%22%230052a3%22%20d%3D%22m337%20900%2061-238%20418%20238zm866-354%20349%20354H876z%22%2F%3E%3Cpath%20fill%3D%22%23003d7a%22%20d%3D%22m1203%20546%20349%20354h-390z%22%2F%3E%3Cpath%20fill%3D%22%230066cc%22%20d%3D%22m641%20695%20245%20205H367z%22%2F%3E%3Cpath%20fill%3D%22%230052a3%22%20d%3D%22m587%20900%2054-205%20245%20205zm1123%200-309-268-305%20268z%22%2F%3E%3Cpath%20fill%3D%22%23003d7a%22%20d%3D%22m1710%20900-309-268-36%20268z%22%2F%3E%3Cpath%20fill%3D%22%230066cc%22%20d%3D%22M1210%20900%20971%20687%20725%20900z%22%2F%3E%3Cpath%20fill%3D%22%230052a3%22%20d%3D%22M943%20900h267L971%20687z%22%2F%3E%3C%2Fsvg%3E");
+}
+
+
+/* Show placeholder when editor is empty */
+.tiptap p.is-editor-empty:first-child::before {
+  color: #ffffff70;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Show placeholder on every empty line */
+.tiptap p.is-empty::before {
+  color: #ffffff70;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+
+.prose-a {
+  color: #007BFF !important;
+}
+
+/* Thanks, TipTap.. */
+#tippy-1 ::selection {
+  background-color: #fff;
+  color: #333;
+}
+
+#tippy-1 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-2 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-3 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-4 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-5 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-6 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-7 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+#tippy-8 {
+  position: relative;
+  transform: translate(0, 50px) !important;
+}
+
+::selection {
+  background-color: #007BFF;
 }
