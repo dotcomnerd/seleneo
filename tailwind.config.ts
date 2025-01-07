@@ -37,6 +37,13 @@ module.exports = {
             },
         },
         extend: {
+            // backgroundColor: {
+            //     primary: '#FBFBFA',
+            //     secondaryLight: '#F1F4F4',
+            //     dark: '#181819',
+            //     formDark: 'hsl(216, 9%, 11%)',
+            //     sidebar: '#151515',
+            // },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
@@ -92,26 +99,26 @@ module.exports = {
                 },
                 blob: {
                     '0%': {
-                      transform: 'translate(0px, 0px) scale(1)',
+                        transform: 'translate(0px, 0px) scale(1)',
                     },
                     '33%': {
-                      transform: 'translate(30px, -50px) scale(1.1)',
+                        transform: 'translate(30px, -50px) scale(1.1)',
                     },
                     '66%': {
-                      transform: 'translate(-20px, 20px) scale(0.9)',
+                        transform: 'translate(-20px, 20px) scale(0.9)',
                     },
                     '100%': {
-                      transform: 'translate(0px, 0px) scale(1)',
+                        transform: 'translate(0px, 0px) scale(1)',
                     },
-                  },
-                  float: {
+                },
+                float: {
                     '0%, 100%': {
-                      transform: 'translateY(0)',
+                        transform: 'translateY(0)',
                     },
                     '50%': {
-                      transform: 'translateY(-20px)',
+                        transform: 'translateY(-20px)',
                     },
-                  },
+                },
                 "shiny-text": {
                     "0%, 90%, 100%": {
                         "background-position": "calc(-100% - var(--shiny-width)) 0",
