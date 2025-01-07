@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/navigation/studio"
+import { StudioNavbar } from "@/components/navigation/studio"
 import { Button } from '@/components/ui/button'
 import {
     Tooltip,
@@ -60,7 +60,7 @@ export const metadata: Metadata = {
 export default function AboutPage() {
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
+            <StudioNavbar />
             <main className="container mx-auto px-4 py-10 md:py-16 md:px-6 lg:px-8">
                 <article className="prose prose-gray dark:prose-invert mx-auto max-w-2xl">
                     <h1 className="text-3xl md:text-4xl font-normal tracking-tighter mb-8">
