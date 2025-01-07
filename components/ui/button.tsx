@@ -51,20 +51,20 @@ interface ButtonProps
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     (
-        { 
-            className, 
-            children, 
-            variant, 
-            isLoading, 
-            size, 
+        {
+            className,
+            children,
+            variant,
+            isLoading,
+            size,
             linkDisabled,
             asChild = false,
-            ...props 
+            ...props
         },
         ref
     ) => {
         const Comp = asChild ? Slot : "button"
-        
+
         return (
             <Comp
                 className={cn(buttonVariants({ variant, size, linkDisabled }), className)}

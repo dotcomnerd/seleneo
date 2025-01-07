@@ -2,7 +2,7 @@
   --uib-size: 25px;
   --uib-speed: 2s;
   --uib-color: #fefefe;
-  
+
   height: var(--uib-size);
   width: var(--uib-size);
   vertical-align: middle;

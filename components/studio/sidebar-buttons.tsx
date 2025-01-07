@@ -22,7 +22,7 @@ export default function SidebarButton({
     >
       <Button
         className={`h-11 rounded-xl px-3 py-2 md:h-12 md:px-4 md:py-3`}
-        variant={activeIndex === index ? 'default' : 'icon'}
+        variant={activeIndex === index ? "activeIcon" : 'icon'}
         aria-label={`${text} options`}
       >
         {icon}
