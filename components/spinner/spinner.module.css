@@ -1,7 +1,7 @@
 .ring {
   --uib-size: 25px;
   --uib-speed: 2s;
-  --uib-color: #fefefe;
+  --uib-color: #007BFF;
 
   height: var(--uib-size);
   width: var(--uib-size);
