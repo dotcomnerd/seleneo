@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/navbar";
+import { Navbar } from "@/components/navigation/studio";
 import { Sidebar } from "@/components/sidebar";
 import Spinner from "@/components/spinner/spinner";
 import { Metadata } from "next";
@@ -55,7 +55,7 @@ const Canvas = dynamic(() => import('@/components/studio/studio-main'), {
         <div className="flex-1 flex items-center justify-center h-full w-full">
             <Spinner />
         </div>
-});
+})
 
 export default function StudioPage() {
     return (

@@ -1,4 +1,4 @@
-import { Navbar } from "@/components/navbar"
+import { Navbar } from "@/components/navigation/studio"
 import { Button } from '@/components/ui/button'
 import {
     Tooltip,
@@ -73,7 +73,7 @@ export default function AboutPage() {
                         but when the holidays and life got in the way, I decided to pivot and go solo. <br /><br />
                         During my ideation, I realized something. Figma and Sketch are great tools, but they're
                         often overkill for simple tasks.
-                        <br/><br/>
+                        <br /><br />
                         I wanted to build a tool that stripped away the
                         complexity while maintaining the power to create beautiful visuals, especially for
                         me, a developer building websites, crafting marketing pages, and creating blog content.
@@ -84,7 +84,7 @@ export default function AboutPage() {
                     </h2>
 
                     <p className="text-base font-light leading-relaxed mb-8">
-                        As a developer, I spend a lot of time doing things that aren't writing code. Building landing pages, crafting marketing materials, and creating blog content are all part of the job. <br/><br/>
+                        As a developer, I spend a lot of time doing things that aren't writing code. Building landing pages, crafting marketing materials, and creating blog content are all part of the job. <br /><br />
                         Each piece of content calls for visuals that enhance the user experience and effectively communicate ideas.
                         Traditionally, we'd turn to tools like Figma or Sketch, but these professional-grade tools often bring
                         unnecessary complexity for simple tasks.
