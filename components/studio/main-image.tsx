@@ -72,7 +72,6 @@ const ImageUpload = () => {
     extractColors()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesCheck])
-  console.log(images)
 
   useOnClickOutside(targetRef, () => {
     if (isMultipleTargetSelected) return
@@ -472,11 +471,11 @@ function LoadAImage() {
                 or drag and drop
               </p>
             </div>
-  
+
             <p className="mt-4 hidden text-sm font-extrabold leading-5 text-muted-foreground sm:block">
               OR
             </p>
-  
+
             <Button
               onClick={loadDemoImage}
               className="z-[120] mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
