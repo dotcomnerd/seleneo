@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { Switch } from "@/components/ui/switch";
 import { BlueToggle } from './toggle';
 
-export function HeroImage() {
+export default function HeroImage() {
     const [imageOrBounce, setImageOrBounce] = useState<'image' | 'bounce'>('image');
 
     return (

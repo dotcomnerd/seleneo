@@ -6,8 +6,13 @@ import { ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { GithubIcon } from '../icons/github';
 import { FadeIn } from './blur-fade';
-import { HeroImage } from './image';
 import { WordRotate } from './word-rotate';
+import dynamic from 'next/dynamic';
+
+// TODO: reconsider this?
+const HeroImage = dynamic(() => import('@/components/marketing/hero/image'), {
+    ssr: false
+})
 
 export const Cover = ({
     words,
