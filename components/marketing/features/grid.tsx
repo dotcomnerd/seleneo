@@ -15,8 +15,8 @@ const features = [
  },
  {
    icon: <Wand2 className="w-6 h-6 text-white" />,
-   title: "AI Enhancements",
-   description: "Leverage advanced AI tools to auto-enhance your screenshots, ensuring top-quality results effortlessly."
+   title: "AI Adaptivity",
+   description: "Leverage advanced AI tools to auto-generate your gradients, shadows, and more with ease."
  },
  {
    icon: <Share className="w-6 h-6 text-white" />,
