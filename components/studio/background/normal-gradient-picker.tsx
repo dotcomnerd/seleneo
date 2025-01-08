@@ -160,8 +160,6 @@ export default function NormalGradientPicker() {
     }
   }
 
-  console.log(dominantColor)
-
   return (
     <div>
       <h3 className="mt-8 flex items-center gap-1.5 text-xs font-medium text-dark/70">
