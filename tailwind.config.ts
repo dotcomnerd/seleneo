@@ -1,29 +1,6 @@
 const { fontFamily } = require("tailwindcss/defaultTheme");
-// theme: {
-//     container: {
-//         center: true,
-//             padding: "1.5rem",
-//                 screens: {
-//             xlg: "100%",
-//       },
-//     },
-//     extend: {
-//         screens: {
-//             xlg: "1100px",
-//       },
-//         backgroundColor: {
-//             primary: "#FBFBFA",
-//                 secondaryLight: "#F1F4F4",
-//                     dark: "#181819",
-//                         formDark: "hsl(216, 9%, 11%)",
-//                             sidebar: "#151515",
-//       },
-//         textColor: {
-//             primary: "#212329",
-//                 dark: "#C2C3C9",
-//                     purple: "#898AEB",
-//       },
-// /** @type {import('tailwindcss').Config} */
+
+/** @type {import('tailwindcss').Config} */
 module.exports = {
     darkMode: ["class"],
     content: ["app/**/*.{ts,tsx}", "components/**/*.{ts,tsx}"],
@@ -37,13 +14,9 @@ module.exports = {
             },
         },
         extend: {
-            // backgroundColor: {
-            //     primary: '#FBFBFA',
-            //     secondaryLight: '#F1F4F4',
-            //     dark: '#181819',
-            //     formDark: 'hsl(216, 9%, 11%)',
-            //     sidebar: '#151515',
-            // },
+            textColors: {
+                dark: "#0000",
+            },
             colors: {
                 border: "hsl(var(--border))",
                 input: "hsl(var(--input))",
