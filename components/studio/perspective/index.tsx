@@ -12,7 +12,7 @@ export default function PerspectiveOptions() {
 
   return (
     <div className={`${selectedImage ? '' : 'pointer-events-none opacity-40'}`}>
-      <h3 className="mt-8 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
+      <h3 className="mt-2 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
         <Rotate3d size={20} />
         <span>Custom options</span>
       </h3>
