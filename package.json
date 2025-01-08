@@ -1,6 +1,6 @@
 {
   "name": "seleneo",
-  "version": "0.1.0",
+  "version": "0.9.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier . --write",
-    "postinstall": "prisma generate && db:push",
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "db:push": "prisma db push",
     "db:studio": "prisma studio"
   },
