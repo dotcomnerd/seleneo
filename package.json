@@ -16,7 +16,7 @@
     "@auth/prisma-adapter": "^2.7.4",
     "@fseehawer/react-circular-slider": "^2.7.0",
     "@hookform/resolvers": "^3.9.1",
-    "@prisma/client": "^6.2.0",
+    "@prisma/client": "latest",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -124,6 +124,6 @@
     "lint-staged": "^15.2.7",
     "prettier": "3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.14",
-    "prisma": "^6.2.0"
+    "prisma": "latest"
   }
 }
