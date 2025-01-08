@@ -53,7 +53,7 @@ const FrameSearchBar = ({ frame }: { frame: FrameTypes }) => (
   <div
     className={cn(
       'flex h-[50%] w-full flex-1 items-center rounded-md px-2 opacity-5',
-      frame === 'MacOS Dark' ? 'bg-white' : 'bg-[#000]'
+      frame === 'MacOS Dark' ? 'bg-gray-200' : 'bg-[#000]'
     )}
   />
 )
