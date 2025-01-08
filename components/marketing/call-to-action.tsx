@@ -6,14 +6,13 @@ import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
 import Link from "next/link";
 import { AnimatedGridPattern } from "./grid-pattern";
-import { FadeIn } from "./hero/blur-fade";
 import { SparklesCore } from "./sparkles";
 
 export function CallToAction() {
     const { resolvedTheme } = useTheme();
     return (
         <>
-            <div className="relative w-full">
+            <div className="relative max-w-full overflow-hidden">
                 <div className="w-full py-20 lg:py-32 my-32">
                     <div className="container mx-auto">
                         <div className="flex flex-col text-center rounded-md p-4 lg:p-14 gap-8 items-center">
@@ -69,7 +68,7 @@ export function CallToAction() {
                         "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12",
                     )}
                 />
-    </div>
+            </div>
         </>
     );
 }
