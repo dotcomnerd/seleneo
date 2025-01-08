@@ -1,0 +1,13 @@
+version: '3'
+services:
+  postgres:
+    image: postgres:12
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: seleneo_db
+    volumes:
+      - ./data:/var/lib/postgresql/data
