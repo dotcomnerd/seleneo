@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useQuery } from '@tanstack/react-query'
 import { Settings2 } from 'lucide-react'
@@ -67,11 +67,7 @@ export default function PatternPicker() {
   }
 
   if (isError && error instanceof Error) {
-    toast({
-      title: 'Error',
-      description: error.message,
-      variant: 'destructive',
-    })
+    toast.error('Error', { description: error.message })
     return <span>Error: {error.message}</span>
   }
 

@@ -2,17 +2,17 @@
 
 import { Button } from '@/components/ui/button'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
 } from '@/components/ui/popover'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Switch } from '@/components/ui/switch'
-import { toast } from '@/hooks/use-toast'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useQuery } from '@tanstack/react-query'
 import { ChevronLeft, ChevronRight, Settings2 } from 'lucide-react'
 import { Key, useEffect, useState } from 'react'
+import { toast } from 'sonner'
 
 export default function ImageGradientPicker() {
   const {
@@ -75,11 +75,7 @@ export default function ImageGradientPicker() {
   }
 
   if (isError && error instanceof Error) {
-    toast({
-      title: 'Error',
-      description: error.message,
-      variant: 'destructive',
-    })
+    toast.error("Error", { description: error.message })
     return <span>Error: {error.message}</span>
   }
 
