@@ -19,7 +19,7 @@ const Slider = React.forwardRef<
             className="h-6 rounded-md border border-border/80 bg-primary/5 p-0.5"
             onClick={onDecrement}
         >
-            <MinusIcon className="h-[1.15rem] w-[1.15rem] text-white/50" />
+            <MinusIcon className="h-[1.15rem] w-[1.15rem] dark:text-primary/80 text-primary/40" />
         </Button>
         <SliderPrimitive.Root
             ref={ref}
@@ -29,7 +29,7 @@ const Slider = React.forwardRef<
             )}
             {...props}
         >
-            <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-[3px] bg-primary/5 disabled:opacity-50">
+            <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-[3px] bg-primary/15 disabled:opacity-50">
                 <SliderPrimitive.Range className="dark:bg-primary absolute h-full bg-primary" />
             </SliderPrimitive.Track>
             <SliderPrimitive.Thumb
@@ -42,7 +42,7 @@ const Slider = React.forwardRef<
             className="h-6 rounded-md border border-border/80 bg-primary/5 p-0.5"
             onClick={onIncrement}
         >
-            <Plus className="h-[1.15rem] w-[1.15rem] text-white/50" />
+            <Plus className="h-[1.15rem] w-[1.15rem] dark:text-primary/80 text-primary/40" />
         </Button>
     </div>
 ))
