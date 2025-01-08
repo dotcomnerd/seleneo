@@ -8,7 +8,7 @@ export default function NotFoundPage() {
             <div className="flex items-center justify-center min-h-screen bg-background  bg-fixed bg-cover error-bg">
                 <div className="container">
                     <div className="row">
-                        <div className="col-sm-8 offset-sm-2 text-gray-50 text-center -mt-52">
+                        <div className="col-sm-8 offset-sm-2 dark:text-gray-50 text-center -mt-52">
                             <div className="relative">
                                 <h1 className="relative text-9xl tracking-tighter-less text-shadow font-sans font-bold">
                                     <span>4</span>
@@ -16,8 +16,8 @@ export default function NotFoundPage() {
                                     <span>4</span>
                                 </h1>
                             </div>
-                            <h5 className="text-white font-semibold mt-3">Page not found</h5>
-                            <p className="text-white mt-2 mb-6">
+                            <h5 className="dark:text-white font-semibold mt-3">Page not found</h5>
+                            <p className="dark:text-white mt-2 mb-6">
                                Hey, looks like you've hit a mountain. The page you're looking for doesn't exist.
                             </p>
                             <Link
