@@ -15,9 +15,9 @@ import { useImageOptions } from '@/store/use-image-options'
 import AddImageButton from './add-image-button'
 import ShadowSettings from './shadow-settings'
 
+// TODO: add accordion idea for all options
 export default function ImageOptions() {
   const { accordionOpen, setAccordionOpen } = useImageOptions()
-
   return (
     <>
       <AddImageButton />
