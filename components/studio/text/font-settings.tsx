@@ -174,9 +174,6 @@ export default function FontSettings() {
                                 <Button
                                     variant="outline"
                                     className="w-full justify-start gap-2"
-                                    style={{
-                                        color: selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'
-                                    }}
                                 >
                                     <Palette className="h-4 w-4" />
                                     {selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
