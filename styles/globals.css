@@ -35,6 +35,10 @@
       --chart-4: 211 4% 95%;
       --chart-5: 211 103% 50%;
       --radius: 0.5rem;
+      --gradient-angle: 170deg;
+      --gradient-bg: linear-gradient(var(--gradient-angle),#D8D9DD,#cccdd1 100%);
+      --mesh-bg: '';
+      --solid-bg: '';
     }
 
     .dark {
@@ -62,6 +66,11 @@
       --chart-3: 0 0% 16%;
       --chart-4: 0 0% 19%;
       --chart-5: 211 103% 50%;
+      --radius: 0.5rem;
+      --gradient-angle: 170deg;
+      --gradient-bg: linear-gradient(var(--gradient-angle),#1A202C,#2D3748 100%);
+      --mesh-bg: '';
+      --solid-bg: '';
     }
   }
 
