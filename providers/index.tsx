@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { Provider } from 'react-wrap-balancer'
+import { Toaster } from 'sonner'
 
 type ProviderProps = {
     children: React.ReactNode
@@ -25,6 +26,7 @@ export function Providers({ children }: ProviderProps) {
             <ThemeProvider attribute="class" defaultTheme='dark'>
                 <Provider>{children}</Provider>
             </ThemeProvider>
+            <Toaster richColors closeButton visibleToasts={1} position="top-center" pauseWhenPageIsHidden />
         </QueryClientProvider>
 
     )
