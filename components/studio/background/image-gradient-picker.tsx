@@ -82,13 +82,13 @@ export default function ImageGradientPicker() {
   return (
     <>
       <h3 className="mt-8 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
-        <span>Images:</span>
+        <span>Images</span>
         <Popover>
           <PopoverTrigger asChild>
             <Settings2 size={20} />
           </PopoverTrigger>
           <PopoverContent className="flex w-fit flex-wrap gap-3">
-            <h1 className="text-[0.85rem]">High resolution background</h1>
+            <h1 className="text-[0.85rem]">High Resolution Background</h1>
             <Switch
               checked={highResBackground}
               onCheckedChange={(checked) => {
@@ -99,7 +99,7 @@ export default function ImageGradientPicker() {
         </Popover>
       </h3>
 
-      <ul className="mt-4 flex grid-cols-5 flex-wrap gap-x-2.5 gap-y-3 md:grid">
+      <ul className="mt-4 flex grid-cols-5 flex-wrap gap-x-2.5 gap-y-3 md:grid select-none">
         {unsplashData?.map(
           (data: {
             user: any

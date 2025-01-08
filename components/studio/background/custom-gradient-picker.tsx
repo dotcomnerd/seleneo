@@ -1,10 +1,13 @@
 'use client'
 
-import { useCallback } from 'react'
-import { solidColors } from '@/presets/solid-colors'
-import { Button } from '@/components/ui/button'
 import PopupColorPicker from '@/components/popup-color-picker'
+import { Button } from '@/components/ui/button'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { solidColors } from '@/presets/solid-colors'
 import { useBackgroundOptions } from '@/store/use-background-options'
+import { Palette } from 'lucide-react'
+import { useCallback } from 'react'
+import { HexColorInput, HexColorPicker } from 'react-colorful'
 
 export default function CustomGradientPicker() {
   const {
@@ -45,9 +48,35 @@ export default function CustomGradientPicker() {
     <>
       <div>
         <h3 className="mb-3 mt-8 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
-          <span>Pick a color:</span>
+          <span>Color Picker</span>
         </h3>
-        <PopupColorPicker onChange={handleColorChange} color={solidColor} />
+              <Popover>
+                  <PopoverTrigger asChild>
+                      <Button
+                          variant="outline"
+                          className="w-full justify-start gap-2"
+                      >
+                          <Palette className="h-4 w-4" />
+                            <span>{solidColor || 'Pick a color'}</span>
+                      </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64">
+                      <HexColorPicker
+                          color={solidColor || '#fff'}
+                          onChange={handleColorChange}
+                      />
+                      <div className="mt-4">
+                          <HexColorInput
+                              tabIndex={0}
+                              prefix='#'
+                              prefixed
+                              color={solidColor || '#fff'}
+                              onChange={handleColorChange}
+                              className="w-full rounded-md border px-2 py-1"
+                          />
+                      </div>
+                  </PopoverContent>
+              </Popover>
       </div>
 
       <div>
@@ -71,7 +100,7 @@ export default function CustomGradientPicker() {
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   className="h-full w-full scale-150"
-                  src="/images/transparent.jpg"
+                  src="/transparent.jpg"
                   alt="transparent background"
                 />
               </Button>
