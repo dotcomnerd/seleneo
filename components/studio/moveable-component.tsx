@@ -133,6 +133,7 @@ export default function MoveableComponent({ id }: { id: string }) {
         }`
       }}
       onScaleEnd={({ target, lastEvent }) => {
+        if (!lastEvent) return
         const scaleX = lastEvent.scale[0]
         // @ts-expect-error
         const xPerc = (lastEvent?.drag?.translate[0] / target.offsetWidth) * 100
