@@ -1,7 +1,7 @@
 "use client";
 
-import { ThemeToggle } from '@/components/theme-toggle';
 import Spinner from '@/components/spinner/spinner';
+import { ThemeToggle } from '@/components/theme-toggle';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -30,10 +30,10 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import logo from "@/public/logo.svg";
-import { ChevronDown, LogOut, Menu, Settings, User } from 'lucide-react';
+import { ChevronDown, LogOut, Menu, User } from 'lucide-react';
+import { User as UserType } from 'next-auth';
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { User as UserType } from 'next-auth';
 
 const UserAvatar = ({ user, className = "h-8 w-8" }:
     { user: UserType | undefined, className?: string }
@@ -65,7 +65,7 @@ export function Navbar() {
     const renderAuthButton = () => {
         if (status === 'loading') {
             return (
-                <Button disabled className="gap-2">
+                <Button disabled variant={"stylish"} className="gap-2">
                     <Spinner />
                     <span>Loading...</span>
                 </Button>
@@ -77,7 +77,7 @@ export function Navbar() {
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="gap-2 p-1">
-                                <UserAvatar user={session.user} />
+                            <UserAvatar user={session.user} />
                             <span className="ml-2">{session.user?.name}</span>
                             <ChevronDown className="h-4 w-4" />
                         </Button>
@@ -121,7 +121,7 @@ export function Navbar() {
         }
 
         return (
-            <Button onClick={() => signIn("github")}>
+            <Button onClick={() => signIn("github")} variant={"stylish"}>
                 Sign In
             </Button>
         );
@@ -177,7 +177,7 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
                         {renderAuthButton()}
-                        <Button disabled>Get Started</Button>
+                        <Button disabled variant={"stylish"}>Get Started</Button>
                     </div>
                     <Sheet>
                         <SheetTrigger asChild className="md:hidden">
@@ -238,7 +238,7 @@ export function Navbar() {
                                         </AlertDialogContent>
                                     </AlertDialog>
                                 ) : (
-                                    <Button onClick={() => signIn("github")} className="mt-2">
+                                    <Button onClick={() => signIn("github")} variant={"stylish"} className="mt-2">
                                         Sign In
                                     </Button>
                                 )}
