@@ -39,11 +39,11 @@ export default function FramePicker() {
     return (
         <>
             <div
-                className={`mb-3 mt-4 flex items-center px-1 md:max-w-full
+                className={`mb-3 flex items-center px-1 md:max-w-full
         ${selectedImage ? '' : 'pointer-events-none opacity-40'}
       `}
             >
-                <h1 className="text-[0.85rem]">Browser frames:</h1>
+                <h1 className="text-[0.85rem]">Browser Frames</h1>
             </div>
 
             <div className="mt-2 grid w-full grid-cols-3 flex-wrap gap-x-2.5 gap-y-6">
@@ -125,12 +125,12 @@ export default function FramePicker() {
                         className={`mt-8 flex flex-col gap-3 px-1 md:max-w-full ${selectedImage ? '' : 'pointer-events-none opacity-40'
                             }`}
                     >
-                        <h1 className="text-[0.85rem]">Frame size</h1>
-                        <Select
+                        <h1 className="text-[0.85rem]">Frame Size</h1>
+                    <Select
                             defaultValue={frameHeight}
                             onValueChange={(value) => setFrameHeight(value)}
                         >
-                            <SelectTrigger className="w-[7rem]">
+                        <SelectTrigger className="w-[7rem] border border-primary/30">
                                 <SelectValue placeholder="Medium" />
                             </SelectTrigger>
                             <SelectContent className="w-[7rem]">
