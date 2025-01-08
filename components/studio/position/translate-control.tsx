@@ -13,9 +13,9 @@ export default function TranslateOption() {
         <div className={`${selectedImage ? '' : 'pointer-events-none opacity-40'}`}>
             <div className="mb-3 mt-2 flex items-center px-1 md:max-w-full">
                 <h1 className="text-[0.85rem]">Translate X</h1>
-                <p className="ml-2 rounded-md bg-formDark p-[0.4rem] text-[0.8rem] text-dark/70">
+                <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.translateX : 0
+                        selectedImage ? images[selectedImage - 1]?.style.translateX || 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -110,7 +110,7 @@ export default function TranslateOption() {
 
             <div className="mb-3 mt-3 flex items-center px-1 md:max-w-full">
                 <h1 className="text-[0.85rem]">Translate Y</h1>
-                <p className="ml-2 rounded-md bg-formDark p-[0.4rem] text-[0.8rem] text-dark/70">
+                <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
                         selectedImage ? images[selectedImage - 1]?.style.translateY : 0
                     )}px`}
