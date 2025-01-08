@@ -58,8 +58,9 @@ const Canvas = dynamic(() => import('@/components/studio/studio-main'), {
 })
 
 export default function StudioPage() {
+    {/* Remember this select-none for the future if we dont like it */}
     return (
-        <div className="flex flex-col h-screen bg-background">
+        <div className="flex flex-col h-screen bg-background select-none">
             <StudioNavbar />
             <div className="flex flex-1 overflow-hidden">
                 <Sidebar />
