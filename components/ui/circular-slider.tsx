@@ -31,7 +31,7 @@ const CircularSliderComp: React.FC<CircularSliderProps> = () => {
         if (typeof window === 'undefined') return
         document?.documentElement.style.setProperty(
           '--gradient-angle',
-          `${value.toString()}deg`
+          `${value?.toString()}deg`
         )
         setGradientAngle(value)
       }}
