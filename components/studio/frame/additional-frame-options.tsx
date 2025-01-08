@@ -32,12 +32,12 @@ export default function AdditionalFrameOptions() {
             >
                 <h3 className="mb-6 mt-8 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
                     <Settings2 size={20} />
-                    <span>Additional options</span>
+                    <span>Additional Options</span>
                 </h3>
 
                 {(browserFrame === 'MacOS Dark' || browserFrame === 'MacOS Light') && (
                     <div className="mb-6 flex items-center justify-between gap-4 px-1">
-                        <h1 className="text-[0.85rem]">Show searchbar :</h1>
+                        <h1 className="text-[0.85rem]">Show Search Bar</h1>
                         <Switch
                             defaultChecked={false}
                             onCheckedChange={(checked) => {
@@ -49,7 +49,7 @@ export default function AdditionalFrameOptions() {
 
                 {(browserFrame === 'MacOS Dark' || browserFrame === 'MacOS Light') && (
                     <div className="mb-6 flex items-center justify-between gap-4 px-1">
-                        <h1 className="text-[0.85rem]">Colorful buttons :</h1>
+                        <h1 className="text-[0.85rem]">Colorful Buttons</h1>
                         <Switch
                             defaultChecked={true}
                             checked={hasButtonColor}
@@ -62,7 +62,7 @@ export default function AdditionalFrameOptions() {
 
                 {(browserFrame === 'MacOS Dark' || browserFrame === 'MacOS Light') && (
                     <div className="mb-6 flex items-center justify-between gap-4 px-1">
-                        <h1 className="text-[0.85rem]">Hide buttons :</h1>
+                        <h1 className="text-[0.85rem]">Hide Buttons</h1>
                         <Switch
                             defaultChecked={false}
                             checked={hideButtons}
@@ -75,7 +75,7 @@ export default function AdditionalFrameOptions() {
 
                 {(browserFrame === 'MacOS Dark' || browserFrame === 'MacOS Light') && (
                     <div className="mb-6 flex items-center justify-between gap-4 px-1">
-                        <h1 className="text-[0.85rem]">Frame color :</h1>
+                        <h1 className="text-[0.85rem]">Frame Color</h1>
                         <PopupColorPicker
                             shouldShowDropdown={false}
                             shouldShowAlpha={true}
@@ -95,7 +95,7 @@ export default function AdditionalFrameOptions() {
 
                 {browserFrame === 'Shadow' && (
                     <div className="mb-6 flex items-center gap-4 px-1 md:max-w-full">
-                        <h1 className="text-[0.85rem]">Show outline :</h1>
+                        <h1 className="text-[0.85rem]">Show Outline</h1>
                         <Switch
                             defaultChecked={true}
                             checked={showStroke}
@@ -108,7 +108,7 @@ export default function AdditionalFrameOptions() {
 
                 {browserFrame === 'Arc' && (
                     <div className="mb-6 flex items-center gap-4 px-1 md:max-w-full">
-                        <h1 className="text-[0.85rem]">Dark mode :</h1>
+                        <h1 className="text-[0.85rem]">Dark Mode</h1>
                         <Switch
                             defaultChecked={false}
                             checked={arcDarkMode}
