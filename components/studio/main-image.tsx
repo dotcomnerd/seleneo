@@ -2,23 +2,25 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { useOnClickOutside } from '@/hooks/use-on-click-outside'
+import {
+    calculateEqualCanvasSize,
+    convertHexToRgba,
+} from '@/lib/utils'
 import demoImage from '@/public/demo.png'
+import lightDemoImage from '@/public/light-demo.png'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useColorExtractor } from '@/store/use-color-extractor'
 import { useFrameOptions } from '@/store/use-frame-options'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
-import {
-  calculateEqualCanvasSize,
-  convertHexToRgba,
-} from '@/lib/utils'
 import { ImageIcon, Upload } from 'lucide-react'
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { Button } from '../ui/button'
 import { BrowserFrame } from './browser-frames'
 import ContextMenuImage from './image-context-menu'
+import ColorThief from 'colorthief'
 
 const ImageUpload = () => {
   const targetRef = useRef<HTMLDivElement>(null)
@@ -72,6 +74,7 @@ const ImageUpload = () => {
     extractColors()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesCheck])
+  console.log(images)
 
   useOnClickOutside(targetRef, () => {
     if (isMultipleTargetSelected) return
@@ -206,8 +209,7 @@ const ImageUpload = () => {
                       }}
                     />
                   </div>
-
-                  {/* Trying layout feature! */}
+                  {/* abandoning layout, too hard */}
                   {/* <div
                     className={`flex flex-col image image-check absolute flex-1 z-[2]   ${
                       isSelecting ? 'selectable' : ''
@@ -313,7 +315,8 @@ function LoadAImage() {
       const file = event.target.files?.[0]
 
       if (file) {
-        const imageUrl = URL.createObjectURL(file)
+          const imageUrl = URL.createObjectURL(file)
+          console.log(`imageUrl`, imageUrl)
         setInitialImageUploaded(true)
 
         setImagesCheck([...imagesCheck, imageUrl])
@@ -359,7 +362,8 @@ function LoadAImage() {
       // const file = event.target.files?.[0]
 
       if (file) {
-        const imageUrl = URL.createObjectURL(file)
+          const imageUrl = URL.createObjectURL(file)
+          console.log(`imageUrl`, imageUrl)
         setInitialImageUploaded(true)
 
         setImagesCheck([...imagesCheck, imageUrl])
@@ -400,30 +404,43 @@ function LoadAImage() {
     ]
   )
 
-  const loadDemoImage = () => {
-    if (typeof window === 'undefined') return;
-    setBackground('linear-gradient(var(--gradient-angle), #898aeb, #d8b9e3)')
-    document?.documentElement.style.setProperty(
-      '--gradient-bg',
-      ' linear-gradient(var(--gradient-angle), #898aeb, #d8b9e3)'
-    )
-    setImages([
-      ...images,
-      {
-        image: demoImage.src,
-        id: 1,
-        style: {
-          ...defaultStyle,
-          borderSize: '15',
-          imageRoundness: 0.7,
-          imageSize: '0.78',
-          insetSize: '10',
-        },
-      },
-    ])
-    setImagesCheck([...imagesCheck, demoImage.src])
-    setResolution('1920x1080')
-  }
+    const loadDemoImage = async (theme: "light" | "dark") => {
+        if (typeof window === 'undefined') return;
+
+        const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
+        const image = new Image();
+        image.crossOrigin = 'Anonymous';
+        image.src = imageSrc;
+
+        image.onload =  async () => {
+            const colorThief = new ColorThief();
+            const palette = await colorThief.getPalette(image, 5);
+            const gradientStops = palette
+              .map((clr, i) => `rgb(${clr.join(',')}) ${Math.floor((i / (palette.length - 1)) * 100)}%`)
+              .join(', ');
+            const gradient = `linear-gradient(var(--gradient-angle), ${gradientStops})`;
+
+            setBackground(gradient);
+            document?.documentElement.style.setProperty('--gradient-bg', gradient);
+
+            setImages([
+                ...images,
+                {
+                    image: imageSrc,
+                    id: 1,
+                    style: {
+                        ...defaultStyle,
+                        borderSize: '15',
+                        imageRoundness: 0.7,
+                        imageSize: '0.78',
+                        insetSize: '10',
+                    },
+                },
+            ]);
+            setImagesCheck([...imagesCheck, imageSrc]);
+            setResolution('1920x1080');
+        };
+    };
 
   return (
     <Dropzone
@@ -441,7 +458,7 @@ function LoadAImage() {
         className="absolute-center h-25 w-4/5 xl:w-2/5"
       >
         <div className="flex flex-col gap-4 rounded-xl text-center">
-          <div className="flex-center flex-col rounded-xl border-2 border-dashed border-border/50 backdrop-blur-md bg-background/60 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
+          <div className="flex-center flex-col rounded-xl border-2 border-dashed border-border backdrop-blur-md bg-background/70 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
             <Upload
               style={{
                 transition: 'all 0.8s cubic-bezier(0.6, 0.6, 0, 1)',
@@ -476,14 +493,24 @@ function LoadAImage() {
               OR
             </p>
 
+        <div className='flex-center gap-4 scale-90'>
             <Button
-              onClick={loadDemoImage}
-              className="z-[120] mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
+              onClick={() => loadDemoImage('light')}
+              className="z-[120] max-w-52 mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
               variant="outline"
             >
-              Try with a demo image
+              Light mode demo
               <ImageIcon className="ml-2" size={19} />
             </Button>
+            <Button
+              onClick={() => loadDemoImage('dark')}
+              className="z-[120] max-w-52 mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
+              variant="outline"
+            >
+              Dark mode demo
+              <ImageIcon className="ml-2" size={19} />
+            </Button>
+        </div>
           </div>
         </div>
       </div>
