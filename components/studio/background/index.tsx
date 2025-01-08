@@ -16,7 +16,7 @@ export default function BackgroundOptions() {
 
   return (
     <Tabs
-      className="mt-4 w-full"
+      className="w-full"
       defaultValue={
         backgroundType === 'solid'
           ? 'customTab'
