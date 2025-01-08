@@ -12,7 +12,7 @@ export function Noise() {
                 style={{
                     opacity: noise,
                 }}
-                src={noiseSvg}
+                src={noiseSvg.src}
                 alt="noise"
                 loading="lazy"
             />}
