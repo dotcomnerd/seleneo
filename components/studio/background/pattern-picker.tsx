@@ -74,14 +74,14 @@ export default function PatternPicker() {
   return (
     <>
       <h3 className="mt-8 flex items-center gap-2 text-xs font-medium uppercase text-dark/70">
-        <span>Wallpapers:</span>
+        <span>Wallpapers</span>
         <Popover>
           <PopoverTrigger asChild>
             <Settings2 size={20} className="rotate-90" />
           </PopoverTrigger>
           <PopoverContent className="flex w-fit flex-col flex-wrap gap-3">
             <div className="flex gap-3">
-              <h1 className="text-[0.85rem]">High resolution background</h1>
+              <h1 className="text-[0.85rem]">High Resolution Background</h1>
               <Switch
                 checked={highResBackground}
                 onCheckedChange={(checked) => {
