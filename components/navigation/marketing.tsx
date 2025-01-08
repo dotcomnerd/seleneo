@@ -12,7 +12,7 @@ import {
     SheetTitle,
     SheetTrigger,
 } from "@/components/ui/sheet";
-import { signIn } from "next-auth/react"
+import { signIn, signOut } from "next-auth/react"
 import logo from "@/public/logo.svg";
 import { ChevronDown, Menu } from 'lucide-react';
 import Link from "next/link";
@@ -80,6 +80,11 @@ export function Navbar() {
                             await signIn("github")
                         }}>
                             Sign In
+                        </Button>
+                        <Button onClick={async () => {
+                            await signOut()
+                        }}>
+                            Sign Out
                         </Button>
                         <Button disabled>Get Started</Button>
                     </div>
