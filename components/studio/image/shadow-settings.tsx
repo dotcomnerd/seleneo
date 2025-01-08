@@ -1,6 +1,5 @@
 'use client'
 
-import PopupColorPicker from '@/components/popup-color-picker'
 import { Button } from '@/components/ui/button'
 import {
     Popover,
@@ -11,7 +10,8 @@ import { Slider } from '@/components/ui/slider'
 import { shadows } from '@/presets/shadows'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Palette } from 'lucide-react'
+import { HexColorInput, HexColorPicker } from 'react-colorful'
 
 export default function ShadowSettings() {
     const { images, setImages } = useImageOptions()
@@ -117,9 +117,8 @@ export default function ShadowSettings() {
                 <PopoverContent
                     align="start"
                     side="right"
-                    className="grid w-[350px] max-h-48 grid-cols-3 gap-4 rounded-lg bg-formDark p-4"
+                    className="grid w-[350px] max-h-52 grid-cols-3 gap-4 rounded-lg bg-background p-4"
                 >
-                    {/* Inside popup  */}
                     {shadows.map((shadow) => (
                         <Button
                             variant="secondary"
@@ -146,7 +145,7 @@ export default function ShadowSettings() {
 
             <div className="mb-3 mt-8 flex items-center px-1">
                 <h1 className="text-[0.85rem]">Opacity</h1>
-                <p className="ml-2 rounded-md bg-formDark p-[0.4rem] text-[0.8rem] text-dark/70">
+                <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {Math.round(
                         Number(
                             selectedImage
@@ -225,16 +224,47 @@ export default function ShadowSettings() {
             </div>
 
             <div className="mb-3 mt-8 flex items-center px-1">
-                <h1 className="text-[0.85rem]">Shadow color</h1>
+                <h1 className="text-[0.85rem]">Shadow Color</h1>
             </div>
-
-            <PopupColorPicker
-                shouldShowAlpha={false}
-                color={
-                    selectedImage ? images[selectedImage - 1]?.style.shadowColor : '#000'
-                }
-                onChange={handleColorChange}
-            />
+            <Popover>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        className="w-full justify-start gap-2"
+                    >
+                        <Palette className="h-4 w-4" />
+                        <span>
+                            {selectedImage
+                                ? images[selectedImage - 1]?.style.shadowColor
+                                : 'Pick a color'}
+                        </span>
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64">
+                    <HexColorPicker
+                        color={
+                            selectedImage
+                                ? images[selectedImage - 1]?.style.shadowColor
+                                : '#fff'
+                        }
+                        onChange={handleColorChange}
+                    />
+                    <div className="mt-4">
+                        <HexColorInput
+                            tabIndex={0}
+                            prefix="#"
+                            prefixed
+                            color={
+                                selectedImage
+                                    ? images[selectedImage - 1]?.style.shadowColor
+                                    : '#fff'
+                            }
+                            onChange={handleColorChange}
+                            className="w-full rounded-md border px-2 py-1"
+                        />
+                    </div>
+                </PopoverContent>
+            </Popover>
         </div>
     )
 }
