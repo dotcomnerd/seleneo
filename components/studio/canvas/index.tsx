@@ -110,7 +110,6 @@ export default function CanvasOptions() {
                 <Input
                     type="number"
                     value={inputResolution.inputWidth}
-                    defaultValue={width}
                     placeholder='Width'
                     min={100}
                     max={5000}
@@ -126,7 +125,6 @@ export default function CanvasOptions() {
                 <Input
                     type="number"
                     value={inputResolution.inputHeight}
-                    defaultValue={height}
                     placeholder='Height'
                     min={100}
                     max={5000}
