@@ -15,10 +15,11 @@ import { useSession } from 'next-auth/react'
 interface ExportActionsProps {
     quality: number
     fileType: FileType
+    sessionStatus: "authenticated" | "loading" | "unauthenticated"
 }
 
 
-export function ExportActions({ quality, fileType }: ExportActionsProps) {
+export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
     const { images } = useImageOptions()
     const { scaleFactor } = useResizeCanvas()
     const [isCopying, setIsCopying] = useState(false)
@@ -156,7 +157,8 @@ export function ExportActions({ quality, fileType }: ExportActionsProps) {
                 variant="ghost"
                 size="icon"
                 onClick={handleCloudSave}
-                disabled={isCopying || isDownloading || isSaving}
+                disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
+                title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
                 className="hover:bg-background"
             >
                 {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}

@@ -35,7 +35,7 @@ import { User as UserType } from 'next-auth';
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
-const UserAvatar = ({ user, className = "h-8 w-8" }:
+export const UserAvatar = ({ user, className = "h-8 w-8" }:
     { user: UserType | undefined, className?: string }
 ) => {
     return (
