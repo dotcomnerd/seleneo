@@ -24,8 +24,8 @@ export default function PerspectiveOptions() {
       </h3>
       <Joystick
         size={40}
-        stickColor="#898aeb"
-        baseColor="#898aeb40"
+        stickColor="#007BFF"
+        baseColor="#003e80"
         move={(event: IJoystickUpdateEvent) => {
           const { type, x, y } = event
           if (type === 'move') {
