@@ -32,7 +32,7 @@ export function ExportActions({ quality, fileType }: ExportActionsProps) {
         }
         return true
     }
-    
+
 
     const handleCopy = async () => {
         if (!checkExportPermission() || isCopying) return
@@ -123,7 +123,7 @@ export function ExportActions({ quality, fileType }: ExportActionsProps) {
             }
 
             toast.success('Saved', { description: 'Your design has been saved' });
-        } 
+        }
         catch (error: any) {
             toast.error('Save failed', { description: error.message });
         }
@@ -131,7 +131,7 @@ export function ExportActions({ quality, fileType }: ExportActionsProps) {
             SetIsSaving(false)
         }
     }
-    
+
     return (
         <div className="flex items-center gap-1">
             <Button
