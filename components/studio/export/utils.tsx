@@ -63,3 +63,8 @@ export const createSnapshot = async (
         throw new Error(error.message)
     }
 }
+
+export const sendToCloudflare = async (file: Blob) => {
+    
+}
+

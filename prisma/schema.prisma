@@ -42,6 +42,8 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+
+  UserImage UserImage[]
 }
 
 model VerificationToken {
@@ -50,4 +52,17 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+}
+
+model UserImage {
+  id              String @id @default(cuid())
+  userId          String
+  cloudflareUrl   String
+  visibility      Visibility
+  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
