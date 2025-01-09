@@ -10,14 +10,14 @@ type StatItem = {
 const stats: StatItem[] = [
   { icon: Settings2, value: '60+', label: 'Customization Options' },
   { icon: "🙅🏿‍♂️", value: '0', label: 'Design Skills Required' },
-  { icon: Paintbrush, value: '1,000,000+', label: 'Possibilities' },
+  { icon: Paintbrush, value: '10,000+', label: 'Possibilities' },
 ];
 
 const IconRenderer = ({ icon }: { icon: StatItem['icon'] }) => {
   if (typeof icon === 'string') {
     return <span className="text-2xl">{icon}</span>;
   }
-  
+
   const IconComponent = icon;
   return <IconComponent className="w-6 h-6 text-indigo-500 dark:text-indigo-400" />;
 };
