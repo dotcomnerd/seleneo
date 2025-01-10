@@ -101,7 +101,11 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             //i dont like this but im on a time crunch
             const snapshotBlob: Blob = typeof snapshot === 'string' ? new Blob([snapshot], { type: 'image/webp' }) : snapshot;
 
+            // TODO: Make this global state so that if the image is uploaded successfully, it is added 2 the list of identifiers
+            const identifier = crypto.randomUUID();
+
             formData.append('file', snapshotBlob, `export-${Date.now()}.${fileType.toLowerCase()}`);
+            formData.append('identifier', identifier);
 
             const response = await fetch("/api/save", {
                 method: "POST",

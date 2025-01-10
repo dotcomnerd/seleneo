@@ -1,7 +1,10 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-async function uploadImageToCloudflare(file: FormData): Promise<string> {
+async function uploadImageToCloudflare(file: FormData): Promise<{ imageUrl: string; identifier: string }> {
+    const identifier = file.get("identifier") as string;
+    file.delete("identifier");
+
     file.append("requireSignedURLs", "false");
     const response = await fetch(
         `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
@@ -19,18 +22,21 @@ async function uploadImageToCloudflare(file: FormData): Promise<string> {
     }
 
     const result = await response.json();
-    return result.result.variants[0]; 
+    return {
+        imageUrl: result.result.variants[0],
+        identifier,
+    };
 }
 
-async function saveOrUpdateUserImage(userId: string, imageUrl: string) {
+async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string): Promise<string> {
     const existingImage = await prisma.userImage.findFirst({
-        where: { userId },
+        where: { userId, identifier },
     });
 
     if (existingImage) {
         await prisma.userImage.update({
             where: { id: existingImage.id },
-            data: { cloudflareUrl: imageUrl },
+            data: { cloudflareUrl: imageUrl, updatedAt: new Date() },
         });
         return "Image updated successfully";
     } else {
@@ -39,6 +45,9 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string) {
                 userId,
                 cloudflareUrl: imageUrl,
                 visibility: "PUBLIC",
+                identifier,
+                createdAt: new Date(),
+                updatedAt: new Date(),
             },
         });
         return "Image saved successfully";
@@ -64,12 +73,13 @@ export async function POST(request: Request) {
 
         const formData = await request.formData();
 
-        const imageUrl = await uploadImageToCloudflare(formData);
+        const { imageUrl, identifier } = await uploadImageToCloudflare(formData);
 
-        const message = await saveOrUpdateUserImage(userId, imageUrl);
+        const message = await saveOrUpdateUserImage(userId, imageUrl, identifier);
 
         return Response.json({ message, status: 200 });
     } catch (error: any) {
+        console.error(error);
         return new Response(error.message, { status: 500 });
     }
 }
