@@ -60,9 +60,12 @@ enum Visibility {
 }
 
 model UserImage {
-  id              String @id @default(cuid())
+  id              String      @id @default(cuid())
+  identifier      String      @unique @default("")
   userId          String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now())
   cloudflareUrl   String
   visibility      Visibility
-  user            User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
