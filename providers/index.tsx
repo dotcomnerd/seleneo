@@ -29,7 +29,7 @@ export function Providers({ children }: ProviderProps) {
                     <Provider>{children}</Provider>
                 </ThemeProvider>
             </SessionProvider>
-            <Toaster richColors closeButton visibleToasts={1} position="top-center" pauseWhenPageIsHidden />
+            <Toaster richColors closeButton visibleToasts={1} pauseWhenPageIsHidden />
         </QueryClientProvider>
 
     )
