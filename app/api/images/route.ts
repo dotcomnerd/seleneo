@@ -43,6 +43,7 @@ export async function DELETE(request: Request) {
 
         if (!cloudflareDeleteResponse.ok) return new Response("Failed to delete image from Cloudflare", { status: 500 });
 
+        // TODO: yeah...
         revalidatePath(('/api/images'));
         revalidatePath('/images');
         revalidatePath(`/${encodeURIComponent(name)}/profile`);
