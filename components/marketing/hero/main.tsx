@@ -1,13 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, InfoIcon } from 'lucide-react';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { GithubIcon } from '../icons/github';
 import { FadeIn } from './blur-fade';
 import { WordRotate } from './word-rotate';
-import dynamic from 'next/dynamic';
 
 // TODO: reconsider this?
 const HeroImage = dynamic(() => import('@/components/marketing/hero/image'), {
@@ -124,7 +123,6 @@ export const Cover = ({
 
 
 export function Hero() {
-
     return (
         <div className="relative container mx-auto px-4 pt-32 pb-40 text-center">
             <FadeIn delay={0}>
@@ -135,7 +133,7 @@ export function Hero() {
                         )}
                     >
                         <div className='flex flex-row justify-center items-center gap-2'>
-                            <Link href="https://github.com/nyumat">
+                            <Link href="https://github.com/dotcomnerd/seleneo" title="Seleneo on GitHub" target='_blank' rel='noopener noreferrer'>
                                 <GithubIcon />
                             </Link>
                             <p>Seleneo is launching soon...</p>
@@ -143,7 +141,6 @@ export function Hero() {
                     </div>
                 </div>
             </FadeIn>
-
             <FadeIn delay={200}>
                 <div className="relative inline-block mb-6 max-w-3xl">
                     <h1 className="relative text-3xl md:text-5xl font-regular tracking-tighter">
@@ -158,60 +155,41 @@ export function Hero() {
                     </h1>
                 </div>
             </FadeIn>
-
-            {/*TODO: maybe add in the future (figure out perf miss) <GradientBlobTwo/> */}
-
+            {/* TODO: maybe add in the future (figure out perf miss) */}
+            {/* <GradientBlobTwo /> */}
             <FadeIn delay={400}>
                 <p className="md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
                     Create elegant showcases for all of your marketing needs in an instant—no design or figma skills needed. And of course, always 100% free.
                 </p>
             </FadeIn>
-
             <FadeIn delay={600}>
                 <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                    <TooltipProvider>
-                        <Tooltip delayDuration={0}>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    className="group px-8 py-4 text-white rounded-lg font-semibold transition-all hover:cursor-not-allowed">
-                                    <span className="flex items-center justify-center gap-2">
-                                        Get Started
-                                        <ArrowRight className="w-4 h-4 animate-pulse" />
-                                    </span>
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                Coming soon ;)
-                            </TooltipContent>
-                        </Tooltip>
-
-                        <Tooltip delayDuration={0}>
-                            <TooltipTrigger asChild>
-                                <Button
-                                    variant={"stylish"}
-                                    className="group px-8 py-4 rounded-lg font-semibold border border-indigo-200/50 dark:border-gray-700/50 hover:cursor-not-allowed">
-                                    View Examples
-                                </Button>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                Making them now!
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+                    <Button
+                        className="group px-8 py-4 text-white rounded-lg font-semibold transition-all" asChild>
+                        <Link href="/studio" prefetch={null} title='Go to Studio'>
+                            <span className="flex items-center justify-center gap-2">
+                                Get Started
+                                <ArrowRight className="w-4 h-4 animate-pulse" />
+                            </span>
+                        </Link>
+                    </Button>
+                    <Button variant={"stylish"} className="group px-8 py-4 rounded-lg font-semibold border border-indigo-200/50 dark:border-gray-700/50 dark:hover:bg-primary/10 hover:bg-primary/10" asChild>
+                        <Link href="/about" title='Learn More About Seleneo' prefetch={null}>
+                            <div className="flex items-center justify-center gap-2">
+                                <InfoIcon className="size-4" />
+                                Learn More
+                            </div>
+                        </Link>
+                    </Button>
                 </div>
-
                 <Button
                     variant={"link"}
                     className="font-semibold" asChild>
-                    <Link href="/about">
-                        Learn More About Seleneo
+                    <Link href="/community" prefetch={null}>
+                        Explore Community Gallery
                     </Link>
                 </Button>
-
-
             </FadeIn>
-
-
             <FadeIn delay={800}>
                 <div className="relative mx-auto max-w-5xl">
                     <HeroImage />
