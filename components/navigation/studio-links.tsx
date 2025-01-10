@@ -28,7 +28,7 @@ export function Links() {
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                        <Link href="/community">
+                        <Link href="/community" prefetch={true}>
                             Community
                         </Link>
                     </DropdownMenuItem>
