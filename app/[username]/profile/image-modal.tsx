@@ -25,7 +25,7 @@ type ImageModalProps = {
         updatedAt: string;
     };
     isOwner: boolean;
-    name?: string;
+    name: string;
 };
 
 export function ImageModal({ children, image, isOwner, name }: ImageModalProps) {
@@ -45,6 +45,10 @@ export function ImageModal({ children, image, isOwner, name }: ImageModalProps) 
                 throw new Error('Failed to delete image');
             }
 
+            // TODO: yeah...
+            revalidatePath(`/api/images`);
+            revalidatePath(`/images`);
+            revalidatePath(`/${encodeURIComponent(name)}/profile`);
             setIsOpen(false);
 
         } catch (error) {
