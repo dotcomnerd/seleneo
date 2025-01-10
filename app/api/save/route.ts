@@ -1,15 +1,105 @@
+import { FILE_TYPES } from "@/components/studio/export/types";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { useLastSavedTime } from "@/store/use-last-save";
+import { diff, Jimp } from 'jimp';
+import sharp from "sharp";
 
-async function uploadImageToCloudflare(file: FormData): Promise<{ imageUrl: string; identifier: string }> {
+export const runtime = "nodejs";
+
+const SIMILARITY_THRESHOLD = 70;
+
+async function compareImages(img1Buffer: Buffer, img2Buffer: Buffer): Promise<number> {
+    try {
+        const jimage1 = await Jimp.read(img1Buffer);
+        const jimage2 = await Jimp.read(img2Buffer);
+
+        const { percent } = diff(jimage1, jimage2, 0.1);
+        const howSimilarImagesAre = 100 - (percent * 100);
+
+        return howSimilarImagesAre;
+    } catch (error) {
+        console.error('compareImages error:', error);
+        throw error;
+    }
+}
+
+async function checkImageSimilarity(newImageBuffer: Buffer): Promise<{ isSimilar: boolean; whichImage?: string }> {
+    const existingImages = await prisma.userImage.findMany({
+        where: {
+            visibility: "PUBLIC",
+        },
+    });
+
+    for (const image of existingImages) {
+        try {
+            const buffer = await fetch(image.cloudflareUrl).then((res) => res.arrayBuffer());
+            const existingImageBuffer = Buffer.from(buffer);
+
+            const similarityPercentage = await compareImages(newImageBuffer, existingImageBuffer);
+
+            if (similarityPercentage > SIMILARITY_THRESHOLD) return { isSimilar: true, whichImage: image.id };
+            else continue;
+        } catch (error) {
+            console.error(error);
+            throw new Error("Failed to compare images");
+        }
+    }
+
+    return { isSimilar: false };
+}
+
+export type UploadImageNonExisting = {
+    imageUrl: string;
+    identifier: string;
+}
+
+export type UploadImageExisting = {
+    id: string;
+    cloudflareUrl: string;
+    identifier: string;
+    isOwner: boolean;
+}
+
+async function uploadImageToCloudflare(file: FormData, userId: string): Promise<UploadImageNonExisting | UploadImageExisting> {
     const identifier = file.get("identifier") as string;
+    const imageFile = file.get("file") as File;
     file.delete("identifier");
 
-    try{
-        file.append("requireSignedURLs", "false");
+    const arrayBuffer = await imageFile.arrayBuffer();
+    let fileBuffer = Buffer.from(arrayBuffer);
 
-        console.log("Uploading image to Cloudflare");
+    const fileType = imageFile.type.split('/')[1].toUpperCase();
+
+    if (!FILE_TYPES.includes(fileType as any)) {
+        fileBuffer = await sharp(fileBuffer)
+            .png()
+            .toBuffer();
+    }
+
+    try {
+        const { isSimilar, whichImage } = await checkImageSimilarity(fileBuffer);
+
+        if (isSimilar) {
+            const image = await prisma.userImage.findUnique({
+                where: { id: whichImage },
+            });
+
+            if (!image) {
+                throw new Error("Image not found");
+            }
+
+            return {
+                ...image,
+                identifier,
+                isOwner: image.userId === userId,
+            }
+        }
+
+        const processedFormData = new FormData();
+        processedFormData.append("file", new Blob([fileBuffer]), `image.${fileType.toLowerCase()}`);
+        processedFormData.append("requireSignedURLs", "false");
+
         const response = await fetch(
             `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
             {
@@ -17,34 +107,30 @@ async function uploadImageToCloudflare(file: FormData): Promise<{ imageUrl: stri
                 headers: {
                     "Authorization": `Bearer ${process.env.CLOUDFLARE_BEARER_TOKEN}`,
                 },
-                body: file,
+                body: processedFormData,
             }
         );
 
-        console.log("Image uploaded to Cloudflare, checking ");
         if (!response.ok) {
             throw new Error(response.statusText);
         }
 
-        console.log("Image uploaded to Cloudflare, getting result");
         const result = await response.json();
         return {
             imageUrl: result.result.variants[0],
             identifier,
         };
-    }
-    catch(error){
+    } catch (error) {
         console.error(error);
-        throw new Error("Failed to upload image to Cloudflare");
+        throw new Error(error instanceof Error ? error.message : "Failed to upload image to Cloudflare");
     }
 }
 
-async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string, visibility: "PUBLIC" | "PRIVATE"): Promise<string> {
+async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string): Promise<string> {
     const existingImage = await prisma.userImage.findFirst({
         where: { userId, identifier },
     });
 
-    console.log("Existing image", existingImage);
     if (existingImage) {
         await prisma.userImage.update({
             where: { id: existingImage.id },
@@ -56,7 +142,7 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
             data: {
                 userId,
                 cloudflareUrl: imageUrl,
-                visibility,
+                visibility: "PUBLIC",
                 identifier,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -84,19 +170,18 @@ export async function POST(request: Request) {
         }
 
         const formData = await request.formData();
-        const visibility = formData.get("visibility") as "PUBLIC" | "PRIVATE";
-        formData.delete("visibility");
+        const type = await uploadImageToCloudflare(formData, userId);
 
-        const { imageUrl, identifier } = await uploadImageToCloudflare(formData);
-
-        useLastSavedTime.getState().setLastSavedTime(new Date());
-        if (!visibility || !["PUBLIC", "PRIVATE"].includes(visibility)) {
-            throw new Error("Visibility must be provided");
+        if ('id' in type) {
+            const { id, cloudflareUrl, identifier, isOwner } = type;
+            // 204 status means duplicate image
+            return Response.json({ id, cloudflareUrl, identifier, isOwner, status: 204 });
+        } else {
+            const { imageUrl, identifier } = type;
+            const message = await saveOrUpdateUserImage(userId, imageUrl, identifier);
+            useLastSavedTime.getState().setLastSavedTime(new Date());
+            return Response.json({ message, status: 200 });
         }
-
-        const message = await saveOrUpdateUserImage(userId, imageUrl, identifier, visibility);
-
-        return Response.json({ message, visibility, status: 200 });
     } catch (error: any) {
         console.error(error);
         return new Response(error.message, { status: 500 });
