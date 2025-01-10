@@ -69,12 +69,12 @@ export default function AboutPage() {
                         <br /><br />
                         <img src="/we-need-seleneo.png" className="w-full rounded-md" />
                         <br />
-                        I didn't realize it at the time, but the validation from this comment would lead to the creation of Seleneo.{" "}
+                        Naturally, I didn't realize it at the time, but the validation from this comment would soon lead to the creation of the platform you're on right now, Seleneo.{" "}
                         <span className="text-primary">A design tool built for humans.</span>
                         <br /><br />
                         Once the ColorStack hackathon came around, I didn't think I could do it. So, I joined a team building software for university clubs.
                         Unforunately for us, when the holidays and life got in the way—our team gave up. I soon knew. <span className="text-primary italic">"This is my moment"</span>{" "},
-                        therefore, I decided to pivot and take on this journey to build this product. <br /><br />
+                        therefore, I decided to pivot and take on this journey and build out this product. <br /><br />
 
                         I wanted a tool that stripped away the complexity while maintaining the power to create beautiful visuals, especially for
                         me—<i>customer 0</i>—a developer building websites, YouTube thumbnails, and even creating blog content. Ubiquity was the goal.
@@ -87,9 +87,10 @@ export default function AboutPage() {
 
                     <p className="text-base font-light leading-relaxed mb-8">
                         As a tried and true builder, I spend a lot of time doing things that aren't writing code.
-                        Building landing pages, crafting marketing materials like YouTube thumbnails, and creating blog content are all part of the job.
+                        Building landing pages, crafting marketing materials like YouTube thumbnails, adding open graph images to my projects,
+                        and creating blog content—are all part of the job.
                         <br /><br />
-                        Each piece of content calls for visuals that enhance the user experience and effectively communicate ideas.
+                        Each piece of content calls for visuals that entice the user to engage and in some cases, effectively communicate ideas.
                         Traditionally, we'd turn to tools like Figma or Sketch, but these professional-grade tools often bring
                         unnecessary complexity for simple tasks, especially for developers who aren't designers, and humans who aren't power users.
                     </p>
