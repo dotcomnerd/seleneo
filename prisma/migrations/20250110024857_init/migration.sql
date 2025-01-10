@@ -50,7 +50,10 @@ CREATE TABLE "VerificationToken" (
 -- CreateTable
 CREATE TABLE "UserImage" (
     "id" TEXT NOT NULL,
+    "identifier" TEXT NOT NULL DEFAULT '',
     "userId" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "cloudflareUrl" TEXT NOT NULL,
     "visibility" "Visibility" NOT NULL,
 
@@ -71,6 +74,9 @@ CREATE UNIQUE INDEX "VerificationToken_token_key" ON "VerificationToken"("token"
 
 -- CreateIndex
 CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON "VerificationToken"("identifier", "token");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "UserImage_identifier_key" ON "UserImage"("identifier");
 
 -- AddForeignKey
 ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
