@@ -1,9 +1,9 @@
-import { DuplicateResponse } from "@/components/studio/export/handlers";
 import { FILE_TYPES } from "@/components/studio/export/types";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { useLastSavedTime } from "@/store/use-last-save";
 import { diff, Jimp } from 'jimp';
+import { revalidatePath } from "next/cache";
 import sharp from "sharp";
 
 export const runtime = "nodejs";
@@ -184,6 +184,9 @@ export async function POST(request: Request) {
             const { imageUrl, identifier } = maybeExists;
             const message = await saveOrUpdateUserImage(userId, imageUrl, identifier, visibility);
             useLastSavedTime.getState().setLastSavedTime(new Date());
+            revalidatePath("/community");
+            revalidatePath(`/${userData.user.name}/profile`);
+            revalidatePath(`/${encodeURIComponent(userData?.user?.name??"")}/profile`);
             return Response.json({ message, status: 200, type: "NEW_SAVE", visibility });
         }
     } catch (error: any) {
