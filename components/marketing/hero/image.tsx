@@ -2,9 +2,8 @@
 
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { InfoIcon, Lock } from 'lucide-react';
-import { BouncingText } from './bouncing-text';
 import { useState } from 'react';
-import { Switch } from "@/components/ui/switch";
+import { BouncingText } from './bouncing-text';
 import { BlueToggle } from './toggle';
 
 export default function HeroImage() {
@@ -29,7 +28,7 @@ export default function HeroImage() {
                                 <InfoIcon className="w-4 h-4 text-gray-400" />
                             </div>
                             <div>
-                                <span className="text-sm text-gray-400 ml-1 tracking-tight font-mono">https://freedesign.fyi/platform</span>
+                                <span className="text-sm text-gray-400 ml-1 tracking-tight font-mono">https://freedesign.fyi/studio</span>
                             </div>
                         </div>
                     </div>
