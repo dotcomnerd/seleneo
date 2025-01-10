@@ -1,74 +1,139 @@
 "use client";
 
+import * as React from "react";
+import Link from "next/link";
+import { signIn, signOut, useSession } from "next-auth/react";
+import { ChevronDown, Frame, LogOut, Menu, User } from 'lucide-react';
+
+import { cn } from "@/lib/utils";
 import Spinner from '@/components/spinner/spinner';
 import { ThemeToggle } from '@/components/theme-toggle';
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-    Sheet,
-    SheetContent,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-} from "@/components/ui/sheet";
 import logo from "@/public/logo.svg";
 import icon from "@/public/logo.webp";
-import { ChevronDown, Frame, LogOut, Menu, User } from 'lucide-react';
-import { User as UserType } from 'next-auth';
-import { signIn, signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 
-export const UserAvatar = ({ user, className = "h-8 w-8" }:
-    { user: UserType | undefined, className?: string }
-) => {
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
+import { type User as NextAuthUser } from "next-auth";
+
+const productItems = [
+    {
+        title: "Features",
+        href: "#features",
+        description: "Explore the powerful features that make Seleneo unique."
+    },
+    {
+        title: "Use Cases",
+        href: "#use-cases",
+        description: "Discover how others are leveraging Seleneo in their workflows."
+    },
+    {
+        title: "How it Works",
+        href: "#how-it-works",
+        description: "Learn about the technology powering Seleneo's capabilities."
+    },
+    {
+        title: "FAQ",
+        href: "#faq",
+        description: "Frequently asked questions about Seleneo."
+    },
+    {
+        title: "GitHub",
+        href: "http://github.com/dotcomnerd/seleneo",
+        description: "View the source code and contribute to make Seleneo better!"
+    }
+];
+
+const ListItem = React.forwardRef<
+    React.ElementRef<"a">,
+    React.ComponentPropsWithoutRef<"a">
+>(({ className, title, children, ...props }, ref) => {
     return (
-        <Avatar className={className}>
-            <AvatarImage
-                src={user?.image || '/default-avatar.png'}
-                alt={user?.name || 'User avatar'}
-            />
-            <AvatarFallback>
-                <img
-                    src="/default-avatar.png"
-                    alt="Default avatar"
-                    className="h-full w-full object-cover"
-                />
-            </AvatarFallback>
-        </Avatar>
+        <li>
+            <NavigationMenuLink asChild>
+                <a
+                    ref={ref}
+                    className={cn(
+                        "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+                        className
+                    )}
+                    {...props}
+                >
+                    <div className="text-sm font-medium leading-none">{title}</div>
+                    <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        {children}
+                    </p>
+                </a>
+            </NavigationMenuLink>
+        </li>
     );
-};
+});
+ListItem.displayName = "ListItem";
+
+export const UserAvatar = ({ user, className = "h-8 w-8" }: {
+    user: NextAuthUser | undefined,
+    className?: string
+}) => (
+    <Avatar className={className}>
+        <AvatarImage src={user?.image || '/default-avatar.png'} alt={user?.name || 'User avatar'} />
+        <AvatarFallback>
+            <img src="/default-avatar.png" alt="Default avatar" className="h-full w-full object-cover" />
+        </AvatarFallback>
+    </Avatar>
+);
+
+const SignOutDialog = ({ onSignOut }: { onSignOut: () => Promise<void> }
+) => (
+    <AlertDialog>
+        <AlertDialogTrigger asChild>
+            <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 dark:text-red-400">
+                <LogOut className="h-4 w-4 mr-2" />Sign Out
+            </DropdownMenuItem>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                <AlertDialogDescription>You'll need to sign in again to access your account.</AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onSignOut} className="bg-red-600 hover:bg-red-700 focus:ring-red-600">
+                    Sign Out
+                </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+    </AlertDialog>
+);
 
 export function Navbar() {
     const { data: session, status } = useSession();
+    const [isOpen, setIsOpen] = React.useState(false);
 
     const handleSignOut = async () => {
         await signOut({ redirect: true, callbackUrl: '/' });
     };
 
+    const platformItems = [
+        { title: "About", href: "/about", description: "Learn more about our mission and team." },
+        { title: "Community", href: "/community", description: "Join our growing community of developers." },
+        { title: "Studio", href: "/studio", description: "Access your development workspace." },
+        ...(status === 'authenticated' ? [
+            {
+                title: "Profile",
+                href: `/${session?.user?.name}/profile`,
+                description: "Manage your account settings and preferences."
+            }
+        ] : [])
+    ];
+
     const renderAuthButton = () => {
         if (status === 'loading') {
             return (
-                <Button disabled variant={"stylish"} className="gap-2">
-                    <Spinner />
-                    <span>Loading...</span>
+                <Button disabled variant="stylish" className="gap-2">
+                    <Spinner /><span>Loading...</span>
                 </Button>
             );
         }
@@ -86,60 +151,18 @@ export function Navbar() {
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
                             <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2">
-                                <User className="h-4 w-4" />
-                                Account
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href={`/studio`} className="flex items-center gap-2">
-                                <Frame className="h-4 w-4" />
-                                Studio
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/community" prefetch={true}>
-                                <div className="flex flex-row items-center gap-2">
-                                    <img src={icon.src} alt="Logo" className="h-6 w-6" />
-                                    <span className="sr-only">Go to Community Hub</span>
-                                    <p>Community</p>
-                                </div>
+                                <User className="h-4 w-4" />Account
                             </Link>
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 dark:text-red-400">
-                                    <LogOut className="h-4 w-4 mr-2" />
-                                    Sign Out
-                                </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        You'll need to sign in again to access your account.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleSignOut}
-                                        className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-                                    >
-                                        Sign Out
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
+                        <SignOutDialog onSignOut={handleSignOut} />
                     </DropdownMenuContent>
-                </DropdownMenu >
+                </DropdownMenu>
             );
         }
 
         return (
-            <Button onClick={() => signIn("github")} variant={"stylish"}>
-                Sign In
-            </Button>
+            <Button onClick={() => signIn("github")} variant="stylish">Sign In</Button>
         );
     };
 
@@ -155,83 +178,123 @@ export function Navbar() {
                                 Pre-release
                             </span>
                         </Link>
-                        <div className="hidden md:flex items-center gap-2">
-                            <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                    <Button variant="ghost" className="gap-2">
-                                        Resources
-                                        <ChevronDown className="h-4 w-4" />
-                                    </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/about" className="flex items-center gap-2">
-                                            About
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild>
-                                        <Link href="/community" className="flex items-center gap-2" prefetch={true}>
-                                            Community
-                                        </Link>
-                                    </DropdownMenuItem>
-                                </DropdownMenuContent>
-                            </DropdownMenu>
-                            <Button variant="ghost" asChild>
-                                <Link href="#features">Features</Link>
-                            </Button>
-                            <Button variant="ghost" asChild>
-                                <Link href="#use-cases">Use Cases</Link>
-                            </Button>
-                            <Button variant="ghost" asChild>
-                                <Link href="#how-it-works">How Seleneo Works</Link>
-                            </Button>
-                            <Button variant="ghost" asChild>
-                                <Link href="#faq">FAQ</Link>
-                            </Button>
-                        </div>
+
+                        <NavigationMenu className="hidden md:flex">
+                            <NavigationMenuList>
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger>Product</NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        <ul className="grid gap-3 p-4 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                                            <li className="row-span-3">
+                                                <NavigationMenuLink asChild>
+                                                    <Link
+                                                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-br from-primary/30 to-primary/20 p-6 no-underline outline-none focus:shadow-md"
+                                                        href="/about"
+                                                    >
+                                                        <img src={icon.src} className="h-6 w-6" alt="Logo" loading="eager" />
+                                                        <div className="mb-2 mt-4 text-lg font-medium">
+                                                            Seleneo
+                                                        </div>
+                                                        <p className="text-sm leading-tight text-muted-foreground">
+                                                            Read more about why we built Seleneo and how it can help you.
+                                                        </p>
+                                                    </Link>
+                                                </NavigationMenuLink>
+                                            </li>
+                                            {productItems.map((item) => (
+                                                <ListItem
+                                                    key={item.href}
+                                                    title={item.title}
+                                                    href={item.href}
+                                                >
+                                                    {item.description}
+                                                </ListItem>
+                                            ))}
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+
+                                <NavigationMenuItem>
+                                    <NavigationMenuTrigger>Platform</NavigationMenuTrigger>
+                                    <NavigationMenuContent>
+                                        <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                                            {platformItems.map((item) => (
+                                                <ListItem
+                                                    key={item.href}
+                                                    title={item.title}
+                                                    href={item.href}
+                                                >
+                                                    {item.description}
+                                                </ListItem>
+                                            ))}
+                                        </ul>
+                                    </NavigationMenuContent>
+                                </NavigationMenuItem>
+                            </NavigationMenuList>
+                        </NavigationMenu>
                     </div>
+
                     <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
                         {renderAuthButton()}
                     </div>
-                    <Sheet>
+
+                    <Sheet open={isOpen} onOpenChange={setIsOpen}>
                         <SheetTrigger asChild className="md:hidden">
                             <Button variant="ghost" size="icon">
                                 <Menu className="h-6 w-6" />
                             </Button>
                         </SheetTrigger>
-                        <SheetContent>
+                        <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                             <SheetHeader>
                                 <SheetTitle>Menu</SheetTitle>
                             </SheetHeader>
                             <div className="flex flex-col gap-4 mt-8">
                                 {status === 'authenticated' && session && (
                                     <div className="flex items-center gap-3 px-2 py-3 mb-2 rounded-lg bg-secondary/20">
-                                        <UserAvatar
-                                            user={session.user}
-                                            className="h-10 w-10"
-                                        />
+                                        <UserAvatar user={session.user} className="h-10 w-10" />
                                         <div className="flex flex-col">
                                             <span className="font-medium">{session.user?.name}</span>
                                             <span className="text-sm text-muted-foreground">{session.user?.email}</span>
                                         </div>
                                     </div>
                                 )}
-                                <Button variant="ghost" asChild>
-                                    <Link href="#features">Features</Link>
-                                </Button>
-                                <Button variant="ghost" asChild>
-                                    <Link href="#how-it-works">How Seleneo Works</Link>
-                                </Button>
-                                <Button variant="ghost" asChild>
-                                    <Link href="#faq">FAQ</Link>
-                                </Button>
+
+                                <div className="space-y-1">
+                                    <h3 className="px-2 text-lg font-semibold">Product</h3>
+                                    {productItems.map((item) => (
+                                        <Button
+                                            key={item.href}
+                                            variant="ghost"
+                                            className="w-full justify-start"
+                                            asChild
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <Link href={item.href}>{item.title}</Link>
+                                        </Button>
+                                    ))}
+                                </div>
+
+                                <div className="space-y-1">
+                                    <h3 className="px-2 text-lg font-semibold">Platform</h3>
+                                    {platformItems.map((item) => (
+                                        <Button
+                                            key={item.href}
+                                            variant="ghost"
+                                            className="w-full justify-start"
+                                            asChild
+                                            onClick={() => setIsOpen(false)}
+                                        >
+                                            <Link href={item.href}>{item.title}</Link>
+                                        </Button>
+                                    ))}
+                                </div>
+
                                 {status === 'authenticated' ? (
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button variant="destructive" className="mt-2">
-                                                <LogOut className="h-4 w-4 mr-2" />
-                                                Sign Out
+                                                <LogOut className="h-4 w-4 mr-2" />Sign Out
                                             </Button>
                                         </AlertDialogTrigger>
                                         <AlertDialogContent>
@@ -253,11 +316,17 @@ export function Navbar() {
                                         </AlertDialogContent>
                                     </AlertDialog>
                                 ) : (
-                                    <Button onClick={() => signIn("github")} variant={"stylish"} className="mt-2">
+                                    <Button
+                                        onClick={() => signIn("github")}
+                                        variant="stylish"
+                                        className="mt-2"
+                                    >
                                         Sign In
                                     </Button>
                                 )}
-                                <Button className="w-full" disabled>Get Started</Button>
+                                <div className="mt-2">
+                                    <ThemeToggle />
+                                </div>
                             </div>
                         </SheetContent>
                     </Sheet>
