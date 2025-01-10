@@ -167,7 +167,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 setVisibility(data.visibility);
             }
 
-            toast.success(`Saved`, { description: `Your design has been saved as ${data.visibility}` });
+            toast.success(`Saved`, { description: `Your design has been saved as ${data.visibility === 'PUBLIC' ? 'public.' : 'private.'}` });
         } catch (error: any) {
             toast.error('Save failed', { description: error.message });
         } finally {
