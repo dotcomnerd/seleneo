@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import logo from "@/public/logo.svg";
+import icon from "@/public/logo.webp";
 import { ChevronDown, Frame, GalleryVertical, LogOut, User } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
@@ -153,7 +154,7 @@ export function StudioNavbar() {
             <Button variant="ghost">
                 <Link href="/community" prefetch={true}>
                     <div className="flex flex-row items-center gap-2">
-                        <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
+                        <img src={icon.src} alt="Logo" className="h-6 w-6" />
                         <span className="sr-only">Go to Community Hub</span>
                         <p>Community</p>
                     </div>
