@@ -1,5 +1,6 @@
 'use client';
 
+import { deleteUserImage } from "@/app/actions";
 import {
     AlertDialog,
     AlertDialogContent,
@@ -37,20 +38,13 @@ export function ImageModal({ children, image, isOwner, name }: ImageModalProps) 
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/images?id=${image.id}`, {
-                method: 'DELETE',
-            });
+            const response = await deleteUserImage(image.id);
 
             if (!response.ok) {
                 throw new Error('Failed to delete image');
             }
 
-            // TODO: yeah...
-            revalidatePath(`/api/images`);
-            revalidatePath(`/images`);
-            revalidatePath(`/${encodeURIComponent(name)}/profile`);
             setIsOpen(false);
-
         } catch (error) {
             console.error('Error deleting image:', error);
             setIsDeleting(false);

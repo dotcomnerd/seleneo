@@ -1,16 +1,16 @@
+"use server";
+
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 
-export async function DELETE(request: Request) {
+export async function deleteUserImage(id: string): Promise<Response> {
     try {
         const userData = await auth();
         const name = userData?.user?.name || "";
         const userId = userData?.user?.id;
         if (!userData?.user || !userId) return new Response("Not logged in", { status: 401 });
 
-        const { searchParams } = new URL(request.url);
-        const id = searchParams.get("id")
         if (!id) return new Response("Image ID is required", { status: 400 });
 
         const session = await prisma.session.findFirstOrThrow({
@@ -24,10 +24,6 @@ export async function DELETE(request: Request) {
         });
 
         if (!image) return new Response("Not found", { status: 404 });
-
-        await prisma.userImage.delete({
-            where: { id },
-        });
 
         const idFromImageUrl = image.cloudflareUrl.split("/")[4];
 
@@ -43,10 +39,13 @@ export async function DELETE(request: Request) {
 
         if (!cloudflareDeleteResponse.ok) return new Response("Failed to delete image from Cloudflare", { status: 500 });
 
-        // TODO: yeah...
-        revalidatePath(('/api/images'));
-        revalidatePath('/images');
+        await prisma.userImage.delete({
+            where: { id },
+        });
+
+        revalidatePath(`/${name}/profile`);
         revalidatePath(`/${encodeURIComponent(name)}/profile`);
+
         return new Response("Image deleted successfully", { status: 200 });
     } catch (error: any) {
         console.error(error);
