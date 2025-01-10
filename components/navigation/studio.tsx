@@ -1,11 +1,9 @@
 "use client";
 
-import { Links } from "@/components/navigation/studio-links"
-import { ExportOptions } from "@/components/studio/export"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { signIn, signOut, useSession } from "next-auth/react";
-import { ChevronDown, LogOut, User } from "lucide-react";
+import { UserAvatar } from "@/components/navigation/marketing";
 import Spinner from '@/components/spinner/spinner';
+import { ExportOptions } from "@/components/studio/export";
+import { ThemeToggle } from "@/components/theme-toggle";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,25 +15,23 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { UserAvatar } from "@/components/navigation/marketing";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import logo from "@/public/logo.svg";
+import { ChevronDown, Frame, GalleryVertical, LogOut, User } from "lucide-react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 export function StudioNavbar() {
     const { data: session, status } = useSession();
+    const pathname = usePathname();
 
-     const handleSignOut = async () => {
-         await signOut
-             ({ redirect: true, callbackUrl: '/' });
-     };
+    const handleSignOut = async () => {
+        await signOut
+            ({ redirect: true, callbackUrl: '/' });
+    };
 
 
     const renderAuthButton = () => {
@@ -60,11 +56,25 @@ export function StudioNavbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
-                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2">
+                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2" prefetch={true}>
                                 <User className="h-4 w-4" />
                                 Account
                             </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/community`} className="flex items-center gap-2" prefetch={true}>
+                                <GalleryVertical className="h-4 w-4" />
+                                Community
+                            </Link>
+                        </DropdownMenuItem>
+                        {!pathname.includes("/studio") && (
+                            <DropdownMenuItem asChild>
+                                <Link href={`/studio`} className="flex items-center gap-2" prefetch={true}>
+                                    <Frame className="h-4 w-4" />
+                                    Studio
+                                </Link>
+                            </DropdownMenuItem>
+                        )}
                         <DropdownMenuSeparator />
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -106,19 +116,52 @@ export function StudioNavbar() {
 
     return (
         <header className="flex h-14 items-center border-b px-4 shrink-0">
-            <Links />
+            <div className="flex items-center gap-4">
+                <Link href="/" className="flex items-center gap-2">
+                    <img src={logo.src} className="size-8" alt="Seleneo Logo" />
+                    <span className="text-xl font-semibold">Seleneo</span>
+                    <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                        Pre-release
+                    </span>
+                </Link>
+                <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="gap-2">
+                            Resources
+                            <ChevronDown className="h-4 w-4" />
+                        </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem asChild>
+                            <Link href="https://github.com/dotcomnerd/seleneo">
+                                GitHub
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/community" prefetch={true}>
+                                Community
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/about">
+                                About
+                            </Link>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
             <Button variant="ghost">
-                <Link href="/community">
+                <Link href="/community" prefetch={true}>
                     <div className="flex flex-row items-center gap-2">
-                    <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
-                    <span className="sr-only">Go to Community Hub</span>
+                        <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
+                        <span className="sr-only">Go to Community Hub</span>
                         <p>Community</p>
                     </div>
                 </Link>
             </Button>
             <div className="ml-auto flex items-center gap-2">
                 <ExportOptions />
-                <div className="h-4 w-px bg-border" />
+                <div className={cn("", { "hidden": !pathname.includes("/studio"), "h-4 w-px bg-border": pathname.includes("/studio") })} />
                 <ThemeToggle />
                 {renderAuthButton()}
             </div>
