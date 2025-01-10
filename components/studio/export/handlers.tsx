@@ -4,6 +4,7 @@ import Spinner from '@/components/spinner/spinner'
 import { type FileType } from '@/components/studio/export/types'
 import { createSnapshot } from '@/components/studio/export/utils'
 import { Button } from "@/components/ui/button"
+import { Checkbox } from '@/components/ui/checkbox'
 import {
     Dialog,
     DialogContent,
@@ -11,11 +12,12 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useImageOptions } from '@/store/use-image-options'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
-import { Copy, Download, Save } from 'lucide-react'
+import { Copy, Download, Eye, EyeOff, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -25,12 +27,23 @@ interface ExportActionsProps {
     sessionStatus: "authenticated" | "loading" | "unauthenticated"
 }
 
-interface SuccessResponse {
+type SuccessResponse = DuplicateResponse | NewSaveResponse;
+
+export interface DuplicateResponse {
+    type: "DUPLICATE";
     cloudflareUrl: string;
     id: string;
     identifier: string;
     isOwner: boolean;
     status: number;
+    message: string;
+}
+
+export interface NewSaveResponse {
+    type: "NEW_SAVE";
+    message: string;
+    status: number;
+    visibility: "PUBLIC" | "PRIVATE";
 }
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
@@ -38,39 +51,11 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     const { scaleFactor } = useResizeCanvas()
     const [isCopying, setIsCopying] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
-    const [isSaving, SetIsSaving] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
     const { lastSavedTime, setLastSavedTime } = useLastSavedTime()
     const [dialogOpen, setDialogOpen] = useState(false)
-    const [existingImage, setExistingImage] = useState<SuccessResponse | null>(null)
-
-    const autoSaveFunction = async () => {
-        console.log("Auto-saving...");
-        if (images.length === 0) return;
-
-        const snapshot = await createSnapshot(fileType, quality, scaleFactor);
-        if (!snapshot) return;
-
-        SetIsSaving(true);
-
-        const formData = new FormData();
-        const snapshotBlob = typeof snapshot === 'string'
-            ? new Blob([snapshot], { type: 'image/webp' })
-            : snapshot;
-
-        formData.append('file', snapshotBlob, `autosave-${Date.now()}.${fileType.toLowerCase()}`);
-
-        const response = await fetch("/api/save", {
-            method: "POST",
-            body: formData,
-        });
-
-        if (response.ok) {
-            console.error("Auto-save failed.");
-        }
-        setLastSavedTime(new Date());
-        SetIsSaving(false);
-        console.log("Auto-saved successfully.");
-    };
+    const [existingImage, setExistingImage] = useState<DuplicateResponse | null>(null)
+    const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">("PRIVATE");
 
     const checkExportPermission = () => {
         if (images.length === 0) {
@@ -78,6 +63,10 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             return false
         }
         return true
+    }
+
+    const toggleVisibility = () => {
+        setVisibility((prev) => prev === "PUBLIC" ? "PRIVATE" : "PUBLIC")
     }
 
     const handleCopy = async () => {
@@ -133,9 +122,9 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     }
 
     const handleCloudSave = async () => {
-        if (!checkExportPermission() || isCopying) return
+        if (!checkExportPermission() || isSaving) return;
 
-        SetIsSaving(true)
+        setIsSaving(true);
 
         try {
             const snapshot = await createSnapshot(fileType, quality, scaleFactor);
@@ -151,6 +140,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
 
             formData.append('file', snapshotBlob, `export-${Date.now()}.${fileType.toLowerCase()}`);
             formData.append('identifier', identifier);
+            formData.append('visibility', visibility);
 
             const response = await fetch("/api/save", {
                 method: "POST",
@@ -167,87 +157,116 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
 
             const data: SuccessResponse = await response.json();
 
-            console.log(data);
-
-            if (data.status === 204) {
+            if (data.type === 'DUPLICATE') {
                 setExistingImage(data);
                 setDialogOpen(true);
                 return;
+            } else if (data.type === 'NEW_SAVE') {
+                setExistingImage(null);
+                setLastSavedTime(new Date());
+                setVisibility(data.visibility);
             }
 
-            setLastSavedTime(new Date());
-            toast.success('Saved', { description: 'Your design has been saved' });
-        }
-        catch (error: any) {
-            console.log(error);
+            toast.success(`Saved`, { description: `Your design has been saved as ${data.visibility}` });
+        } catch (error: any) {
             toast.error('Save failed', { description: error.message });
-        }
-        finally {
-            SetIsSaving(false)
+        } finally {
+            setIsSaving(false);
         }
     }
 
     return (
         <>
-            <div className="flex items-center gap-1">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCopy}
-                    disabled={isCopying || isDownloading || isSaving}
-                    className="hover:bg-background"
-                >
-                    {isCopying ? <Spinner /> : <Copy className="h-4 w-4" />}
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleDownload}
-                    disabled={isCopying || isDownloading || isSaving}
-                    className="hover:bg-background"
-                >
-                    {isDownloading ? <Spinner /> : <Download className="h-4 w-4" />}
-                </Button>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={handleCloudSave}
-                    disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
-                    title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
-                    className="hover:bg-background"
-                >
-                    {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
-                </Button>
-                <p className="ml-2 text-sm">
-                    {lastSavedTime
-                        ? `Last saved at: ${lastSavedTime.toLocaleTimeString()}`
-                        : "Not saved yet"}
-                </p>
-            </div>
-
-            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                <DialogContent>
-                    <DialogHeader>
-                        <div className="flex items-center justify-between">
-                            <DialogTitle>Duplicate Image Found</DialogTitle>
-                        </div>
-                    </DialogHeader>
-                    {existingImage && (
-                        <>
-                            <DialogDescription>
-                                This image {existingImage.isOwner ? 'was previously created by you' : 'already exists in our system'}
-                            </DialogDescription>
-                            <div className="mt-4">
-                                <img
-                                    src={existingImage.cloudflareUrl}
-                                    alt="Existing similar image"
-                                    className="w-full rounded-lg object-cover"
+            <div className="flex items-center">
+                <div className="flex items-center -space-x-3">
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleCopy}
+                        disabled={isCopying || isDownloading || isSaving}
+                        className="hover:bg-background"
+                    >
+                        {isCopying ? <Spinner /> : <Copy className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleDownload}
+                        disabled={isCopying || isDownloading || isSaving}
+                        className="hover:bg-background"
+                    >
+                        {isDownloading ? <Spinner /> : <Download className="h-4 w-4" />}
+                    </Button>
+                    <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleCloudSave}
+                        disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
+                        title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
+                        className="hover:bg-background"
+                    >
+                        {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
+                    </Button>
+                </div>
+                <div className="h-4 w-px bg-border" />
+                <div className="flex items-center gap-1 px-4">
+                    <p className="text-sm dark:text-white">
+                        {lastSavedTime
+                            ? `Last saved at: ${lastSavedTime.toLocaleTimeString()}`
+                            : "Not saved yet"}
+                    </p>
+                </div>
+                <div className="h-4 w-px bg-border" />
+                <TooltipProvider>
+                    <Tooltip delayDuration={100}>
+                        <TooltipTrigger asChild>
+                            <div className="flex items-center gap-4 ml-auto px-2">
+                                <span title={`Visibility: ${visibility}`}>
+                                    {visibility === "PUBLIC" ? (
+                                        <Eye className="size-4 dark:stroke-white/50" />
+                                    ) : (
+                                        <EyeOff className="size-4 dark:stroke-white/50" />
+                                    )}
+                                </span>
+                                <Checkbox
+                                    checked={visibility === "PUBLIC"}
+                                    onCheckedChange={toggleVisibility}
+                                    disabled={isSaving}
+                                    aria-label="Toggle visibility"
+                                    className="data-[state=on]:bg-primary"
+                                    title="Toggle visibility"
                                 />
                             </div>
-                        </>
-                    )}
-                </DialogContent>
-            </Dialog>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Current Visibility: {visibility === "PUBLIC" ? "Public" : "Private"}</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                    <DialogContent>
+                        <DialogHeader>
+                            <div className="flex items-center justify-between">
+                                <DialogTitle>Duplicate Image Found</DialogTitle>
+                            </div>
+                        </DialogHeader>
+                        {existingImage && (
+                            <>
+                                <DialogDescription>
+                                    This image {existingImage.isOwner ? 'was previously created by you' : 'already exists in our system'}
+                                </DialogDescription>
+                                <div className="mt-4">
+                                    <img
+                                        src={existingImage.cloudflareUrl}
+                                        alt="Existing similar image"
+                                        className="w-full rounded-lg object-cover"
+                                    />
+                                </div>
+                            </>
+                        )}
+                    </DialogContent>
+                </Dialog>
+            </div>
         </>
     )
 }
