@@ -1,18 +1,18 @@
 'use client';
 
-import { useState } from 'react';
 import {
     AlertDialog,
     AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
     AlertDialogDescription,
     AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Eye, X, Trash2, Globe, Lock } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { Globe, Lock, Trash2, X } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
+import { useState } from 'react';
 
 type ImageModalProps = {
     children: React.ReactNode;
@@ -60,7 +60,6 @@ export function ImageModal({ children, image, isOwner, name }: ImageModalProps) 
     return (
         <>
             <div onClick={() => setIsOpen(true)}>{children}</div>
-
             <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
                 <AlertDialogContent className="max-w-4xl">
                     <div className="absolute right-4 top-4 z-50">
