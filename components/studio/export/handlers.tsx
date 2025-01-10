@@ -11,6 +11,8 @@ import { Copy, Download, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
+import { useAutoSave } from '@/hooks/use-auto-save'
+import { useLastSavedTime } from '@/store/use-last-save'
 
 interface ExportActionsProps {
     quality: number
@@ -25,6 +27,38 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     const [isCopying, setIsCopying] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
     const [isSaving, SetIsSaving] = useState(false)
+    const { lastSavedTime, setLastSavedTime } = useLastSavedTime()
+
+    const autoSaveFunction = async () => {
+        console.log("Auto-saving...");
+        if (images.length === 0) return;
+
+        const snapshot = await createSnapshot(fileType, quality, scaleFactor);
+        if (!snapshot) return;
+
+        SetIsSaving(true);
+
+        const formData = new FormData();
+        const snapshotBlob = typeof snapshot === 'string'
+            ? new Blob([snapshot], { type: 'image/webp' })
+            : snapshot;
+
+        formData.append('file', snapshotBlob, `autosave-${Date.now()}.${fileType.toLowerCase()}`);
+
+        const response = await fetch("/api/save", {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            console.error("Auto-save failed.");
+        }
+        setLastSavedTime(new Date());
+        SetIsSaving(false);
+        console.log("Auto-saved successfully.");
+    };
+
+    // useAutoSave(autoSaveFunction);
 
     const checkExportPermission = () => {
         if (images.length === 0) {
@@ -126,7 +160,8 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             if (data.status !== 200){
                 throw new Error('Failed to upload image');
             }
-
+            
+            setLastSavedTime(new Date());
             toast.success('Saved', { description: 'Your design has been saved' });
         }
         catch (error: any) {
@@ -167,6 +202,11 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             >
                 {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
             </Button>
+            <p className="ml-2 text-sm">
+                {lastSavedTime
+                    ? `Last saved at: ${lastSavedTime.toLocaleTimeString()}`
+                    : "Not saved yet"}
+            </p>
         </div>
     )
 }

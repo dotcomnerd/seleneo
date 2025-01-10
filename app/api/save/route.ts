@@ -1,31 +1,42 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { useLastSavedTime } from "@/store/use-last-save";
 
 async function uploadImageToCloudflare(file: FormData): Promise<{ imageUrl: string; identifier: string }> {
     const identifier = file.get("identifier") as string;
     file.delete("identifier");
 
-    file.append("requireSignedURLs", "false");
-    const response = await fetch(
-        `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
-        {
-            method: "POST",
-            headers: {
-                "Authorization": `Bearer ${process.env.CLOUDFLARE_BEARER_TOKEN}`,
-            },
-            body: file,
+    try{
+        file.append("requireSignedURLs", "false");
+
+        console.log("Uploading image to Cloudflare");
+        const response = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${process.env.CLOUDFLARE_ACCOUNT_ID}/images/v1`,
+            {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${process.env.CLOUDFLARE_BEARER_TOKEN}`,
+                },
+                body: file,
+            }
+        );
+        
+        console.log("Image uploaded to Cloudflare, checking ");
+        if (!response.ok) {
+            throw new Error(response.statusText);
         }
-    );
-
-    if (!response.ok) {
-        throw new Error(response.statusText);
+    
+        console.log("Image uploaded to Cloudflare, getting result");
+        const result = await response.json();
+        return {
+            imageUrl: result.result.variants[0],
+            identifier,
+        };
     }
-
-    const result = await response.json();
-    return {
-        imageUrl: result.result.variants[0],
-        identifier,
-    };
+    catch(error){
+        console.error(error);
+        throw new Error("Failed to upload image to Cloudflare");
+    }
 }
 
 async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string): Promise<string> {
@@ -33,6 +44,7 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
         where: { userId, identifier },
     });
 
+    console.log("Existing image", existingImage);
     if (existingImage) {
         await prisma.userImage.update({
             where: { id: existingImage.id },
@@ -76,6 +88,8 @@ export async function POST(request: Request) {
         const { imageUrl, identifier } = await uploadImageToCloudflare(formData);
 
         const message = await saveOrUpdateUserImage(userId, imageUrl, identifier);
+
+        useLastSavedTime.getState().setLastSavedTime(new Date());
 
         return Response.json({ message, status: 200 });
     } catch (error: any) {
