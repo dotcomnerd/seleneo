@@ -30,11 +30,11 @@ import {
     SheetTrigger,
 } from "@/components/ui/sheet";
 import logo from "@/public/logo.svg";
-import { ChevronDown, LogOut, Menu, User } from 'lucide-react';
+import icon from "@/public/logo.webp";
+import { ChevronDown, Frame, LogOut, Menu, User } from 'lucide-react';
 import { User as UserType } from 'next-auth';
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
-import { useState } from 'react';
 
 export const UserAvatar = ({ user, className = "h-8 w-8" }:
     { user: UserType | undefined, className?: string }
@@ -90,6 +90,21 @@ export function Navbar() {
                                 Account
                             </Link>
                         </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href={`/studio`} className="flex items-center gap-2">
+                                <Frame className="h-4 w-4" />
+                                Studio
+                            </Link>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem asChild>
+                            <Link href="/community" prefetch={true}>
+                                <div className="flex flex-row items-center gap-2">
+                                    <img src={icon.src} alt="Logo" className="h-6 w-6" />
+                                    <span className="sr-only">Go to Community Hub</span>
+                                    <p>Community</p>
+                                </div>
+                            </Link>
+                        </DropdownMenuItem>
                         <DropdownMenuSeparator />
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
@@ -117,7 +132,7 @@ export function Navbar() {
                             </AlertDialogContent>
                         </AlertDialog>
                     </DropdownMenuContent>
-                </DropdownMenu>
+                </DropdownMenu >
             );
         }
 
@@ -155,7 +170,7 @@ export function Navbar() {
                                         </Link>
                                     </DropdownMenuItem>
                                     <DropdownMenuItem asChild>
-                                        <Link href="/community" className="flex items-center gap-2">
+                                        <Link href="/community" className="flex items-center gap-2" prefetch={true}>
                                             Community
                                         </Link>
                                     </DropdownMenuItem>
@@ -178,7 +193,6 @@ export function Navbar() {
                     <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
                         {renderAuthButton()}
-                        <Button disabled variant={"stylish"}>Get Started</Button>
                     </div>
                     <Sheet>
                         <SheetTrigger asChild className="md:hidden">
