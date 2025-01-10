@@ -95,15 +95,17 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
                         {description}
                     </p>
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <Link href="/studio" className="absolute top-4 right-4 dark:text-white/50 dark:hover:text-white" title="Studio">
-                            <Frame className="h-6 w-6" aria-label="Go to studio" />
-                        </Link>
-                        <Link href={`/${encodeURIComponent(currentUserId)}/profile`} className="absolute top-12 right-4 dark:text-white/50 dark:hover:text-white" prefetch={true} title="Profile">
-                            <User className="h-6 w-6" aria-label="Go to profile" />
-                        </Link>
-                        <Link href="/" className="absolute top-[5.2rem] right-4 dark:text-white/50 dark:hover:text-white" title="Home">
+                        <Link href="/" className="absolute top-4 right-4 dark:text-white/50 dark:hover:text-white" title="Home">
                             <Home className="h-6 w-6" aria-label="Go to landing page" />
                         </Link>
+                        <Link href="/studio" className="absolute top-12 right-4 dark:text-white/50 dark:hover:text-white" title="Studio">
+                            <Frame className="h-6 w-6" aria-label="Go to studio" />
+                        </Link>
+                        {currentUserId && (
+                        <Link href={`/${encodeURIComponent(currentUserId)}/profile`} className="absolute top-[5.2rem] right-4 dark:text-white/50 dark:hover:text-white" prefetch={true} title="Profile">
+                            <User className="h-6 w-6" aria-label="Go to profile" />
+                        </Link>
+                        )}
                     </div>
                 </div>
 
