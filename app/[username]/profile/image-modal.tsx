@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Eye, X, Trash2, Globe, Lock } from 'lucide-react';
+import { revalidatePath } from 'next/cache';
 
 type ImageModalProps = {
     children: React.ReactNode;
@@ -24,18 +25,19 @@ type ImageModalProps = {
         updatedAt: string;
     };
     isOwner: boolean;
+    name?: string;
 };
 
-export function ImageModal({ children, image, isOwner }: ImageModalProps) {
+export function ImageModal({ children, image, isOwner, name }: ImageModalProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
-        if (!isOwner) return;
+        if (!isOwner || name === "") return;
 
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/images/${image.id}`, {
+            const response = await fetch(`/api/images?id=${image.id}`, {
                 method: 'DELETE',
             });
 
@@ -44,7 +46,7 @@ export function ImageModal({ children, image, isOwner }: ImageModalProps) {
             }
 
             setIsOpen(false);
-            window.location.reload();
+
         } catch (error) {
             console.error('Error deleting image:', error);
             setIsDeleting(false);
@@ -85,7 +87,14 @@ export function ImageModal({ children, image, isOwner }: ImageModalProps) {
                                 )}
                             </span>
                             <span className="text-muted-foreground">
-                                Created on {new Date(image.createdAt).toLocaleDateString()}
+                                Created on {new Date(image.createdAt).toLocaleString("en-US", {
+                                    month: "long",
+                                    day: "numeric",
+                                    year: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    hour12: true,
+                                })}
                             </span>
                         </AlertDialogDescription>
                     </AlertDialogHeader>
