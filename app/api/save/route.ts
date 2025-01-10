@@ -1,3 +1,4 @@
+import { DuplicateResponse } from "@/components/studio/export/handlers";
 import { FILE_TYPES } from "@/components/studio/export/types";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
@@ -24,10 +25,10 @@ async function compareImages(img1Buffer: Buffer, img2Buffer: Buffer): Promise<nu
     }
 }
 
-async function checkImageSimilarity(newImageBuffer: Buffer): Promise<{ isSimilar: boolean; whichImage?: string }> {
+async function checkImageSimilarity(newImageBuffer: Buffer, viz: "PUBLIC" | "PRIVATE"): Promise<{ isSimilar: boolean; whichImage?: string }> {
     const existingImages = await prisma.userImage.findMany({
         where: {
-            visibility: "PUBLIC",
+            visibility: viz,
         },
     });
 
@@ -61,7 +62,7 @@ export type UploadImageExisting = {
     isOwner: boolean;
 }
 
-async function uploadImageToCloudflare(file: FormData, userId: string): Promise<UploadImageNonExisting | UploadImageExisting> {
+async function uploadImageToCloudflare(file: FormData, userId: string, viz: "PUBLIC" | "PRIVATE"): Promise<UploadImageNonExisting | UploadImageExisting> {
     const identifier = file.get("identifier") as string;
     const imageFile = file.get("file") as File;
     file.delete("identifier");
@@ -78,7 +79,7 @@ async function uploadImageToCloudflare(file: FormData, userId: string): Promise<
     }
 
     try {
-        const { isSimilar, whichImage } = await checkImageSimilarity(fileBuffer);
+        const { isSimilar, whichImage } = await checkImageSimilarity(fileBuffer, viz);
 
         if (isSimilar) {
             const image = await prisma.userImage.findUnique({
@@ -126,7 +127,7 @@ async function uploadImageToCloudflare(file: FormData, userId: string): Promise<
     }
 }
 
-async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string): Promise<string> {
+async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string, visibility: "PUBLIC" | "PRIVATE"): Promise<string> {
     const existingImage = await prisma.userImage.findFirst({
         where: { userId, identifier },
     });
@@ -134,7 +135,7 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
     if (existingImage) {
         await prisma.userImage.update({
             where: { id: existingImage.id },
-            data: { cloudflareUrl: imageUrl, updatedAt: new Date() },
+            data: { cloudflareUrl: imageUrl, updatedAt: new Date(), visibility },
         });
         return "Image updated successfully";
     } else {
@@ -142,7 +143,7 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
             data: {
                 userId,
                 cloudflareUrl: imageUrl,
-                visibility: "PUBLIC",
+                visibility,
                 identifier,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -170,17 +171,20 @@ export async function POST(request: Request) {
         }
 
         const formData = await request.formData();
-        const type = await uploadImageToCloudflare(formData, userId);
+        const visibility = formData.get("visibility") as "PUBLIC" | "PRIVATE";
+        if (!visibility || !["PUBLIC", "PRIVATE"].includes(visibility)) throw new Error("Visibility must be provided");
 
-        if ('id' in type) {
-            const { id, cloudflareUrl, identifier, isOwner } = type;
+        const maybeExists = await uploadImageToCloudflare(formData, userId, visibility);
+
+        if ('id' in maybeExists) {
+            const { id, cloudflareUrl, identifier, isOwner } = maybeExists;
             // 204 status means duplicate image
-            return Response.json({ id, cloudflareUrl, identifier, isOwner, status: 204 });
+            return Response.json({ id, cloudflareUrl, identifier, isOwner, status: 204, type: "DUPLICATE", visibility, message: "Design already exists" });
         } else {
-            const { imageUrl, identifier } = type;
-            const message = await saveOrUpdateUserImage(userId, imageUrl, identifier);
+            const { imageUrl, identifier } = maybeExists;
+            const message = await saveOrUpdateUserImage(userId, imageUrl, identifier, visibility);
             useLastSavedTime.getState().setLastSavedTime(new Date());
-            return Response.json({ message, status: 200 });
+            return Response.json({ message, status: 200, type: "NEW_SAVE", visibility });
         }
     } catch (error: any) {
         console.error(error);
