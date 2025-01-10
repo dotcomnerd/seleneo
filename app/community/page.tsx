@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { ImageGallery } from "./image-gallery";
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
     generator: 'Next.js Baby!',
     applicationName: 'Seleneo',

@@ -18,6 +18,8 @@ import { Suspense } from "react";
 import { DeleteAccount } from "./delete-account";
 import { ImageModal } from "./image-modal";
 
+export const dynamic = 'force-dynamic'
+
 async function getUser(name: string, isCurrentUser = false) {
     if (!name) {
         return null;
