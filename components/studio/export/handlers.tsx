@@ -4,15 +4,20 @@ import Spinner from '@/components/spinner/spinner'
 import { type FileType } from '@/components/studio/export/types'
 import { createSnapshot } from '@/components/studio/export/utils'
 import { Button } from "@/components/ui/button"
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog"
 import { useImageOptions } from '@/store/use-image-options'
+import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
 import { Copy, Download, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
-import { useAutoSave } from '@/hooks/use-auto-save'
-import { useLastSavedTime } from '@/store/use-last-save'
 
 interface ExportActionsProps {
     quality: number
@@ -20,6 +25,13 @@ interface ExportActionsProps {
     sessionStatus: "authenticated" | "loading" | "unauthenticated"
 }
 
+interface SuccessResponse {
+    cloudflareUrl: string;
+    id: string;
+    identifier: string;
+    isOwner: boolean;
+    status: number;
+}
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
     const { images } = useImageOptions()
@@ -28,6 +40,8 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     const [isDownloading, setIsDownloading] = useState(false)
     const [isSaving, SetIsSaving] = useState(false)
     const { lastSavedTime, setLastSavedTime } = useLastSavedTime()
+    const [dialogOpen, setDialogOpen] = useState(false)
+    const [existingImage, setExistingImage] = useState<SuccessResponse | null>(null)
 
     const autoSaveFunction = async () => {
         console.log("Auto-saving...");
@@ -58,8 +72,6 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         console.log("Auto-saved successfully.");
     };
 
-    // useAutoSave(autoSaveFunction);
-
     const checkExportPermission = () => {
         if (images.length === 0) {
             toast.error('No image to export', { description: 'Please upload an image first' })
@@ -67,7 +79,6 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         }
         return true
     }
-
 
     const handleCopy = async () => {
         if (!checkExportPermission() || isCopying) return
@@ -154,17 +165,21 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 throw new Error('Failed to upload image');
             }
 
-            const data = await response.json();
+            const data: SuccessResponse = await response.json();
 
-            // redundant but we dont care atp
-            if (data.status !== 200){
-                throw new Error('Failed to upload image');
+            console.log(data);
+
+            if (data.status === 204) {
+                setExistingImage(data);
+                setDialogOpen(true);
+                return;
             }
-            
+
             setLastSavedTime(new Date());
             toast.success('Saved', { description: 'Your design has been saved' });
         }
         catch (error: any) {
+            console.log(error);
             toast.error('Save failed', { description: error.message });
         }
         finally {
@@ -173,40 +188,66 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     }
 
     return (
-        <div className="flex items-center gap-1">
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCopy}
-                disabled={isCopying || isDownloading || isSaving}
-                className="hover:bg-background"
-            >
-                {isCopying ? <Spinner /> : <Copy className="h-4 w-4" />}
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleDownload}
-                disabled={isCopying || isDownloading || isSaving}
-                className="hover:bg-background"
-            >
-                {isDownloading ? <Spinner /> : <Download className="h-4 w-4" />}
-            </Button>
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={handleCloudSave}
-                disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
-                title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
-                className="hover:bg-background"
-            >
-                {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
-            </Button>
-            <p className="ml-2 text-sm">
-                {lastSavedTime
-                    ? `Last saved at: ${lastSavedTime.toLocaleTimeString()}`
-                    : "Not saved yet"}
-            </p>
-        </div>
+        <>
+            <div className="flex items-center gap-1">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCopy}
+                    disabled={isCopying || isDownloading || isSaving}
+                    className="hover:bg-background"
+                >
+                    {isCopying ? <Spinner /> : <Copy className="h-4 w-4" />}
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleDownload}
+                    disabled={isCopying || isDownloading || isSaving}
+                    className="hover:bg-background"
+                >
+                    {isDownloading ? <Spinner /> : <Download className="h-4 w-4" />}
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleCloudSave}
+                    disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
+                    title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
+                    className="hover:bg-background"
+                >
+                    {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
+                </Button>
+                <p className="ml-2 text-sm">
+                    {lastSavedTime
+                        ? `Last saved at: ${lastSavedTime.toLocaleTimeString()}`
+                        : "Not saved yet"}
+                </p>
+            </div>
+
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                <DialogContent>
+                    <DialogHeader>
+                        <div className="flex items-center justify-between">
+                            <DialogTitle>Duplicate Image Found</DialogTitle>
+                        </div>
+                    </DialogHeader>
+                    {existingImage && (
+                        <>
+                            <DialogDescription>
+                                This image {existingImage.isOwner ? 'was previously created by you' : 'already exists in our system'}
+                            </DialogDescription>
+                            <div className="mt-4">
+                                <img
+                                    src={existingImage.cloudflareUrl}
+                                    alt="Existing similar image"
+                                    className="w-full rounded-lg object-cover"
+                                />
+                            </div>
+                        </>
+                    )}
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }
