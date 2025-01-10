@@ -8,17 +8,17 @@ const footerLinks = [
     {
         title: 'Product',
         links: [
-            { label: 'Features', href: '#features' },
-            { label: 'How it Works', href: '#how-it-works' },
-            { label: 'FAQ', href: '#faq' },
+            { label: 'Features', href: '/#features' },
+            { label: 'How it Works', href: '/#how-it-works' },
+            { label: 'FAQ', href: '/#faq' },
         ]
     },
     {
-        title: 'Company',
+        title: 'Product',
         links: [
             { label: 'About', href: '/about' },
-            { label: 'Contact', href: 'mailto:tomenyuma@gmail.com' },
-            { label: 'GitHub', href: 'https://github.com/nyumat' },
+            { label: 'Contact', href: 'mailto:titandq@gmail.com' },
+            { label: 'GitHub', href: 'https://github.com/dotcomnerd/seleneo' },
         ]
     }
 ];
@@ -34,7 +34,7 @@ export function Footer() {
                             <span className="font-bold text-xl">Seleneo</span>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400 mb-4">
-                            The one stop shop for digital product marketing.
+                            The one stop shop for your digital marketing needs.
                         </p>
                         <div className="flex gap-4">
                             <a
@@ -74,16 +74,22 @@ export function Footer() {
                         </div>
                     ))}
                 </div>
-                <p className='mt-4 font-light tracking-tight md:mt-0 text-gray-600 dark:text-gray-400'>Seleneo was built for the
+                <p className='mt-4 tracking-tight md:mt-0 text-gray-600 dark:text-gray-400'>Seleneo was built for the
                     <Button variant={"link"} className="-mx-3" asChild>
                         <Link target="_blank" href={"https://colorstack.notion.site/winter-break-hackathon-24"}>
                             ColorStack
                         </Link>
                     </Button>
-                    Hackathon, by
+                    Hackathon by
                     <Button variant={"link"} className="-mx-3" asChild>
-                        <Link target="_blank" href={"https://tomnyuma.rocks"}>
+                        <Link target="_blank" href={"https://github.com/Nyumat"}>
                             Nyumat
+                        </Link>
+                    </Button>
+                    and
+                    <Button variant={"link"} className="-mx-3" asChild>
+                        <Link target="_blank" href={"https://github.com/Flanderzz"}>
+                            Devine C.
                         </Link>
                     </Button>
                 </p>
