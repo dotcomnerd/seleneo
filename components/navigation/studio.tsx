@@ -37,6 +37,7 @@ export function StudioNavbar() {
              ({ redirect: true, callbackUrl: '/' });
      };
 
+
     const renderAuthButton = () => {
         if (status === 'loading') {
             return (
@@ -59,7 +60,7 @@ export function StudioNavbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
-                            <Link href="/account" className="flex items-center gap-2">
+                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 Account
                             </Link>
@@ -106,6 +107,15 @@ export function StudioNavbar() {
     return (
         <header className="flex h-14 items-center border-b px-4 shrink-0">
             <Links />
+            <Button variant="ghost">
+                <Link href="/community">
+                    <div className="flex flex-row items-center gap-2">
+                    <img src="/icon.svg" alt="Logo" className="h-6 w-6" />
+                    <span className="sr-only">Go to Community Hub</span>
+                        <p>Community</p>
+                    </div>
+                </Link>
+            </Button>
             <div className="ml-auto flex items-center gap-2">
                 <ExportOptions />
                 <div className="h-4 w-px bg-border" />

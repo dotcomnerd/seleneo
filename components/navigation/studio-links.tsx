@@ -27,9 +27,9 @@ export function Links() {
                             GitHub
                         </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild disabled>
-                        <Link href="/examples">
-                            Examples
+                    <DropdownMenuItem asChild>
+                        <Link href="/community">
+                            Community
                         </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>

@@ -34,6 +34,7 @@ import { ChevronDown, LogOut, Menu, User } from 'lucide-react';
 import { User as UserType } from 'next-auth';
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
+import { useState } from 'react';
 
 export const UserAvatar = ({ user, className = "h-8 w-8" }:
     { user: UserType | undefined, className?: string }
@@ -84,7 +85,7 @@ export function Navbar() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem asChild>
-                            <Link href="/account" className="flex items-center gap-2">
+                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2">
                                 <User className="h-4 w-4" />
                                 Account
                             </Link>
@@ -153,9 +154,9 @@ export function Navbar() {
                                             About
                                         </Link>
                                     </DropdownMenuItem>
-                                    <DropdownMenuItem asChild disabled>
-                                        <Link href="/examples" className="flex items-center gap-2">
-                                            Examples
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/community" className="flex items-center gap-2">
+                                            Community
                                         </Link>
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
