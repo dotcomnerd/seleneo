@@ -1,8 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { Button } from "@/components/ui/button";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,16 +11,19 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { signOut } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export function DeleteAccount({ userId }: { userId: string }) {
     const [isDeleting, setIsDeleting] = useState(false);
-    const router = useRouter();
 
     const handleDeleteAccount = async () => {
         setIsDeleting(true);
         try {
-            const response = await fetch(`/api/users/${userId}`, {
+            const response = await fetch(`/api/users?id=${userId}`, {
                 method: 'DELETE',
             });
 
@@ -31,8 +31,7 @@ export function DeleteAccount({ userId }: { userId: string }) {
                 throw new Error('Failed to delete account');
             }
 
-            router.push('/');
-            router.refresh();
+            await signOut({ redirectTo: "/" });
         } catch (error) {
             console.error('Error deleting account:', error);
             setIsDeleting(false);
