@@ -1,16 +1,16 @@
 'use client'
 
+import { BlueToggle } from '@/components/marketing/hero/toggle'
 import Spinner from '@/components/spinner/spinner'
 import { type FileType } from '@/components/studio/export/types'
 import { createSnapshot } from '@/components/studio/export/utils'
-import { Button } from "@/components/ui/button"
+import { Button } from '@/components/ui/button'
 import { useImageOptions } from '@/store/use-image-options'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
 import { Copy, Download, Save } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { useSession } from 'next-auth/react'
 
 interface ExportActionsProps {
     quality: number
@@ -24,7 +24,9 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     const { scaleFactor } = useResizeCanvas()
     const [isCopying, setIsCopying] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
-    const [isSaving, SetIsSaving] = useState(false)
+    const [isSaving, setIsSaving] = useState(false)
+    const [isUpdatingVisibility, setIsUpdatingVisibility] = useState(false);
+    const [latestVisibility, setLatestVisibility] = useState<"PUBLIC" | "PRIVATE">("PRIVATE");
 
     const checkExportPermission = () => {
         if (images.length === 0) {
@@ -34,6 +36,9 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         return true
     }
 
+    const toggleVisibility = () => {
+        setLatestVisibility((prev) => (prev === "PUBLIC" ? "PRIVATE" : "PUBLIC"))
+    }
 
     const handleCopy = async () => {
         if (!checkExportPermission() || isCopying) return
@@ -88,25 +93,26 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
     }
 
     const handleCloudSave = async () => {
-        if (!checkExportPermission() || isCopying) return
-
-        SetIsSaving(true)
-
+        if (!checkExportPermission() || isSaving) return;
+    
+        setIsSaving(true);
+    
         try {
             const snapshot = await createSnapshot(fileType, quality, scaleFactor);
             if (!snapshot) return;
-
+    
             const formData: FormData = new FormData();
 
             //i dont like this but im on a time crunch
             const snapshotBlob: Blob = typeof snapshot === 'string' ? new Blob([snapshot], { type: 'image/webp' }) : snapshot;
-
+    
             // TODO: Make this global state so that if the image is uploaded successfully, it is added 2 the list of identifiers
             const identifier = crypto.randomUUID();
 
             formData.append('file', snapshotBlob, `export-${Date.now()}.${fileType.toLowerCase()}`);
             formData.append('identifier', identifier);
-
+            formData.append('visibility', latestVisibility);
+    
             const response = await fetch("/api/save", {
                 method: "POST",
                 body: formData,
@@ -115,11 +121,11 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             if (response.status === 401) {
                 throw new Error('Login to save design');
             }
-
+    
             if (!response.ok) {
                 throw new Error('Failed to upload image');
             }
-
+    
             const data = await response.json();
 
             // redundant but we dont care atp
@@ -127,13 +133,13 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 throw new Error('Failed to upload image');
             }
 
-            toast.success('Saved', { description: 'Your design has been saved' });
-        }
-        catch (error: any) {
+            setLatestVisibility(data.visibility);
+    
+            toast.success(`Saved`, { description: `Your design has been saved as ${data.visibility}` });
+        } catch (error: any) {
             toast.error('Save failed', { description: error.message });
-        }
-        finally {
-            SetIsSaving(false)
+        } finally {
+            setIsSaving(false);
         }
     }
 
@@ -167,6 +173,19 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             >
                 {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
             </Button>
+
+            <div className="flex items-center gap-2 mt-1">
+                <span className="text-sm w-12 text-left">
+                    {latestVisibility === "PUBLIC" ? "Public" : "Private"}
+                </span>
+                <div className="flex-shrink-0 mt-1">
+                    <BlueToggle
+                        checked={latestVisibility === "PUBLIC"}
+                        onChange={toggleVisibility}
+                        disabled={isSaving}
+                    />
+                </div>
+            </div>
         </div>
     )
 }

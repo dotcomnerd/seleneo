@@ -28,7 +28,7 @@ async function uploadImageToCloudflare(file: FormData): Promise<{ imageUrl: stri
     };
 }
 
-async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string): Promise<string> {
+async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifier: string, visibility: "PUBLIC" | "PRIVATE"): Promise<string> {
     const existingImage = await prisma.userImage.findFirst({
         where: { userId, identifier },
     });
@@ -44,7 +44,7 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
             data: {
                 userId,
                 cloudflareUrl: imageUrl,
-                visibility: "PUBLIC",
+                visibility,
                 identifier,
                 createdAt: new Date(),
                 updatedAt: new Date(),
@@ -72,12 +72,18 @@ export async function POST(request: Request) {
         }
 
         const formData = await request.formData();
+        const visibility = formData.get("visibility") as "PUBLIC" | "PRIVATE";
+        formData.delete("visibility");
 
         const { imageUrl, identifier } = await uploadImageToCloudflare(formData);
 
-        const message = await saveOrUpdateUserImage(userId, imageUrl, identifier);
+        if (!visibility || !["PUBLIC", "PRIVATE"].includes(visibility)) {
+            throw new Error("Visibility must be provided");
+        }
 
-        return Response.json({ message, status: 200 });
+        const message = await saveOrUpdateUserImage(userId, imageUrl, identifier, visibility);
+
+        return Response.json({ message, visibility, status: 200 });
     } catch (error: any) {
         console.error(error);
         return new Response(error.message, { status: 500 });
