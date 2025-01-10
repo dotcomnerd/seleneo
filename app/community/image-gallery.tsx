@@ -1,15 +1,15 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
     AlertDialog,
     AlertDialogContent,
 } from "@/components/ui/alert-dialog";
-import { Button } from "@/components/ui/button";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight, Download, Frame, Home, Link as LinkIcon, User, X } from 'lucide-react';
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Download, User, X, Link as LinkIcon } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 type ImageType = {
@@ -28,7 +28,7 @@ type ImageType = {
 
 type ImageGalleryProps = {
     images: ImageType[];
-    currentUserId?: string;
+    currentUserId: string;
     title: string;
     description: string;
 };
@@ -87,13 +87,24 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
     return (
         <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-                <div className="relative aspect-[4/3] bg-gradient-to-br from-primary/25 to-background rounded-lg p-6 flex flex-col justify-center border shadow-lg border-primary/50">
+                <div className="relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-6 flex flex-col justify-center border shadow-lg border-primary/50">
                     <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                         {title}
                     </h1>
                     <p className="text-muted-foreground text-base">
                         {description}
                     </p>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <Link href="/studio" className="absolute top-4 right-4 dark:text-white/50 dark:hover:text-white" title="Studio">
+                            <Frame className="h-6 w-6" aria-label="Go to studio" />
+                        </Link>
+                        <Link href={`/${encodeURIComponent(currentUserId)}/profile`} className="absolute top-12 right-4 dark:text-white/50 dark:hover:text-white" prefetch={true} title="Profile">
+                            <User className="h-6 w-6" aria-label="Go to profile" />
+                        </Link>
+                        <Link href="/" className="absolute top-[5.2rem] right-4 dark:text-white/50 dark:hover:text-white" title="Home">
+                            <Home className="h-6 w-6" aria-label="Go to landing page" />
+                        </Link>
+                    </div>
                 </div>
 
                 {images.map((image, index) => (
@@ -105,14 +116,12 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
                         role="button"
                         aria-label={`View image by ${image.user.name}`}
                     >
-                        <AspectRatio ratio={4 / 3}>
                             <img
                                 src={image.cloudflareUrl}
                                 alt={image.identifier}
                                 className="object-cover w-full h-full rounded-lg"
                                 draggable={false}
                             />
-                        </AspectRatio>
                         <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-black/60 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                             <div className="absolute bottom-4 left-4 right-4">
                                 <div className="flex items-center gap-2">
@@ -145,6 +154,7 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
                                     <Button
                                         variant="ghost"
                                         size="icon"
+                                        disabled
                                         onClick={() => copyToClipboard(selectedImage.cloudflareUrl)}
                                         className="h-8 w-8 text-white/70 hover:text-white z-50"
                                         aria-label="Copy image"
@@ -217,7 +227,7 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
                                     </Link>
                                     <div>
                                         <Link
-                                            href={`/${selectedImage.user.name}/profile`}
+                                            href={`/${encodeURIComponent(selectedImage.user.name ?? "")}/profile`}
                                             className="text-sm font-medium text-white hover:underline outline-none"
                                         >
                                             {selectedImage.user.name}
