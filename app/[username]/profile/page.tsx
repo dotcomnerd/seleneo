@@ -15,6 +15,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DeleteAccount } from "./delete-account";
 import { ImageModal } from "./image-modal";
+import Spinner from "@/components/spinner/spinner";
 
 async function getUser(name: string, isCurrentUser = false) {
     if (!name) {
@@ -65,7 +66,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
             <div className="container mx-auto px-4 py-20 md:py-32 max-w-7xl">
                 <div className="grid grid-cols-1 gap-8">
                     <Card>
-                        <Suspense fallback={<div className="flex-center h-96"><Spinner className="h-12 w-12" /></div>}>
+                        <Suspense fallback={<div className="flex-center h-96"><Spinner /></div>}>
                             <div className="flex flex-col md:flex-row">
                                 <div className="flex-center flex-col p-8 md:w-72 border-b md:border-b-0 md:border-r">
                                     <Avatar className="h-32 w-32">
