@@ -1,4 +1,5 @@
-import { Navbar } from "@/components/navigation/marketing";
+import { StudioNavbar } from "@/components/navigation/studio";
+import Spinner from "@/components/spinner/spinner";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -11,11 +12,11 @@ import {
     Mail,
     User as UserIcon
 } from "lucide-react";
+import type { Metadata, ResolvingMetadata } from 'next';
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DeleteAccount } from "./delete-account";
 import { ImageModal } from "./image-modal";
-import Spinner from "@/components/spinner/spinner";
 
 async function getUser(name: string, isCurrentUser = false) {
     if (!name) {
@@ -53,6 +54,69 @@ async function getUser(name: string, isCurrentUser = false) {
     return user;
 }
 
+
+type Props = {
+    params: Promise<{ id: string }>
+    searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata(
+    { params, searchParams }: Props,
+    parent: ResolvingMetadata
+): Promise<Metadata> {
+    const id = (await params).id
+
+    const user = await getUser(id) ?? null;
+    const numberOfImages = user?.UserImage.length;
+    const name = user?.name ?? ""
+
+    return {
+        generator: 'Next.js Baby!',
+        applicationName: 'Seleneo',
+        title: `${name}'s Profile - Seleneo`,
+        description: `Explore ${name}'s generated images within Seleneo`,
+        robots: 'index, follow',
+        referrer: 'origin-when-cross-origin',
+        keywords: ['design', 'tooling', 'open-source', 'digital assets', 'social media', 'images',
+            'thumbnails', 'screenshots', 'free design tooling', 'seleneo', 'seleneo design tooling',
+            'graphics', 'editing', 'creative', 'visual', 'marketing', 'branding', 'digital tools',
+            'image editor', 'social media tools', 'content creation', 'web design', 'UI/UX', 'thumbnail generator',
+            'design software', 'media creation', 'asset management', 'social graphics', 'visual content',
+            'design platform', 'digital marketing', 'image optimization', 'design resources', 'content tools',
+            'digital design', 'online editor', 'web tools', 'creative suite', 'design automation',
+            'social assets', 'media toolkit'],
+        authors: [{ name: 'Nyumat', url: 'https://github.com/nyumat' }],
+        creator: 'Nyumat',
+        publisher: 'Nyumat',
+        formatDetection: {
+            email: false,
+            address: false,
+            telephone: false,
+        },
+        metadataBase: new URL('https://freedesign.fyi'),
+        alternates: {
+            canonical: `/`,
+        },
+        openGraph: {
+            title: `${name}'s Profile - Seleneo`,
+            description: `Explore ${name}'s designs and images, as shared on Seleneo.`,
+            url: `https://freedesign.fyi/${encodeURIComponent(name)}/profile`,
+            siteName: 'Seleneo',
+            images: [
+                {
+                    url: `https://freedesign.fyi/api/og?title=Profile`,
+                    width: 1800,
+                    height: 1600,
+                    alt: `${name}'s Profile Image`,
+                },
+            ],
+            locale: 'en_US',
+            type: 'profile',
+        },
+    } as Metadata
+
+}
+
 export default async function ProfilePage({ params }: { params: { username: string } }) {
     const currentUser = await auth();
     const profile = await getUser(params.username, currentUser?.user?.name === params.username);
@@ -62,7 +126,7 @@ export default async function ProfilePage({ params }: { params: { username: stri
 
     return (
         <div className="min-h-screen bg-background">
-            <Navbar />
+            <StudioNavbar />
             <div className="container mx-auto px-4 py-20 md:py-32 max-w-7xl">
                 <div className="grid grid-cols-1 gap-8">
                     <Card>
