@@ -4,6 +4,7 @@ import "@/styles/globals.css"
 import { GeistMono } from 'geist/font/mono'
 import { GeistSans } from 'geist/font/sans'
 import { Metadata } from "next"
+import Script from 'next/script'
 
 export const metadata: Metadata = {
     generator: 'Next.js Baby!',
@@ -58,7 +59,12 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning suppressContentEditableWarning>
             <head>
-                <script defer src="https://cloud.umami.is/script.js" data-website-id="706fcc6f-f292-4265-bca3-97e91d28432b"></script>
+                <Script
+                    defer
+                    src="/stats/script.js"
+                    data-website-id="706fcc6f-f292-4265-bca3-97e91d28432b"
+                    strategy="afterInteractive"
+                />
             </head>
             <body>
                 <Providers>
