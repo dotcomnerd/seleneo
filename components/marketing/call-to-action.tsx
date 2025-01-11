@@ -13,9 +13,9 @@ export function CallToAction() {
     return (
         <>
             <div className="relative max-w-full overflow-hidden">
-                <div className="w-full py-20 lg:py-32 my-32">
+                <div className="w-full py-20 lg:py-32 md:mt-12">
                     <div className="container mx-auto">
-                        <div className="flex flex-col text-center rounded-md p-4 lg:p-14 gap-8 items-center">
+                        <div className="flex flex-col text-center rounded-md p-4 lg:p-14 gap-4 items-center">
                             <div>
                                 <Badge className='py-1 rounded-2xl px-4 text-lg bg-primary/70'>Use Seleneo</Badge>
                             </div>
@@ -23,20 +23,27 @@ export function CallToAction() {
                                 <h3 className="text-3xl md:text-5xl tracking-tighter max-w-xl font-regular">
                                     What are you waiting for?
                                 </h3>
-                                <p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl">
+                                {/* <p className="text-lg leading-relaxed tracking-tight text-muted-foreground max-w-xl">
                                     Just kidding—Seleneo is still being developed by <Button variant={"link"} className="-mx-4 text-lg" asChild>
                                         <Link target="_blank" href={"https://tomnyuma.rocks"}>
                                             Nyumat
                                         </Link>
                                     </Button>. <br />Check back later, I'm launching the platform soon!
-                                </p>
+                                </p> */}
                             </div>
                             <div className="flex flex-row gap-4">
                                 <div className="w-full bg-background flex flex-col items-center justify-center overflow-hidden rounded-md">
-                                    <h3 className="text-xl md:text-2xl tracking-tighter max-w-xl font-regular whitespace-nowrap">
-                                        Seleneo is Coming Soon.
-                                    </h3>
-                                    <div className="w-[40rem] h-40 relative">
+                                    <Button asChild size="x-lg" className="text-lg py-3 px-6 cursor-pointer z-[999999px]">
+                                        <Link
+                                            href="/studio"
+                                            prefetch={null}
+                                            title='Go to Studio'>
+
+                                            Join the Fun &rarr;
+                                        </Link>
+                                    </Button>
+
+                                    <div className="w-[40rem] h-40 relative mt-4">
                                         <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-[2px] w-3/4 blur-sm" />
                                         <div className="absolute inset-x-20 top-0 bg-gradient-to-r from-transparent via-indigo-500 to-transparent h-px w-3/4" />
                                         <div className="absolute inset-x-60 top-0 bg-gradient-to-r from-transparent via-sky-500 to-transparent h-[5px] w-1/4 blur-sm" />
@@ -45,7 +52,7 @@ export function CallToAction() {
                                             background="transparent"
                                             minSize={0.4}
                                             maxSize={1}
-                                            particleDensity={200}
+                                            particleDensity={500}
                                             className="w-full h-full"
                                             particleColor={resolvedTheme === 'dark' ? '#fff' : '#2218de'}
                                         />
@@ -56,18 +63,18 @@ export function CallToAction() {
                             </div>
                         </div>
                     </div>
+                    <AnimatedGridPattern
+                        numSquares={10}
+                        maxOpacity={0.5}
+                        duration={1}
+                        repeatDelay={1}
+                        className={cn(
+                            "-translate-y-40",
+                            "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
+                            "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12",
+                        )}
+                    />
                 </div>
-                <AnimatedGridPattern
-                    numSquares={10}
-                    maxOpacity={0.5}
-                    duration={1}
-                    repeatDelay={1}
-                    className={cn(
-                        "-translate-y-40",
-                        "[mask-image:radial-gradient(500px_circle_at_center,white,transparent)]",
-                        "inset-x-0 inset-y-[-30%] h-[200%] skew-y-12",
-                    )}
-                />
             </div>
         </>
     );
