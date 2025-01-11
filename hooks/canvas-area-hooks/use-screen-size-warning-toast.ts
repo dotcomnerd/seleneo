@@ -12,7 +12,7 @@ export default function useScreenSizeWarningToast() {
       router.push('/') // TODO: maybe don't push to home page?
       // document.body.style.filter = 'none'
       // if (sessionStorage.getItem('toastShown')) return
-      toast.warning("Not optimized for mobile devices!", { description: "The editor is not optimized for mobile devices, hence many feature won't work as expected. Please use a desktop device for the best experience." })
+      toast.error("Not optimized for mobile devices 😔", { description: "The studio is not optimized for mobile devices just yet. In the meantime, check out our about page to learn more about Seleneo." })
       // sessionStorage.setItem('toastShown', 'true')
     }
   }, [])
