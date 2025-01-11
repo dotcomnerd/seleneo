@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, InfoIcon } from 'lucide-react';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { GithubIcon } from '../icons/github';
+import { GitHubButton } from '../icons/github';
 import { FadeIn } from './blur-fade';
 import { WordRotate } from './word-rotate';
 
@@ -127,18 +127,7 @@ export function Hero() {
         <div className="relative container mx-auto px-4 pt-32 pb-40 text-center">
             <FadeIn delay={0}>
                 <div className="flex justify-center mb-8">
-                    <div
-                        className={cn(
-                            "group p-1 px-4 rounded-full border border-black/5 bg-indigo-100 text-base dark:text-white transition-all ease-in hover:cursor-pointer hover:bg-indigo-200 dark:border-white/5 dark:bg-indigo-900/70 dark:hover:bg-indigo-900",
-                        )}
-                    >
-                        <div className='flex flex-row justify-center items-center gap-2'>
-                            <Link href="https://github.com/dotcomnerd/seleneo" title="Seleneo on GitHub" target='_blank' rel='noopener noreferrer'>
-                                <GithubIcon />
-                            </Link>
-                            <p>Seleneo is launching soon...</p>
-                        </div>
-                    </div>
+                    <GitHubButton />
                 </div>
             </FadeIn>
             <FadeIn delay={200}>
