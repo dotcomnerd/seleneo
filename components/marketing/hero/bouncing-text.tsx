@@ -1,5 +1,6 @@
 "use client";
 
+import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, useAnimationControls } from 'framer-motion';
 import { useTheme } from 'next-themes';
 import { useEffect, useRef, useState } from 'react';
@@ -36,10 +37,9 @@ const getRandomVelocity = (currentVel: number) => {
 interface BouncingTextProps {
     speed?: number;
     state: 'image' | 'bounce';
-    setState: (state: 'image' | 'bounce') => void;
 }
 
-export function BouncingText({ speed = 0.2, state, setState }: BouncingTextProps) {
+export function BouncingText({ speed = 0.2, state }: BouncingTextProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const textRef = useRef<HTMLDivElement>(null);
     const controls = useAnimationControls();
@@ -49,6 +49,7 @@ export function BouncingText({ speed = 0.2, state, setState }: BouncingTextProps
     const velocityRef = useRef({ x: speed, y: speed });
     const lastCollisionRef = useRef(0);
     const { resolvedTheme } = useTheme();
+    const isMobile = useIsMobile();
 
     useEffect(() => {
         if (state === 'bounce') {
@@ -156,7 +157,7 @@ export function BouncingText({ speed = 0.2, state, setState }: BouncingTextProps
             resizeObserver.disconnect();
         };
     }, [state, speed, controls]);
-    
+
     return (
         <div ref={containerRef} className="absolute inset-0">
             {state === 'image' && (
@@ -172,10 +173,16 @@ export function BouncingText({ speed = 0.2, state, setState }: BouncingTextProps
                     ref={textRef}
                     animate={controls}
                     initial={{ x: 0, y: 0 }}
-                    className={`absolute whitespace-nowrap ${colors.background} backdrop-blur-sm px-4 py-2 rounded-lg transition-colors duration-200 bg-opacity-80`}
+                    className={`absolute flex items-center w-auto max-w-full break-words
+                        ${!isMobile && colors.background}
+                        backdrop-blur-sm md:px-4 py-2 rounded-lg transition-colors duration-200 bg-opacity-80`}
                 >
                     <span className={`${colors.text} transition-colors duration-200`}>
-                        the web sure is a lot of fun, don't you think?
+                        {isMobile ?
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" alt="notion logo" className="w-6 h-6 inline-block" />
+                            :
+                            <p className="inline-block">you found the easter egg! 🥚</p>
+                        }
                     </span>
                 </motion.div>
             )}
