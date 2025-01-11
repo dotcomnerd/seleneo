@@ -57,7 +57,9 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning suppressContentEditableWarning>
-            <head />
+            <head>
+                <script defer src="https://cloud.umami.is/script.js" data-website-id="706fcc6f-f292-4265-bca3-97e91d28432b"></script>
+            </head>
             <body>
                 <Providers>
                     <ThemeProvider
