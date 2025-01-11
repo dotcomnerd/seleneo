@@ -23,17 +23,17 @@ const productItems = [
     {
         title: "Features",
         href: "#features",
-        description: "Explore the powerful features that make Seleneo unique."
+        description: "Explore the powerful features that make Seleneo awesome."
     },
     {
         title: "Use Cases",
         href: "#use-cases",
-        description: "Discover how others are leveraging Seleneo in their workflows."
+        description: "Discover how you can leverage Seleneo in your workflows."
     },
     {
         title: "How it Works",
         href: "#how-it-works",
-        description: "Learn about the technology powering Seleneo's capabilities."
+        description: "See the simple workflow to get started with Seleneo."
     },
     {
         title: "FAQ",
@@ -167,16 +167,16 @@ export function Navbar() {
     };
 
     return (
-        <nav className="fixed top-0 left-0 right-0 bg-white/5 dark:bg-transparent backdrop-blur-md z-50 border-b w-screen">
+        <nav className="fixed top-0 left-0 right-0 bg-white/5 dark:bg-transparent backdrop-blur-md z-50 border-b-[1px] border-primary/20 w-screen">
             <div className="container mx-auto px-4">
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center gap-4">
                         <Link href="/" className="flex items-center gap-2">
                             <img src={logo.src} className="size-8" alt='Seleneo Logo' />
                             <span className="text-xl font-semibold">Seleneo</span>
-                            <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            {/* <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
                                 Pre-release
-                            </span>
+                            </span> */}
                         </Link>
 
                         <NavigationMenu className="hidden md:flex">
@@ -188,7 +188,7 @@ export function Navbar() {
                                             <li className="row-span-3">
                                                 <NavigationMenuLink asChild>
                                                     <Link
-                                                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-br from-primary/30 to-primary/20 p-6 no-underline outline-none focus:shadow-md"
+                                                        className="flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-br from-primary/15 to-primary/5 dark:bg-gradient-to-br dark:from-primary/30 dark:to-primary/5  p-6 no-underline outline-none focus:shadow-md"
                                                         href="/about"
                                                     >
                                                         <img src={icon.src} className="h-6 w-6" alt="Logo" loading="eager" />
