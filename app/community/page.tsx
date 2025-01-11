@@ -93,7 +93,7 @@ export default async function CommunityPage() {
                     images={images}
                     currentUserId={currentUser?.user?.name || ""}
                     title="Community Gallery"
-                    description={`Explore ${images.length} images shared by our community`}
+                    description={`Explore the images shared by our community.`}
                 />
             </div>
         </div>
