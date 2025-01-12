@@ -64,31 +64,28 @@ export default function AboutPage() {
 
                     <p className="text-base font-light leading-relaxed mb-8">
                         Quick story. Last year—amidst my internship at Notion, <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" className="size-6 inline-block px-1 mr-1" />
-                        The idea for Seleneo was born in one of our design channels. My intern project required heavy iterations in Figma,
+                        One of my <Link href="https://www.linkedin.com/posts/notionhq_its-easier-than-ever-to-secure-your-account-activity-7242602102907117568-0jm7"
+                            className="text-primary hover:underline" target="_blank">intern projects</Link> required heavy iterations in Figma,
                         and being a <i>developer-first</i>, I found the tool overwhelming. This soon led to my comment:
                         <br /><br />
                         <img src="/we-need-seleneo.png" className="w-full rounded-md" />
-                        <br />
-                        Naturally, I didn't realize it at the time, but the validation from this comment would soon lead to the creation of the platform you're on right now, Seleneo.{" "}
-                        <span className="text-primary">A design tool built for humans.</span>
                         <br /><br />
                         Once the ColorStack hackathon came around, I didn't think I could do it. So, I joined a team building software for university clubs.
-                        Unforunately for us, when the holidays and life got in the way—our team gave up. I soon knew. <span className="text-primary italic">"This is my moment"</span>{" "},
-                        therefore, I decided to pivot and take on this journey and build out this product. <br /><br />
+                        Unfortunately for us, when the holidays and life got in the way—our team disbanded. I soon knew that I had to pivot, and
+                        therefore, I decided to pivot and take on this journey and build out Seleneo. <br /><br />
 
-                        I wanted a tool that stripped away the complexity while maintaining the power to create beautiful visuals, especially for
-                        me—<i>customer 0</i>—a developer building websites, YouTube thumbnails, and even creating blog content. Ubiquity was the goal.
-                        How can I support all the various workflows our users may have? <br /><br /> <span className="text-primary">And that's how Seleneo was born.</span>
+                        At the core, I wanted a tool that stripped away the complexity while maintaining the power to create beautiful visuals, especially for
+                        me—<i>customer 0</i>—a developer building websites, YouTube thumbnails, and even creating blog content. Ubiquity was the goal, but I wondered:
+                        How can I support all the various workflows our users may have? <br /><br /> <span className="text-primary">And so, Seleneo was born.</span>
                     </p>
 
                     <h2 className="text-2xl font-normal tracking-tighter mt-12 mb-4">
-                        So Why Build Another Design Tool?
+                        So...Why Build Another Design Tool?
                     </h2>
 
                     <p className="text-base font-light leading-relaxed mb-8">
                         As a tried and true builder, I spend a lot of time doing things that aren't writing code.
-                        Building landing pages, crafting marketing materials like YouTube thumbnails, adding open graph images to my projects,
-                        and creating blog content—are all part of the job.
+                        Whether it's designing a website, creating a YouTube thumbnail, or crafting a blog post, I'm constantly creating content.
                         <br /><br />
                         Each piece of content calls for visuals that entice the user to engage and in some cases, effectively communicate ideas.
                         Traditionally, we'd turn to tools like Figma or Sketch, but these professional-grade tools often bring
@@ -99,7 +96,7 @@ export default function AboutPage() {
                         For instance. Want to create a custom open graph image for your website? You're suddenly dealing with an overwhelming interface,
                         subscription plans, and navigating a steep learning curve just to create a simple visual. <br /><br />I wasn't
                         an power user of these tools either, so for this hackathon, I decided to take on the challenge of building a tool that
-                        would make it easy for <span className="text-primary inline-block">anyone</span> to create beautiful visuals.
+                        would make it easy for <span className="text-primary inline-block">anyone</span> to create beautiful visuals quickly and easily.
                     </p>
 
                     <h2 className="text-2xl font-normal tracking-tighter mt-12 mb-4">
@@ -107,22 +104,15 @@ export default function AboutPage() {
                     </h2>
 
                     <p className="text-base font-light leading-relaxed mb-8">
-                        Seleneo strips away the complexity while maintaining the power to create beautiful visuals.
+                        Seleneo strips away the complexity while maintaining the power to craft these elegant visuals.
                         Built with developers and creators in mind, Seleneo is a design tool that's easy to use, fast, and powerful.
                         <br /><br />
 
                         Initially working alone, I got the entire frontend done in about 5 days. However, I soon realized that I needed help with the backend.
                         I decided to bring on the team my friend, 'cracked' backend developer, and software engineer at Oracle, <Link className="text-primary hover:underline" href="https://github.com/Flanderzz" target="_blank">Devine</Link>
-                        —who was more than happy to help. We got the backend done in about 3 days, and the rest was history. <br /><br />
+                        —who was more than happy to help. We got the backend done in about 3 days, and the rest is history. <br /><br />
 
-
-                        With Seleneo, you can create stunning visuals for your website, social media, and more in minutes.
-                        The design studio makes it easy to create custom graphics, thumbnails, and images for your projects, and explore a library of community-generated content.
-                        <br /><br />
-                        With features like adaptive gradient background generation, 100+ image customization options, and cloud-saving,
-                        Seleneo is the perfect tool for <s>developers, designers, and creators</s> <span className="text-primary inline-block">everyone</span> looking to develop meaningful content quickly and easily. <br /><br />
-
-                        Isn't it just funny how, a simple comment in a design channel led to the creation of a tool that would change the way we create visuals?
+                        Isn't it just funny how, a simple comment led to a hackathon project, which led to a full-fledged design tool? <span className="text-primary">Life is funny.</span>
                     </p>
 
                     <h2 className="text-2xl font-normal tracking-tighter mt-12 mb-4">
@@ -133,7 +123,7 @@ export default function AboutPage() {
                         While Seleneo started as a hackathon project, our vision for this project extends far beyond the ColorStack Hackathon. Devine and I truly feel like this project
                         could become something massive, and we're excited to see where it goes from here. <br /><br />
 
-                        Our roadmap includes features like real-time team collaboration and spaces, more sharing options, and an auto-save capbilitiy similar to Google Docs.
+                        Our roadmap includes features like real-time team collaboration and spaces, more sharing options, and an auto-save capability similar to Google Docs.
                         If ColorStack is able to pay for our infrastructure, we'll be able to keep this tool free for everyone. And keep the domain <span className="text-primary">freedesign.fyi</span> alive—literally and figuratively.
                     </p>
 
