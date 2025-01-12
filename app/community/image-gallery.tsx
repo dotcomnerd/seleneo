@@ -35,7 +35,6 @@ type ImageGalleryProps = {
 
 export function ImageGallery({ images, currentUserId, title, description }: ImageGalleryProps) {
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-
     const breakpointColumns = {
         default: 4,
         1536: 4,
@@ -44,23 +43,22 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
         768: 2,
         640: 1
     };
-
     return (
         <>
             <div className="min-h-screen">
                 <Masonry
                     breakpointCols={breakpointColumns}
-                    className="flex gap-[2px]"
+                    className="flex gap-[6px]"
                     columnClassName="flex flex-col gap-[2px] bg-background"
                 >
-                    <div className="relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-6 flex flex-col justify-center border shadow-lg border-primary/50">
+                    <div className="relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-8 flex flex-col justify-center border shadow-lg border-primary/20">
                         <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                             {title}
                         </h1>
                         <p className="text-muted-foreground text-base">
                             {description}
                         </p>
-                        <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="absolute inset-0 flex items-center justify-center m-2">
                             <Link href="/" className="absolute top-4 right-4 dark:text-white/50 dark:hover:text-white" title="Home">
                                 <Home className="h-6 w-6" aria-label="Go to landing page" />
                             </Link>
@@ -176,7 +174,6 @@ export default function ImageViewer({ images, selectedIndex, setSelectedIndex }:
             <AlertDialogContent className="max-w-4xl max-h-[90vh] p-6 bg-zinc-950">
                 {selectedImage && (
                     <div className="relative flex flex-col h-full">
-                        {/* Header */}
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex gap-2">
                                 <Button
@@ -207,7 +204,6 @@ export default function ImageViewer({ images, selectedIndex, setSelectedIndex }:
                             </Button>
                         </div>
 
-                        {/* Image Container */}
                         <div className="relative flex-1 min-h-0">
                             <div className="absolute left-0 top-1/2 -translate-y-1/2">
                                 <Button
@@ -241,7 +237,6 @@ export default function ImageViewer({ images, selectedIndex, setSelectedIndex }:
                             </div>
                         </div>
 
-                        {/* Footer */}
                         <div className="mt-4 flex items-center gap-3">
                             <Link href={`/${selectedImage.user.name}/profile`} className="outline-none">
                                 <Avatar className="h-8 w-8">
