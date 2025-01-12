@@ -58,18 +58,15 @@ async function getUser(name: string, isCurrentUser = false) {
 
 
 type Props = {
-    params: Promise<{ id: string }>
+    params: Promise<{ username: string }>
     searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata(
-    { params, searchParams }: Props,
-    parent: ResolvingMetadata
+    { params }: Props,
 ): Promise<Metadata> {
-    const id = (await params).id
-
+    const id = (await params).username;
     const user = await getUser(id) ?? null;
-    const numberOfImages = user?.UserImage.length;
     const name = user?.name ?? ""
 
     return {
@@ -102,7 +99,7 @@ export async function generateMetadata(
         openGraph: {
             title: `${name}'s Profile - Seleneo`,
             description: `Explore ${name}'s designs and images, as shared on Seleneo.`,
-            url: `https://freedesign.fyi/${encodeURIComponent(name)}/profile`,
+            url: `https://freedesign.fyi/${name}/profile`,
             siteName: 'Seleneo',
             images: [
                 {
