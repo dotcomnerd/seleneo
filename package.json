@@ -98,6 +98,7 @@
     "react-icons": "^5.4.0",
     "react-image-crop": "^11.0.7",
     "react-joystick-component": "^6.2.1",
+    "react-masonry-css": "^1.0.16",
     "react-moveable": "^0.56.0",
     "react-resizable-panels": "^2.1.7",
     "react-responsive": "^10.0.0",
