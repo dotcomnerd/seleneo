@@ -14,13 +14,13 @@ import { useFrameOptions } from '@/store/use-frame-options'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
+import ColorThief from 'colorthief'
 import { ImageIcon, Upload } from 'lucide-react'
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
 import { Button } from '../ui/button'
 import { BrowserFrame } from './browser-frames'
 import ContextMenuImage from './image-context-menu'
-import ColorThief from 'colorthief'
 
 const ImageUpload = () => {
   const targetRef = useRef<HTMLDivElement>(null)
@@ -74,7 +74,6 @@ const ImageUpload = () => {
     extractColors()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [imagesCheck])
-  console.log(images)
 
   useOnClickOutside(targetRef, () => {
     if (isMultipleTargetSelected) return
@@ -315,8 +314,7 @@ function LoadAImage() {
       const file = event.target.files?.[0]
 
       if (file) {
-          const imageUrl = URL.createObjectURL(file)
-          console.log(`imageUrl`, imageUrl)
+        const imageUrl = URL.createObjectURL(file)
         setInitialImageUploaded(true)
 
         setImagesCheck([...imagesCheck, imageUrl])
@@ -362,8 +360,7 @@ function LoadAImage() {
       // const file = event.target.files?.[0]
 
       if (file) {
-          const imageUrl = URL.createObjectURL(file)
-          console.log(`imageUrl`, imageUrl)
+        const imageUrl = URL.createObjectURL(file)
         setInitialImageUploaded(true)
 
         setImagesCheck([...imagesCheck, imageUrl])
