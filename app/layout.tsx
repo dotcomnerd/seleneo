@@ -59,12 +59,14 @@ export default function RootLayout({
     return (
         <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning suppressContentEditableWarning>
             <head>
-                <Script
-                    defer
-                    src="/stats/script.js"
-                    data-website-id="706fcc6f-f292-4265-bca3-97e91d28432b"
-                    strategy="afterInteractive"
-                />
+                {process.env.VERCEL_ENV === 'production' && (
+                    <Script
+                        defer
+                        src="/stats/script.js"
+                        data-website-id="706fcc6f-f292-4265-bca3-97e91d28432b"
+                        strategy="afterInteractive"
+                    />
+                )}
             </head>
             <body>
                 <Providers>
