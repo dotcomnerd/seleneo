@@ -67,7 +67,8 @@ export async function generateMetadata(
 ): Promise<Metadata> {
     const id = (await params).username;
     const user = await getUser(id) ?? null;
-    const name = user?.name ?? ""
+    let name = user?.name ?? "";
+    name.length > 10 ? name = `${name.slice(0, 10)}...` : name;
 
     return {
         generator: 'Next.js Baby!',
@@ -103,7 +104,7 @@ export async function generateMetadata(
             siteName: 'Seleneo',
             images: [
                 {
-                    url: `https://freedesign.fyi/api/og?title=Profile`,
+                    url: `https://freedesign.fyi/api/og?title=${name}'s Profile`,
                     width: 1800,
                     height: 1600,
                     alt: `${name}'s Profile Image`,
