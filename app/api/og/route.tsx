@@ -41,7 +41,7 @@ export async function GET(request: Request) {
                             left: 0,
                             width: '100%',
                             height: '100%',
-                            backgroundColor: 'rgba(0, 0, 0, 0.9)',
+                            backgroundColor: 'rgba(0, 0, 0, 0.85)',
                         }}
                     />
                     <div
