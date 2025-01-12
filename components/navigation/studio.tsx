@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, Frame, GalleryVertical, LogOut, LucideIcon, Menu, User } from "lucide-react";
+import { ChevronDown, GalleryVertical, Github, Info, LogOut, LucideIcon, Menu, User } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -75,7 +75,7 @@ export function StudioNavbar() {
             title: "GitHub",
             href: "https://github.com/dotcomnerd/seleneo",
             description: "Access our open-source repository and contribute to development of Seleneo!",
-            icon: Frame
+            icon: Github
         },
         {
             title: "Community",
@@ -87,7 +87,7 @@ export function StudioNavbar() {
             title: "About",
             href: "/about",
             description: "Learn more about Seleneo, the team behind it, and why we built it.",
-            icon: User
+            icon: Info
         },
     ];
 
