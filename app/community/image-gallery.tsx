@@ -51,7 +51,7 @@ export function ImageGallery({ images, currentUserId, title, description }: Imag
                     className="flex gap-[6px]"
                     columnClassName="flex flex-col gap-[2px] bg-background"
                 >
-                    <div className="relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-8 flex flex-col justify-center border shadow-lg border-primary/20">
+                    <div className="relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-8 flex flex-col justify-center border shadow-lg border-primary/20 mb-1">
                         <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
                             {title}
                         </h1>
