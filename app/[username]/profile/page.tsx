@@ -104,7 +104,7 @@ export async function generateMetadata(
             siteName: 'Seleneo',
             images: [
                 {
-                    url: `https://freedesign.fyi/api/og?title=${name}'s Profile`,
+                    url: `https://freedesign.fyi/api/og?title=${name}`,
                     width: 1800,
                     height: 1600,
                     alt: `${name}'s Profile Image`,
