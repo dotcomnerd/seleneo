@@ -14,8 +14,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { signOut } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
+import { toast } from "sonner";
 
 export function DeleteAccount({ userId }: { userId: string }) {
     const [isDeleting, setIsDeleting] = useState(false);
@@ -28,12 +28,13 @@ export function DeleteAccount({ userId }: { userId: string }) {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to delete account');
+                toast.error('Failed to delete account');
             }
 
-            await signOut({ redirectTo: "/" });
+            await signOut({ redirectTo: '/' });
         } catch (error) {
             console.error('Error deleting account:', error);
+            toast.error('Failed to delete account');
             setIsDeleting(false);
         }
     };

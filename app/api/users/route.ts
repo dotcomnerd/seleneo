@@ -44,6 +44,9 @@ export async function DELETE(request: Request) {
         });
 
         await Promise.all(deleteImagePromises);
+
+        await signOut({ redirect: false });
+
         await prisma.user.delete({ where: { id: userId } });
 
         return Response.json({ message: "Account successfully deleted" }, { status: 200 });
