@@ -1,40 +1,40 @@
 "use client";
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
+    ContextMenu,
+    ContextMenuContent,
+    ContextMenuItem,
+    ContextMenuSeparator,
+    ContextMenuShortcut,
+    ContextMenuSub,
+    ContextMenuSubContent,
+    ContextMenuSubTrigger,
+    ContextMenuTrigger,
+} from '@/components/ui/context-menu';
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { useColorExtractor } from '@/store/use-color-extractor'
-import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
-import { useMoveable } from '@/store/use-moveable'
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog';
+import { useColorExtractor } from '@/store/use-color-extractor';
+import { useImageOptions, useSelectedLayers } from '@/store/use-image-options';
+import { useMoveable } from '@/store/use-moveable';
 import {
-  BringToFront,
-  CropIcon,
-  ImagePlus,
-  SendToBack,
-  Trash,
-} from 'lucide-react'
-import dynamic from 'next/dynamic'
-import React, { ChangeEvent, useRef, useState } from 'react'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { type Crop } from 'react-image-crop'
-import 'react-image-crop/dist/ReactCrop.css'
+    BringToFront,
+    CropIcon,
+    ImagePlus,
+    SendToBack,
+    Trash,
+} from 'lucide-react';
+import dynamic from 'next/dynamic';
+import React, { ChangeEvent, useRef, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import { type Crop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
 
 const DynamicCropComponent = dynamic(() =>
   import('react-image-crop').then((mod) => mod.ReactCrop)
@@ -65,6 +65,7 @@ export default function ContextMenuImage({
 
     if (images.length === 1) {
       setImages([])
+      setSelectedImage(null)
       return
     }
 
@@ -315,9 +316,9 @@ function ReplaceImage() {
                 }
               : image
           )
-        )
+      )
 
-      setImagesCheck([...imagesCheck, imageUrl])
+        setImagesCheck([...imagesCheck, imageUrl])
     }
   }
   return (
