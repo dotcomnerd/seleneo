@@ -102,8 +102,7 @@ export default function FontSettings() {
                         }
                         : text
                 )
-            )
-    }
+    )}
 
     return (
         <Card className="border-none shadow-none">
@@ -343,9 +342,6 @@ export default function FontSettings() {
                                     <Button
                                         variant="outline"
                                         className="w-full justify-start gap-2"
-                                        style={{
-                                            color: selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'
-                                        }}
                                     >
                                         <Palette className="h-4 w-4" />
                                         {selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
