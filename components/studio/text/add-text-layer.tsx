@@ -21,7 +21,7 @@ export default function AddTextLayer() {
       }}
       size="lg"
       variant="stylish"
-      className="w-full rounded-lg text-center text-base"
+      className="w-full rounded-lg text-center text-base border-2 border-primary/20 hover:border-primary/40"
     >
       <Plus size={22} className="mr-2 inline-block align-middle" />
       <span>Add a text layer</span>
