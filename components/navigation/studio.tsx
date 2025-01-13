@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown, GalleryVertical, Github, Info, LogOut, LucideIcon, Menu, User } from "lucide-react";
+import { ChevronDown, Frame, GalleryVertical, Github, Info, LogOut, LucideIcon, Menu, User } from "lucide-react";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -72,10 +72,10 @@ export function StudioNavbar() {
 
     const resourceItems: ResourceItem[] = [
         {
-            title: "GitHub",
-            href: "https://github.com/dotcomnerd/seleneo",
-            description: "Access our open-source repository and contribute to development of Seleneo!",
-            icon: Github
+            title: "About",
+            href: "/about",
+            description: "Learn more about Seleneo, the team behind it, and why we built it.",
+            icon: Info
         },
         {
             title: "Community",
@@ -84,11 +84,17 @@ export function StudioNavbar() {
             icon: GalleryVertical
         },
         {
-            title: "About",
-            href: "/about",
-            description: "Learn more about Seleneo, the team behind it, and why we built it.",
-            icon: Info
+            title: "GitHub",
+            href: "https://github.com/dotcomnerd/seleneo",
+            description: "Access our open-source repository and contribute to development of Seleneo!",
+            icon: Github
         },
+        {
+            title: "Studio",
+            href: "/studio",
+            description: "Start creating your own designs with Seleneo's 100% free, and 100% powerful canvas.",
+            icon: Frame
+        }
     ];
 
     const renderAuthButton = () => {
@@ -104,13 +110,13 @@ export function StudioNavbar() {
             return (
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="gap-2 p-1">
+                        <Button variant="ghost" className="gap-2 p-1 px-2 -mx-2">
                             <UserAvatar user={session.user} />
                             <span className="ml-2">{session.user?.name}</span>
                             <ChevronDown className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuContent align="end" className="w-56 border-primary/20">
                         <DropdownMenuItem asChild>
                             <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2" prefetch={true}>
                                 <User className="h-4 w-4" />Account
@@ -121,7 +127,7 @@ export function StudioNavbar() {
                                 <GalleryVertical className="h-4 w-4" />Community
                             </Link>
                         </DropdownMenuItem>
-                        <DropdownMenuSeparator />
+                        <DropdownMenuSeparator className="bg-primary/20" />
                         <AlertDialog>
                             <AlertDialogTrigger asChild>
                                 <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 dark:text-red-400">
