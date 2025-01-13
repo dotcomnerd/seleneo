@@ -197,7 +197,7 @@ export const useImageOptions = create(
         imageShadow: '',
         shadowPreview: '0 25px 50px -12px #000000',
         shadowOpacity: 0.22,
-        shadowName: 'Medium',
+        shadowName: 'None',
         shadowColor: '#000',
         borderSize: '0',
         borderColor: '#ffffff50',
@@ -215,8 +215,8 @@ export const useImageOptions = create(
       },
 
       defaultTextStyle: {
-        textSize: '3',
-        textColor: '#151515',
+        textSize: '2',
+        textColor: '#ffffff',
         textAlign: 'center',
         fontWeight: 500,
         fontFamily: 'Inter',
