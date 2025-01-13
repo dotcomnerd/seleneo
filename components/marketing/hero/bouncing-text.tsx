@@ -1,5 +1,6 @@
 "use client";
 
+import { Checkbox } from '@/components/ui/checkbox';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion, useAnimationControls } from 'framer-motion';
 import { useTheme } from 'next-themes';
@@ -50,6 +51,7 @@ export function BouncingText({ speed = 0.2, state }: BouncingTextProps) {
     const lastCollisionRef = useRef(0);
     const { resolvedTheme } = useTheme();
     const isMobile = useIsMobile();
+    const [switcher, setSwitcher] = useState(isMobile);
 
     useEffect(() => {
         if (state === 'bounce') {
@@ -160,6 +162,20 @@ export function BouncingText({ speed = 0.2, state }: BouncingTextProps) {
 
     return (
         <div ref={containerRef} className="absolute inset-0">
+            {state === 'bounce' && (
+                <div>
+                    <p className="absolute top-4 right-10 text-xs text-gray-400 dark:text-gray-500">
+                        Switch to Notion Logo
+                    </p>
+                    <Checkbox
+                        title="Switch to Notion Logo"
+                        checked={switcher || isMobile}
+                        disabled={isMobile}
+                        onCheckedChange={() => setSwitcher(!switcher)}
+                        className="absolute top-4 right-4"
+                    />
+                </div>
+            )}
             {state === 'image' && (
                 <img
                     src={typeof window !== 'undefined' && typeof document !== 'undefined' &&
@@ -178,10 +194,13 @@ export function BouncingText({ speed = 0.2, state }: BouncingTextProps) {
                         backdrop-blur-sm md:px-4 py-2 rounded-lg transition-colors duration-200 bg-opacity-80`}
                 >
                     <span className={`${colors.text} transition-colors duration-200`}>
-                        {isMobile ?
+                        {switcher || isMobile ?
                             <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" alt="notion logo" className="w-6 h-6 inline-block" />
-                            :
-                            <p className="inline-block">you found the easter egg! 🥚</p>
+                            : (
+                                <div>
+                                    <p className="inline-block">You found the easter egg! 🥚</p>
+                                </div>
+                            )
                         }
                     </span>
                 </motion.div>
