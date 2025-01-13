@@ -1,7 +1,7 @@
 # [freedesign.fyi](https://freedesign.fyi)
 ![freedesign.fyi](/public/studio-demo.webp)
 
-### Seleneo helps you easily create all types of visuals for free.
+### [Seleneo](https://freedesign.fyi/about) helps you easily create all types of visuals for free.
 
 > [!NOTE]
 > This application was developed for the [ColorStack Hackathon](https://colorstack.notion.site/winter-break-hackathon-24).
@@ -14,10 +14,13 @@
 - npm (v10.0.0 or higher recommended)
 - Docker or PostgreSQL
 - Cloudflare Images API key
+- GitHub OAuth credentials
+- Google Fonts API key
+- Unsplash API key
 
 ### Installation 🐳
 
-First, clone this repository and install Seleneo's dependencies:
+Get started by cloning this repository and installing Seleneo's dependencies:
 
 ```bash
 git clone https://github.com/dotcomnerd/seleneo.git
@@ -103,7 +106,7 @@ bun start
 3. **Add Effects & Frames**: Enhance your screenshot with shadows, multi-dimensional transformations, and device frames. It's perfect for showcasing your product.
 4. **Export & Share**: Export your designs in multiple formats or share directly to social media. Get your visuals ready for the world to see.
 5. **Save Your Designs**: Create an account to save your designs and settings. Access your visuals from anywhere and share them with your team and or community.
-6. **(optional) Browse Other Designs**: View and submit visuals created by other users of Seleneo. Get inspired by the community and share your creations.
+6. **Browse Other Designs**: View and submit visuals created by other users of Seleneo. Get inspired by the community and share your creations.
 
 ## Extra Scripts
 
@@ -137,7 +140,7 @@ Other:
 - [FontAwesome](https://fontawesome.com) / [Lucide](https://lucide.dev) for the icons
 - [Magic UI](https://magicui.design/) for making design eng ez
 - [CoolShap.es](https://coolshap.es) for the logos/icons
-- [Unsplash](https://unsplash.com) for the images
+- [Unsplash](https://unsplash.com) for the images API
 - [Cloudflare](https://cloudflare.com) for the images API
 - [Google Fonts](https://fonts.google.com) for the fonts
 - [Prisma](https://prisma.io) for the database
