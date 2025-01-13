@@ -34,12 +34,12 @@ export default function InsetOption() {
                         </PopoverTrigger>
                         <PopoverContent
                             align="start"
-                            className="w-[250px] rounded-lg bg-primary/10 p-4"
+                            className="w-[250px] rounded-lg bg-card p-4"
                         >
                             <div className="grid gap-4">
                                 <div className="space-y-2">
                                     <h4 className="pb-1 text-sm font-medium tracking-tight">
-                                        Detected colors
+                                        Detected Colors
                                     </h4>
                                     <hr className="border-border pt-2" />
                                     <div className="flex flex-wrap gap-2">
