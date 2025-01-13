@@ -48,6 +48,6 @@ export const useResizeCanvas = create<ResizeCanvasState>((set) => ({
   shouldFloat: false,
   setShouldFloat: (shouldFloat) => set({ shouldFloat }),
 
-  automaticResolution: true,
+  automaticResolution: false, // TODO: maybe our users would like this to be true by default?
   setAutomaticResolution: (automaticResolution) => set({ automaticResolution }),
 }))
