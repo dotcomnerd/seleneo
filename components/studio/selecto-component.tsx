@@ -26,7 +26,7 @@ export default function SelectoComponent() {
     <Selecto
       dragContainer={'.canvas-container'}
       selectableTargets={['.image']}
-      selectByClick={false}
+      selectByClick
       selectFromInside={false}
       toggleContinueSelect={['shift']}
       ratio={0}
