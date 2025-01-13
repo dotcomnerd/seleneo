@@ -77,7 +77,7 @@ export function SidebarImageSettings({
     sidebarButtons,
 }: SidebarImageSettingsProps) {
     const { activeIndex } = useActiveIndexStore()
-    const activeButton = sidebarButtons[activeIndex] ?? sidebarButtons[1] // default to image if no active index
+    const activeButton = sidebarButtons[activeIndex] ?? sidebarButtons[1]
     const ActiveComponent = activeButton?.component
 
     return (
@@ -97,38 +97,10 @@ export function SidebarImageSettings({
 }
 
 export function Sidebar() {
-    //   const [selectedTool, setSelectedTool] = useState(tools[0])
     const sidebarButtons = useSidebarButtons()
     const { activeIndex } = useActiveIndexStore()
     const activeSection = sidebarButtons[activeIndex]?.id ?? 'image'
     useUndoRedoHotkeys()
-
-    //   return (
-    //     <div className="flex h-full border-r">
-    //       <div className="flex w-20 flex-col justify-between border-r">
-    //         <div>
-    //           {tools.map((Tool, index) => (
-    //             <Button
-    //               key={index}
-    //               variant={selectedTool === Tool ? "secondary" : "ghost"}
-    //               size="default"
-    //               className="h-20 w-20 rounded-none flex flex-col items-center justify-center"
-    //               onClick={() => setSelectedTool(Tool)}
-    //             >
-    //               <Tool.icon className="h-5 w-5 mb-1" />
-    //               <span className="text-xs">{Tool.label}</span>
-    //             </Button>
-    //           ))}
-    //         </div>
-    //       </div>
-    //       <div className="w-60 flex flex-col">
-    //         <div className="p-4 flex-1 overflow-y-auto">
-    //           {selectedTool.component && <selectedTool.component />}
-    //         </div>
-    //         <BottomNav />
-    //       </div>
-    //     </div>
-    //   )
 
     return (
         <aside className="flex w-[6rem] overflow-x-hidden border-r border-border/60 md:min-w-[25rem] md:max-w-[25rem]">
