@@ -109,7 +109,7 @@ const ImageUpload = () => {
                 ]);
                 setImagesCheck([...imagesCheck, imageUrl]);
                 if (localStorage.getItem('image-init-pro-tip') === null) {
-                    toast.info("Pro Tip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                    toast.info("Pro Tip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-center" });
                     localStorage.setItem('image-init-pro-tip', 'true')
                 }
                 if (images.length > 0) return;
