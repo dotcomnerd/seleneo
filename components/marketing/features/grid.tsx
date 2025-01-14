@@ -41,7 +41,7 @@ const features = [
 
 export function FeatureGrid() {
  return (
-  <div className="md:flex flex-wrap gap-4 space-y-4 md:space-y-0 justify-center justify-items-center">
+  <div className="flex flex-wrap gap-4 space-y-4 md:space-y-0 justify-center justify-items-center max-w-5xl mx-auto">
     {features.map((feature) => (
         <FeatureCardAlternate
             key={feature.title}
