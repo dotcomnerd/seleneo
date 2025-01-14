@@ -32,7 +32,7 @@ const steps = [
 export function HowItWorks() {
     // TODO: Maybe stop hiding the overflow? hm.
     return (
-        <section className="relative md:py-16 overflow-hidden" id='how-it-works'>
+        <section className="relative pt-24 overflow-hidden" id='how-it-works'>
             <div className="container mx-auto px-4">
                 <div className="flex flex-col text-center rounded-md p-4  gap-8 items-center">
                     <div>
