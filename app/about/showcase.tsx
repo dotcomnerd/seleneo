@@ -1,11 +1,11 @@
 "use client";
 
-import { AspectRatio } from "@/components/ui/aspect-ratio"
-import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter } from "@/components/ui/alert-dialog"
-import { Button } from "@/components/ui/button"
-import { useState } from "react";
-import Link from "next/link";
+import { AlertDialog, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Button } from "@/components/ui/button";
 import { Github, Globe, X } from 'lucide-react';
+import Link from "next/link";
+import { useState } from "react";
 
 const projects = [
     {
@@ -18,7 +18,7 @@ const projects = [
     },
     {
         title: "NyumatFlix",
-        description: "A next-generation of streaming service that lets you watch your favorite movies and TV shows...for free.",
+        description: "A next-generation streaming service that lets you watch your favorite movies and TV shows...for free.",
         image: "https://nyumatflix.com/preview.png",
         productImage: "https://freedesign.fyi/nyumatflix-preview.webp",
         product: "https://nyumatflix.com",
@@ -26,7 +26,7 @@ const projects = [
     },
     {
         title: "Incivent",
-        description: "A real-time incident tracking map for communities around the world.",
+        description: "A real-time incident tracking map for communities around the world to report and view incidents.",
         image: "https://dont-commit-crimes.vercel.app/og-image.png",
         product: "https://dont-commit-crimes.vercel.app",
         productImage: "https://dont-commit-crimes.vercel.app/preview.png",
@@ -93,7 +93,7 @@ export function ProjectShowcase() {
                     </AlertDialogHeader>
 
                     <div className="my-4">
-                        <AspectRatio ratio={16/9} className="overflow-hidden rounded-lg border">
+                        <AspectRatio ratio={16 / 9} className="overflow-hidden rounded-lg border">
                             <img
                                 src={selectedProject?.productImage}
                                 alt={`${selectedProject?.title} Preview`}
