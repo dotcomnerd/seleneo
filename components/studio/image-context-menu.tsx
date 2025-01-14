@@ -214,11 +214,10 @@ export default function ContextMenuImage({
                                     </ContextMenuShortcut>
                                 </ContextMenuItem>
                             </DialogTrigger>
-
-                            <ContextMenuItem>...</ContextMenuItem>
+                            {/* <ContextMenuItem>...</ContextMenuItem>
                             <ContextMenuItem>...</ContextMenuItem>
                             <ContextMenuSeparator />
-                            <ContextMenuItem>...</ContextMenuItem>
+                            <ContextMenuItem>...</ContextMenuItem> */}
                         </ContextMenuSubContent>
                     </ContextMenuSub>
 
