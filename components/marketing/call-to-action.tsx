@@ -12,8 +12,8 @@ export function CallToAction() {
     const { resolvedTheme } = useTheme();
     return (
         <>
-            <div className="relative max-w-full overflow-hidden">
-                <div className="w-full py-20 lg:py-32 md:mt-12">
+            <div className="relative max-w-full overflow-hidden py-36 lg:py-32">
+                <div className="w-full pt-12">
                     <div className="container mx-auto">
                         <div className="flex flex-col text-center rounded-md p-4 lg:p-14 gap-4 items-center">
                             <div>

@@ -37,7 +37,7 @@ export function ProductShowcase() {
     const [selected, setSelected] = React.useState(0);
 
     return (
-        <section className="py-20 overflow-hidden bg-background" id='use-cases' ref={ref}>
+        <section className="py-10 md:py-32 overflow-hidden bg-background" id='use-cases' ref={ref}>
             <div className="container mx-auto px-4">
                 <div className="flex flex-col text-center rounded-md gap-8 items-center">
                     <div>
