@@ -17,36 +17,21 @@ type Storage struct {
 		DeleteUser(context.Context, string) error
 	}
 	UserImage interface{
-		SaveOrUpdateUserImage(ctx context.Context, userID, imageUrl, identifier string, visibility Visibility) (string, error)
+		SaveOrUpdateUserImage(context.Context, string, string, string, string, Visibility) (string, error)
 		FindByIdentifier(context.Context, string, string) (*UserImage, error)
 	}
-	Session interface{
-		// GetSessionById(string) (Session, error)
-		// GetSessionByToken(string) (Session, error)
-		// CreateSession(Session) error
-		// DeleteSession(string) error
+	ImageHash interface {
+		FindSimilarImage(context.Context, string, string) (*UserImage, bool, error)
 	}
-	VerificationToken interface{
-		// GetVerificationTokenByIdentifier(string) (VerificationToken, error)
-		// CreateVerificationToken(VerificationToken) error
-		// DeleteVerificationToken(string) error
-	}
-	Account interface{
-		// GetAccountById(string) (Account, error)
-		// GetAccountByProvider(string, string) (Account, error)
-		// CreateAccount(Account) error
-		// UpdateAccount(Account) error
-		// DeleteAccount(string) error
-	}
+
 }
 
+// TODO: rewrite with gorm instead of sql.DB
 func New(db *sql.DB) Storage {
 	return Storage{
 		User: 			   &UserRepo{db},
 		UserImage: 		   &UserImageRepo{db},
-		Session: 		   &SessionRepo{db},
-		VerificationToken: &VerificationTokenRepo{db},
-		Account: 		   &AccountRepo{db},
+		ImageHash: 		   &ImageHashRepo{db},
 	}
 }
 

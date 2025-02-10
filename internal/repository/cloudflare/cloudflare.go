@@ -2,84 +2,64 @@ package cloudflare
 
 import (
 	"bytes"
-	"encoding/json"
-	"errors"
+	"context"
 	"fmt"
-	"mime/multipart"
-	"net/http"
 	"strings"
-	"time"
+
+	"github.com/cloudflare/cloudflare-go/v4"
+	"github.com/cloudflare/cloudflare-go/v4/images"
+	"github.com/cloudflare/cloudflare-go/v4/option"
 
 	"github.com/dotcomnerd/seleneo/internal/env"
-	// "os"
 )
 
-type CloudflareResponse struct {
-	Result struct {
-		Variants []string `json:"variants"`
-	} `json:"result"`
-}
-
-// extra shit fast shipping code code
-// TODO: REWRITE
 func UploadImageToCloudflare(fileBuffer []byte, fileType, userId string) (string, error) {
 	accountID := env.GetString("CLOUDFLARE_ACCOUNT_ID", "GET_YOUR_OWN_CLOUDFLARE_ID")
 	apiToken := env.GetString("CLOUDFLARE_API_TOKEN", "GET_YOUR_OWN_CLOUDFLARE_API_KEY")
 
-	url := fmt.Sprintf("https://api.cloudflare.com/client/v4/accounts/%s/images/v1", accountID)
+	api := cloudflare.NewClient(
+		option.WithAPIToken(apiToken),
+	)
 
-	body := &bytes.Buffer{}
-	writer := multipart.NewWriter(body)
-	fileWriter, _ := writer.CreateFormFile("file", fmt.Sprintf("image-%s.%s", userId, fileType))
-	fileWriter.Write(fileBuffer)
-	writer.WriteField("requireSignedURLs", "false")
-	writer.Close()
+	reader := bytes.NewReader(fileBuffer)
+	filename := fmt.Sprintf("image-%s.%s", userId, fileType)
+	contentType := fmt.Sprintf("image/%s", fileType)
+	file := cloudflare.FileParam(reader, filename, contentType)
 
-	req, _ := http.NewRequest("POST", url, body)
-	bearer := fmt.Sprintf("Bearer %s", apiToken)
-	req.Header.Set("Authorization", bearer)
-	req.Header.Set("Content-Type", writer.FormDataContentType())
+	//TODO: change from background to a timeout context, based on connection (ctx in handler)
+	image, err := api.Images.V1.New(context.Background(), images.V1NewParams{
+		AccountID: cloudflare.F(accountID),
+		// NAHH THIS CLOUDFLARE API IS SO AWEFUL OML
+		File:      cloudflare.F[any](file),
+	})
 
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return "", errors.New("failed to upload image")
+	if err != nil {
+		return "", fmt.Errorf("failed to upload image: %w", err)
 	}
-	defer resp.Body.Close()
 
-	var response CloudflareResponse
-	json.NewDecoder(resp.Body).Decode(&response)
-
-	return response.Result.Variants[0], nil
+	return image.Variants[0], nil
 }
 
 func DeleteImageFromCloudflare(imageURL string) error {
 	accountID := env.GetString("CLOUDFLARE_ACCOUNT_ID", "GET_YOUR_OWN_CLOUDFLARE_ID")
 	apiToken := env.GetString("CLOUDFLARE_API_TOKEN", "GET_YOUR_OWN_CLOUDFLARE_API_KEY")
 
-	parts := strings.Split(imageURL, "/")
-	if len(parts) < 5 {
-		return errors.New("invalid Cloudflare URL format")
-	}
-	imageID := parts[4]
-	fmt.Println(imageID)
+	api := cloudflare.NewClient(
+		option.WithAPIToken(apiToken),
+	)
 
-	url := fmt.Sprintf("https://api.cloudflare.com/client/v4/accounts/%s/images/v1/%s", accountID, imageID)
+	imageId := strings.Split(imageURL, "/")[4]
 
-	req, err := http.NewRequest("DELETE", url, nil)
+	_, err := api.Images.V1.Delete(context.Background(), imageId, images.V1DeleteParams{
+		AccountID: cloudflare.F(accountID),
+	}) 
+
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to delete image: %w", err)
 	}
-	bearer := fmt.Sprintf("Bearer %s", apiToken)
-	req.Header.Set("Authorization", bearer)
 
-	client := &http.Client{
-		Timeout: 10 * time.Second,
-	}
-	resp, err := client.Do(req)
-	if err != nil || resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("failed to delete image from Cloudflare, status: %d", resp.StatusCode)
-	}
-	defer resp.Body.Close()
+	// TODO: find a way to get errors on response
+	// I still hate this shitty ahh cloudflare API with my whole SOUL
 
 	return nil
 }

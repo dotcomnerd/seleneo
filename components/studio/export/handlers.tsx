@@ -155,7 +155,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 throw new Error('Failed to upload image');
             }
 
-            const data: SuccessResponse = await response.json();
+            const data: SuccessResponse = (await response.json()).data;
 
             if (data.type === 'DUPLICATE') {
                 setExistingImage(data);
