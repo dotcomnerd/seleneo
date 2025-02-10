@@ -15,9 +15,6 @@ type User struct {
 	Email         *string     `json:"email,omitempty"`
 	EmailVerified *time.Time  `json:"emailVerified,omitempty"`
 	Image         *string     `json:"image,omitempty"`
-	Accounts      []Account   `json:"accounts,omitempty"`
-	Sessions      []Session   `json:"sessions,omitempty"`
-	UserImages    []UserImage `json:"userImages,omitempty"`
 }
 
 type UserRepo struct {
@@ -81,6 +78,7 @@ func (u *UserRepo) DeleteUser(ctx context.Context, id string) error {
 			return err
 		}
 
+		// potential delete, might be handled by next-auth
 		_, err = tx.ExecContext(ctx, `DELETE FROM "Session" WHERE "userId" = $1`, id)
 		if err != nil {
 			return err

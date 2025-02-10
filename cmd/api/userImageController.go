@@ -1,18 +1,21 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
 	"github.com/dotcomnerd/seleneo/internal/repository"
 	"github.com/dotcomnerd/seleneo/internal/repository/cloudflare"
+	"github.com/dotcomnerd/seleneo/internal/util"
 )
 
+// TODO: add better logs for this function
 func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	maxBytes := 6 * 1024 * 1024
+	maxBytes := 10 * 1024 * 1024
 	err := r.ParseMultipartForm(int64(maxBytes))
 	if err != nil {
 		writeJsonError(w, http.StatusBadRequest, "Unable to parse form data")
@@ -28,7 +31,7 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 	}
 
 	// this will be slow
-	// TODO: FIND A WAY TO MAKE IT FASTER
+	// TODO: FIND A WAY TO MAKE IT FASTER (one might not exist :void:)
 	file, _, err := r.FormFile("file")
 	if err != nil {
 		writeJsonError(w, http.StatusBadRequest, "file not found")
@@ -49,14 +52,41 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
+	pHash, err := util.CalculateImageHash(fileBuffer)
+	if err != nil {
+		writeJsonError(w, http.StatusInternalServerError, "error processing image")
+		return
+	}
+
+	fmt.Printf("pHash: %s\n", pHash)
+
+	dupImg, isOwner, err := app.repo.ImageHash.FindSimilarImage(ctx, pHash, userID)
+	if err != nil && err.Error() != "image found" {
+		app.jsonResponse(w, http.StatusInternalServerError, "Server error")
+		return
+	} else if err != nil && err.Error() == "image found" {
+		// TODO: Make custom error for this, also make this return this into data instead of wrapping resp in nest json
+		app.jsonResponse(w, http.StatusOK, map[string]interface{}{
+			"id":				dupImg.ID,
+			"cloudflareUrl":   	dupImg.CloudflareURL,
+			"identifier":    	identifier,
+			"message":    		"Design already exists",
+			"type":       		"DUPLICATE",
+			"isOwner":    		isOwner,
+			"status":    		http.StatusNoContent,
+		})
+		return
+	}
+
 	imageURL, err := cloudflare.UploadImageToCloudflare(fileBuffer, fileExt, userID)
 	if err != nil {
 		writeJsonError(w, http.StatusInternalServerError, "error uploading image to cloudflare")
 		return
 	}
 
-	msg, err := app.repo.UserImage.SaveOrUpdateUserImage(ctx, userID, imageURL, identifier, visibility)
+	msg, err := app.repo.UserImage.SaveOrUpdateUserImage(ctx, userID, imageURL, identifier, pHash, visibility)
 	if err != nil {
+		// TODO: go back and delete the image we just uploaded (im lazy)
 		writeJsonError(w, http.StatusInternalServerError, "error saving image")
 		return
 	}
@@ -64,6 +94,7 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 	app.jsonResponse(w, http.StatusOK, map[string]interface{}{
 		"message":    msg,
 		"type":       "NEW_SAVE",
+		"status":     http.StatusOK,
 		"visibility": visibility,
 	})
 }

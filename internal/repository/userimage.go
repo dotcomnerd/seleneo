@@ -32,7 +32,7 @@ type UserImageRepo struct {
 	db *sql.DB
 }
 
-func (ui *UserImageRepo) SaveOrUpdateUserImage(ctx context.Context, userID, imageUrl, identifier string, visibility Visibility) (string, error) {
+func (ui *UserImageRepo) SaveOrUpdateUserImage(ctx context.Context, userID, imageUrl, identifier, pHash string, visibility Visibility) (string, error) {
 	existingImage, _ := ui.FindByIdentifier(ctx, userID, identifier)
 
 	if existingImage != nil {
@@ -57,6 +57,17 @@ func (ui *UserImageRepo) SaveOrUpdateUserImage(ctx context.Context, userID, imag
 		fmt.Println("error saving image 56")
 		return "", err
 	}
+
+	_, err = ui.db.ExecContext(ctx, `
+		INSERT INTO "ImageHash" (id, "imageId", "perceptualHash")
+		VALUES ($1, $2, $3)`,
+		uuid.New().String(), id, pHash)
+
+	if err != nil {
+		fmt.Printf("Error saving perceptual hash: %v\n", err)
+		return "", err
+	}
+
 
 	return "Image saved successfully", nil
 }
