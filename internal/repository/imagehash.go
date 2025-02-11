@@ -4,8 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
-	// "time"
 )
 
 type ImageHash struct {
@@ -26,13 +24,9 @@ func (ih *ImageHashRepo) FindSimilarImage(ctx context.Context, pHash, currUserId
 	err := ih.db.QueryRowContext(ctx, `SELECT "imageId" FROM "ImageHash" WHERE "perceptualHash" = $1`, pHash).
 		Scan(&imageId)
 
-	fmt.Printf("imageId: %s\n", imageId)
-
 	if err == sql.ErrNoRows {
-		fmt.Printf("good case \n")
 		return nil, false, nil
 	} else if err != nil {
-		fmt.Printf("err1 %v\n", err)
 		return nil, false, err
 	}
 
@@ -45,14 +39,9 @@ func (ih *ImageHashRepo) FindSimilarImage(ctx context.Context, pHash, currUserId
 		WHERE id = $1`, imageId).
 		Scan(&image.ID, &ownerId, &image.CloudflareURL, &image.Identifier, &image.CreatedAt, &image.UpdatedAt, &image.Visibility)
 
-	fmt.Printf("ownerId: %s\n", ownerId)
-	fmt.Printf("image: %v\n", image)
-
 	if err == sql.ErrNoRows {
-		fmt.Printf("good case 2 \n")
 		return nil, false, nil
 	} else if err != nil {
-		fmt.Printf("err2 \n")
 		return nil, false, err
 	}
 

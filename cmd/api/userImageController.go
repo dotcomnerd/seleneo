@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -58,8 +57,6 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	fmt.Printf("pHash: %s\n", pHash)
-
 	dupImg, isOwner, err := app.repo.ImageHash.FindSimilarImage(ctx, pHash, userID)
 	if err != nil && err.Error() != "image found" {
 		app.jsonResponse(w, http.StatusInternalServerError, "Server error")
@@ -78,7 +75,7 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	imageURL, err := cloudflare.UploadImageToCloudflare(fileBuffer, fileExt, userID)
+	imageURL, err := cloudflare.UploadImageToCloudflare(ctx, fileBuffer, fileExt, userID)
 	if err != nil {
 		writeJsonError(w, http.StatusInternalServerError, "error uploading image to cloudflare")
 		return
@@ -86,7 +83,8 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 
 	msg, err := app.repo.UserImage.SaveOrUpdateUserImage(ctx, userID, imageURL, identifier, pHash, visibility)
 	if err != nil {
-		// TODO: go back and delete the image we just uploaded (im lazy)
+		cloudflare.DeleteImageFromCloudflare(imageURL)
+		app.logger.Errorf("error saving image:", err)
 		writeJsonError(w, http.StatusInternalServerError, "error saving image")
 		return
 	}
