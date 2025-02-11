@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/cloudflare/cloudflare-go/v4"
 	"github.com/cloudflare/cloudflare-go/v4/images"
@@ -13,7 +14,7 @@ import (
 	"github.com/dotcomnerd/seleneo/internal/env"
 )
 
-func UploadImageToCloudflare(fileBuffer []byte, fileType, userId string) (string, error) {
+func UploadImageToCloudflare(ctx context.Context, fileBuffer []byte, fileType, userId string) (string, error) {
 	accountID := env.GetString("CLOUDFLARE_ACCOUNT_ID", "GET_YOUR_OWN_CLOUDFLARE_ID")
 	apiToken := env.GetString("CLOUDFLARE_API_TOKEN", "GET_YOUR_OWN_CLOUDFLARE_API_KEY")
 
@@ -26,8 +27,7 @@ func UploadImageToCloudflare(fileBuffer []byte, fileType, userId string) (string
 	contentType := fmt.Sprintf("image/%s", fileType)
 	file := cloudflare.FileParam(reader, filename, contentType)
 
-	//TODO: change from background to a timeout context, based on connection (ctx in handler)
-	image, err := api.Images.V1.New(context.Background(), images.V1NewParams{
+	image, err := api.Images.V1.New(ctx, images.V1NewParams{
 		AccountID: cloudflare.F(accountID),
 		// NAHH THIS CLOUDFLARE API IS SO AWEFUL OML
 		File:      cloudflare.F[any](file),
@@ -50,7 +50,11 @@ func DeleteImageFromCloudflare(imageURL string) error {
 
 	imageId := strings.Split(imageURL, "/")[4]
 
-	_, err := api.Images.V1.Delete(context.Background(), imageId, images.V1DeleteParams{
+	// cloudflare timeout is 15 seconds anyway, but this is just a nice precausion
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := api.Images.V1.Delete(ctx, imageId, images.V1DeleteParams{
 		AccountID: cloudflare.F(accountID),
 	}) 
 
