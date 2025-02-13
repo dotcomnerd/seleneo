@@ -1,10 +1,9 @@
-import { FILE_TYPES } from "@/components/studio/export/types";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { useLastSavedTime } from "@/store/use-last-save";
 import { diff, Jimp } from 'jimp';
 import { revalidatePath } from "next/cache";
-import sharp from "sharp";
+
 
 export const runtime = "nodejs";
 
@@ -72,11 +71,14 @@ async function uploadImageToCloudflare(file: FormData, userId: string, viz: "PUB
 
     const fileType = imageFile.type.split('/')[1].toUpperCase();
 
+    /*
+    // TODO: Remove this once we have a better way to handle the file type
     if (!FILE_TYPES.includes(fileType as any)) {
         fileBuffer = await sharp(fileBuffer)
             .png()
             .toBuffer();
     }
+    */
 
     try {
         const { isSimilar, whichImage } = await checkImageSimilarity(fileBuffer, viz);
