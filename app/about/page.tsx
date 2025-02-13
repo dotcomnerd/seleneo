@@ -70,12 +70,12 @@ export default function AboutPage() {
                     </div>
                     <br />
                     <p className="text-base font-light leading-relaxed mb-8">
-                        Quick story. Last year—amidst my internship at Notion, <img src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" className="size-6 inline-block px-1 mr-1" />
+                        Quick story. Last year—amidst my internship at Notion, <img alt="slack-pic" src="https://upload.wikimedia.org/wikipedia/commons/e/e9/Notion-logo.svg" className="size-6 inline-block px-1 mr-1" />
                         One of my <Link href="https://www.linkedin.com/posts/notionhq_its-easier-than-ever-to-secure-your-account-activity-7242602102907117568-0jm7"
                             className="text-primary hover:underline" target="_blank">intern projects</Link> required heavy iterations in Figma,
                         and being a <i>developer-first</i>, I found the tool overwhelming. This soon led to my comment:
                         <br /><br />
-                        <img src="/we-need-seleneo.png" className="w-full rounded-md" />
+                        <img src="/we-need-seleneo.png" className="w-full rounded-md" alt="slack-pic" />
                         <br />
                         Since I started doing product development, I've always craved something that was easy to use. The big players feel like they all require 3 YouTube tutorials, 2 Medium articles, and a StackOverflow thread, <i>just</i> to get started.<br /> <br />For <i>the large majority</i> of my use cases, a tool that's:
                         simple, fast, and powerful—is all I desired. <br /><br />  I put the idea on the back burner, thinking it was just a pipe dream.
