@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -10,7 +11,7 @@ import (
 	"github.com/dotcomnerd/seleneo/internal/util"
 )
 
-// TODO: add better logs for this function
+// TODO: put this into a service layer PLEASE
 func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
@@ -29,9 +30,7 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	// this will be slow
-	// TODO: FIND A WAY TO MAKE IT FASTER (one might not exist :void:)
-	file, _, err := r.FormFile("file")
+	file, header, err := r.FormFile("file")
 	if err != nil {
 		writeJsonError(w, http.StatusBadRequest, "file not found")
 		return
@@ -44,22 +43,27 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	fileType := http.DetectContentType(fileBuffer)
+	fileType := header.Header.Get("Content-Type")
 	fileExt := strings.Split(fileType, "/")[1]
 	if !isValidFileType(fileExt) {
-		writeJsonError(w, http.StatusBadRequest, "invalid file type. Only PNG, JPG, WEBP, and SVG allowed")
+		writeJsonError(w, http.StatusBadRequest, "invalid file type. Only PNG and JPG allowed")
 		return
 	}
 
 	pHash, err := util.CalculateImageHash(fileBuffer)
 	if err != nil {
-		writeJsonError(w, http.StatusInternalServerError, "error processing image")
+		app.logger.Errorf("error calculating image hash:", err)
+		writeJsonError(w, http.StatusInternalServerError, "Server Error")
 		return
 	}
 
 	dupImg, isOwner, err := app.repo.ImageHash.FindSimilarImage(ctx, pHash, userID)
 	if err != nil && err.Error() != "image found" {
-		app.jsonResponse(w, http.StatusInternalServerError, "Server error")
+		app.logger.Errorf("error finding similar image:", err)
+		app.jsonResponse(w, http.StatusInternalServerError, map[string]interface{}{
+			"message": "Server Error",
+			"type":    "SERVER_ERROR",
+		})
 		return
 	} else if err != nil && err.Error() == "image found" {
 		// TODO: Make custom error for this, also make this return this into data instead of wrapping resp in nest json
@@ -67,15 +71,14 @@ func (app *application) uploadImageHandler(w http.ResponseWriter, r *http.Reques
 			"id":				dupImg.ID,
 			"cloudflareUrl":   	dupImg.CloudflareURL,
 			"identifier":    	identifier,
-			"message":    		"Design already exists",
 			"type":       		"DUPLICATE",
 			"isOwner":    		isOwner,
-			"status":    		http.StatusNoContent,
 		})
 		return
 	}
 
-	imageURL, err := cloudflare.UploadImageToCloudflare(ctx, fileBuffer, fileExt, userID)
+	filename := fmt.Sprintf("image-%s.%s", userID, fileExt)
+	imageURL, err := cloudflare.UploadImageToCloudflare(ctx, fileBuffer, fileType, filename)
 	if err != nil {
 		writeJsonError(w, http.StatusInternalServerError, "error uploading image to cloudflare")
 		return
@@ -102,14 +105,12 @@ type FileType string
 const (
 	FileTypePNG  FileType = "PNG"
 	FileTypeJPG  FileType = "JPG"
-	FileTypeWEBP FileType = "WEBP"
-	FileTypeSVG  FileType = "SVG"
 )
 
 // i like my helpers and this will be used elsewhere (i hope)
 func isValidFileType(fileType string) bool {
 	switch FileType(strings.ToUpper(fileType)) {
-	case FileTypePNG, FileTypeJPG, FileTypeWEBP, FileTypeSVG:
+	case FileTypePNG, FileTypeJPG:
 		return true
 	default:
 		return false
