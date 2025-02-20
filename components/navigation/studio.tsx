@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, Frame, GalleryVertical, Github, Info, LogOut, LucideIcon, Menu, User } from "lucide-react";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -62,12 +62,12 @@ const ListItem = React.forwardRef<React.ElementRef<"a">, ListItemProps>(
 ListItem.displayName = "ListItem";
 
 export function StudioNavbar() {
-    const { data: session, status } = useSession();
+    const { data: session, isPending: loading, error } = useSession();
     const pathname = usePathname();
     const [isOpen, setIsOpen] = React.useState(false);
 
     const handleSignOut = async () => {
-        await signOut({ redirect: true, callbackUrl: '/' });
+        await signOut()
     };
 
     const resourceItems: ResourceItem[] = [
@@ -97,82 +97,12 @@ export function StudioNavbar() {
         }
     ];
 
-    const renderAuthButton = () => {
-        if (status === 'loading') {
-            return (
-                <Button disabled variant="stylish" className="gap-2">
-                    <Spinner /><span>Loading...</span>
-                </Button>
-            );
-        }
-
-        if (status === 'authenticated' && session) {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="gap-2 p-1 px-2 -mx-2">
-                            <UserAvatar user={session.user} />
-                            <span className="ml-2">{session.user?.name}</span>
-                            <ChevronDown className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56 border-primary/20">
-                        <DropdownMenuItem asChild>
-                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2" prefetch={true}>
-                                <User className="h-4 w-4" />Account
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem asChild>
-                            <Link href="/community" className="flex items-center gap-2" prefetch={true}>
-                                <GalleryVertical className="h-4 w-4" />Community
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-primary/20" />
-                        <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 dark:text-red-400">
-                                    <LogOut className="h-4 w-4 mr-2" />Sign Out
-                                </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        You won't be able to save your changes.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                        onClick={handleSignOut}
-                                        className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
-                                    >
-                                        Sign Out
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        }
-
-        return (
-            <Button onClick={() => signIn("github", { redirectTo: "/studio" })} variant="stylish">
-                Sign In
-            </Button>
-        );
-    };
-
     return (
         <header className="flex h-14 items-center border-b px-4 shrink-0">
             <div className="flex items-center gap-4">
                 <Link href="/" className="flex items-center gap-2">
                     <img src={logo.src} className="size-8" alt="Seleneo Logo" />
                     <span className="text-xl font-semibold">Seleneo</span>
-                    {/* <span className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                        Pre-release
-                    </span> */}
                 </Link>
 
                 <NavigationMenu className="hidden md:flex">
@@ -206,7 +136,62 @@ export function StudioNavbar() {
                         "h-4 w-px bg-border": pathname.includes("/studio")
                     })} />
                     <ThemeToggle />
-                    {renderAuthButton()}
+                    {loading ? (
+                        <Button disabled variant="stylish" className="gap-2">
+                            <Spinner /><span>Loading...</span>
+                        </Button>
+                    ) : session ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" className="gap-2 p-1 px-2 -mx-2">
+                                    <UserAvatar user={session.user} />
+                                    <span className="ml-2">{session.user?.name}</span>
+                                    <ChevronDown className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-56 border-primary/20">
+                                <DropdownMenuItem asChild>
+                                    <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2" prefetch={true}>
+                                        <User className="h-4 w-4" />Account
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/community" className="flex items-center gap-2" prefetch={true}>
+                                        <GalleryVertical className="h-4 w-4" />Community
+                                    </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator className="bg-primary/20" />
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <DropdownMenuItem onSelect={(e) => e.preventDefault()} className="text-red-600 dark:text-red-400">
+                                            <LogOut className="h-4 w-4 mr-2" />Sign Out
+                                        </DropdownMenuItem>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure you want to sign out?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                You won't be able to save your changes.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                onClick={handleSignOut}
+                                                className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+                                            >
+                                                Sign Out
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <Button onClick={() => signIn.social({ provider: "github", callbackURL: "/studio" })} variant="stylish">
+                            Sign In
+                        </Button>
+                    )}
                 </div>
 
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -224,7 +209,7 @@ export function StudioNavbar() {
                             </Link>
                         </SheetHeader>
                         <div className="flex flex-col gap-4 mt-8">
-                            {status === 'authenticated' && session && (
+                            {session && (
                                 <div className="flex items-center gap-3 px-2 py-3 mb-2 rounded-lg bg-secondary/20">
                                     <UserAvatar user={session.user} className="h-10 w-10" />
                                     <div className="flex flex-col">
@@ -252,7 +237,7 @@ export function StudioNavbar() {
                                 ))}
                             </div>
 
-                            {status === 'authenticated' ? (
+                            {session ? (
                                 <AlertDialog>
                                     <AlertDialogTrigger asChild>
                                         <Button variant="destructive" className="mt-2">
@@ -279,7 +264,7 @@ export function StudioNavbar() {
                                 </AlertDialog>
                             ) : (
                                 <Button
-                                    onClick={() => signIn("github", { redirectTo: "/studio" })}
+                                    onClick={() => signIn.social({ provider: "github", callbackURL: "/studio" })}
                                     variant="stylish"
                                     className="mt-2"
                                 >
