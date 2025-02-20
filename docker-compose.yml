@@ -1,12 +1,17 @@
-version: '3'
+version: "3.8"
+
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:15
+    container_name: postgres_db
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: root
-      POSTGRES_PASSWORD: postgres123
-      POSTGRES_DB: seleneo_db
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
