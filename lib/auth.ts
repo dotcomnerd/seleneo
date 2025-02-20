@@ -1,40 +1,32 @@
-import { prisma } from "@/lib/prisma"
-import { PrismaAdapter } from "@auth/prisma-adapter"
-import NextAuth from "next-auth"
-import GitHub from "next-auth/providers/github"
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import { prisma } from './prisma';
 
-export const { handlers, signIn, signOut, auth } = NextAuth({
-    providers: [GitHub({
-        profile(profile) {
-            return {
-                id: profile.id.toString(),
-                name: profile.login,
-                email: profile.email,
-                image: profile.avatar_url
-            }
-        }
-    })],
-    adapter: PrismaAdapter(prisma),
-    callbacks: {
-        async session({ session, user }) {
-            session.user.id = user.id
-            return session
-        },
-        async signIn({ user, profile }) {
-            if (profile && 'login' in profile) {
-                const dbUser = await prisma.user.findUnique({
-                    where: { id: user.id },
-                    select: { name: true }
-                })
-
-                if (dbUser?.name?.includes(' ')) {
-                    await prisma.user.update({
-                        where: { id: user.id },
-                        data: { name: profile.login as string }
-                    })
+export const auth = betterAuth({
+    socialProviders: {
+        github: {
+            clientId: process.env.AUTH_GITHUB_ID!,
+            clientSecret: process.env.AUTH_GITHUB_SECRET!,
+            mapProfileToUser: (profile) => {
+                return {
+                    id: profile.id.toString(),
+                    name: profile.login,
+                    email: profile.email,
+                    image: profile.avatar_url,
                 }
-            }
-            return true
-        },
+            },
+        }
     },
-})
+    accounts: {
+        fields: {
+            accountId: "providerAccountId",
+            refreshToken: "refresh_token",
+            accessToken: "access_token",
+            accessTokenExpiresAt: "access_token_expires",
+            idToken: "id_token",
+        }
+    },
+    database: prismaAdapter(prisma, {
+        provider: "postgresql",
+    }),
+});
