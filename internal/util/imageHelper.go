@@ -9,8 +9,8 @@ import (
 	"github.com/corona10/goimagehash"
 )
 
-func CalculateImageHash(fileBuffer []byte) (string, error) {
-	img, _, err := image.Decode(bytes.NewReader(fileBuffer))
+func CalculateImageHash(file []byte) (string, error) {
+	img, _, err := image.Decode(bytes.NewReader(file))
 	if err != nil {
 		return "", err
 	}

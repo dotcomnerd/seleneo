@@ -14,7 +14,7 @@ import (
 	"github.com/dotcomnerd/seleneo/internal/env"
 )
 
-func UploadImageToCloudflare(ctx context.Context, fileBuffer []byte, fileType, userId string) (string, error) {
+func UploadImageToCloudflare(ctx context.Context, fileBuffer []byte, fileType, filename string) (string, error) {
 	accountID := env.GetString("CLOUDFLARE_ACCOUNT_ID", "GET_YOUR_OWN_CLOUDFLARE_ID")
 	apiToken := env.GetString("CLOUDFLARE_API_TOKEN", "GET_YOUR_OWN_CLOUDFLARE_API_KEY")
 
@@ -23,13 +23,10 @@ func UploadImageToCloudflare(ctx context.Context, fileBuffer []byte, fileType, u
 	)
 
 	reader := bytes.NewReader(fileBuffer)
-	filename := fmt.Sprintf("image-%s.%s", userId, fileType)
-	contentType := fmt.Sprintf("image/%s", fileType)
-	file := cloudflare.FileParam(reader, filename, contentType)
+	file := cloudflare.FileParam(reader, filename, fileType)
 
 	image, err := api.Images.V1.New(ctx, images.V1NewParams{
 		AccountID: cloudflare.F(accountID),
-		// NAHH THIS CLOUDFLARE API IS SO AWEFUL OML
 		File:      cloudflare.F[any](file),
 	})
 

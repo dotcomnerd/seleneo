@@ -35,8 +35,6 @@ export interface DuplicateResponse {
     id: string;
     identifier: string;
     isOwner: boolean;
-    status: number;
-    message: string;
 }
 
 export interface NewSaveResponse {
@@ -127,13 +125,13 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         setIsSaving(true);
 
         try {
-            const snapshot = await createSnapshot(fileType, quality, scaleFactor);
+            const snapshot = await createSnapshot("PNG", quality, scaleFactor);
             if (!snapshot) return;
 
             const formData: FormData = new FormData();
 
-            //i dont like this but im on a time crunch
-            const snapshotBlob: Blob = typeof snapshot === 'string' ? new Blob([snapshot], { type: 'image/webp' }) : snapshot;
+            //i STILL dont like this
+            const snapshotBlob: Blob = typeof snapshot === 'string' ? new Blob([snapshot], { type: 'image/png' }) : snapshot;
 
             // TODO: Make this global state so that if the image is uploaded successfully, it is added 2 the list of identifiers
             const identifier = crypto.randomUUID();
