@@ -12,14 +12,14 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { signOut } from '@/lib/auth-client';
 import { Trash2 } from "lucide-react";
-import { signOut } from 'next-auth/react';
 import { useState } from 'react';
 import { toast } from "sonner";
-
+import { useRouter } from "next/navigation";
 export function DeleteAccount({ userId }: { userId: string }) {
     const [isDeleting, setIsDeleting] = useState(false);
-
+    const router = useRouter()
     const handleDeleteAccount = async () => {
         setIsDeleting(true);
         try {
@@ -31,7 +31,9 @@ export function DeleteAccount({ userId }: { userId: string }) {
                 toast.error('Failed to delete account');
             }
 
-            await signOut({ redirectTo: '/' });
+            await signOut()
+
+            router.push('/')
         } catch (error) {
             console.error('Error deleting account:', error);
             toast.error('Failed to delete account');

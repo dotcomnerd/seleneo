@@ -1,5 +1,6 @@
-import { auth, signOut } from "@/lib/auth";
+import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { headers } from 'next/headers';
 
 async function deleteImageFromCloudflare(imageId: string): Promise<void> {
     const response = await fetch(
@@ -19,7 +20,9 @@ async function deleteImageFromCloudflare(imageId: string): Promise<void> {
 
 export async function DELETE(request: Request) {
     try {
-        const userData = await auth();
+        const userData = await auth.api.getSession({
+            headers: headers()
+        });
         const { searchParams } = new URL(request.url);
         const userId = searchParams.get("id");
 
@@ -45,7 +48,7 @@ export async function DELETE(request: Request) {
 
         await Promise.all(deleteImagePromises);
 
-        await signOut({ redirect: false });
+        await auth.api.signOut({ headers: headers() })
 
         await prisma.user.delete({ where: { id: userId } });
 
