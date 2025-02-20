@@ -13,10 +13,9 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@auth/prisma-adapter": "^2.7.4",
     "@fseehawer/react-circular-slider": "^2.7.0",
     "@hookform/resolvers": "^3.9.1",
-    "@prisma/client": "latest",
+    "@prisma/client": "6.2.1",
     "@radix-ui/react-accordion": "^1.2.2",
     "@radix-ui/react-alert-dialog": "^1.1.4",
     "@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -87,7 +86,6 @@
     "lucide-react": "^0.469.0",
     "match-sorter": "^6.3.4",
     "next": "14.2.16",
-    "next-auth": "beta",
     "next-themes": "^0.4.4",
     "pngjs": "^7.0.0",
     "postcss": "8.4.28",
@@ -131,6 +129,6 @@
     "lint-staged": "^15.2.7",
     "prettier": "3.0.3",
     "prettier-plugin-tailwindcss": "^0.5.14",
-    "prisma": "latest"
+    "prisma": "^6.2.1"
   }
 }
