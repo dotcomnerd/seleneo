@@ -1,4 +1,4 @@
-import { signIn } from "@/lib/auth"
+import { signIn } from "@/lib/auth-client"
 import { Button } from "../ui/button"
 
 export function SignIn() {
@@ -6,7 +6,7 @@ export function SignIn() {
         <form
             action={async () => {
                 "use server"
-                await signIn("github")
+                await signIn.social({ provider: "github" })
             }}
         >
             <Button type="submit">Sign In</Button>

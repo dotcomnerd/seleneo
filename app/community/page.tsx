@@ -2,7 +2,9 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { Metadata } from "next";
 import { ImageGallery } from "./image-gallery";
-
+import { headers } from 'next/headers';
+import { Button } from '@/components/ui/button';
+import Link from "next/link";
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
@@ -84,17 +86,33 @@ async function getAllPublicImages() {
 
 export default async function CommunityPage() {
     const images = await getAllPublicImages();
-    const currentUser = await auth();
+    const currentUser = await auth.api.getSession({
+        headers: headers()
+    });
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-[100vw] p-4">
-                <ImageGallery
-                    images={images}
-                    currentUserId={currentUser?.user?.name || ""}
-                    title="Community Gallery"
-                    description={`Explore the images shared by our community.`}
-                />
+            <div className="h-[calc(100vh-4rem)] w-full p-4">
+                {images.length > 0 ? (
+                    <ImageGallery
+                        images={images}
+                        currentUserId={currentUser?.user?.name || ""}
+                        title="Community Gallery"
+                        description={`Explore the images shared by our community.`}
+                    />
+                ) : (
+                    <div className="h-full w-full relative bg-gradient-to-br from-primary/25 to-background rounded-lg p-4 sm:p-8 lg:p-12 flex flex-col items-center justify-center border shadow-lg border-primary/20">
+                        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4 text-center bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
+                            Community Gallery
+                        </h1>
+                        <p className="text-muted-foreground text-center max-w-lg mb-8 px-4 text-sm sm:text-base">
+                            Be the first to share your creations with the community! Head over to the Studio to get started.
+                        </p>
+                        <Button variant="stylish" size="lg" asChild>
+                            <Link href="/studio">Go to Studio</Link>
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     );

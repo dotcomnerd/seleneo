@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { useImageOptions } from '@/store/use-image-options'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
+import { Auth, type Session } from 'better-auth'
 import { saveAs } from 'file-saver'
 import { Copy, Download, Eye, EyeOff, Save } from 'lucide-react'
 import { useState } from 'react'
@@ -24,7 +25,7 @@ import { toast } from 'sonner'
 interface ExportActionsProps {
     quality: number
     fileType: FileType
-    sessionStatus: "authenticated" | "loading" | "unauthenticated"
+    sessionStatus: any
 }
 
 type SuccessResponse = DuplicateResponse | NewSaveResponse;
@@ -201,8 +202,8 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                         variant="ghost"
                         size="icon"
                         onClick={handleCloudSave}
-                        disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
-                        title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
+                        disabled={isCopying || isDownloading || isSaving || !sessionStatus}
+                        title={sessionStatus ? 'Login to save your design!' : 'Save your design to the cloud'}
                         className="hover:bg-background"
                     >
                         {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}

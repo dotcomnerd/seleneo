@@ -1,9 +1,12 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { headers } from 'next/dist/client/components/headers';
 
-export async function GET(request : Request) { 
+export async function GET(request : Request) {
     try{
-        const userData = await auth();
+        const userData = await auth.api.getSession({
+            headers: headers()
+        });
         const userId = userData?.user?.id;
 
         if(!userData?.user || !userId){
@@ -14,7 +17,7 @@ export async function GET(request : Request) {
             where: { userId },
             orderBy: { updatedAt: "desc" },
         })
-        
+
         if (!lastSavedImage) {
             return new Response(null, { status: 200 });
         }

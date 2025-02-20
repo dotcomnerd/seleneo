@@ -1,13 +1,14 @@
 "use client";
 
-import * as React from "react";
+import { authClient, signIn, useSession } from "@/lib/auth-client";
+import { ChevronDown, GalleryVertical, LogOut, Menu, UserIcon } from 'lucide-react';
 import Link from "next/link";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { ChevronDown, Frame, LogOut, Menu, User } from 'lucide-react';
+import * as React from "react";
+import { type User } from 'better-auth';
+import { useRouter } from 'next/navigation';
 
-import { cn } from "@/lib/utils";
-import Spinner from '@/components/spinner/spinner';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { cn } from "@/lib/utils";
 import logo from "@/public/logo.svg";
 import icon from "@/public/logo.webp";
 
@@ -15,9 +16,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-import { type User as NextAuthUser } from "next-auth";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const productItems = [
     {
@@ -74,7 +74,7 @@ const ListItem = React.forwardRef<
 ListItem.displayName = "ListItem";
 
 export const UserAvatar = ({ user, className = "h-8 w-8" }: {
-    user: NextAuthUser | undefined,
+    user: User | undefined,
     className?: string
 }) => (
     <Avatar className={className}>
@@ -109,62 +109,30 @@ const SignOutDialog = ({ onSignOut }: { onSignOut: () => Promise<void> }
 );
 
 export function Navbar() {
-    const { data: session, status } = useSession();
+    const { data: session, isPending: loading, error } = useSession();
+    const router = useRouter();
     const [isOpen, setIsOpen] = React.useState(false);
 
-    const handleSignOut = async () => {
-        await signOut({ redirect: true, callbackUrl: '/' });
-    };
-
-    const platformItems = [
+    const platformItems = React.useMemo(() => session ? [
         { title: "About", href: "/about", description: "Learn more about our mission and team." },
         { title: "Community", href: "/community", description: "Join our growing community of developers." },
         { title: "Studio", href: "/studio", description: "Access your development workspace." },
-        ...(status === 'authenticated' ? [
-            {
-                title: "Profile",
-                href: `/${session?.user?.name}/profile`,
-                description: "Manage your account settings and preferences."
+        {
+            title: "Profile",
+            href: `/${session?.user?.name}/profile`,
+            description: "Manage your account settings and preferences."
+        }
+    ] : [], [session]);
+
+    const handleSignOut = React.useCallback(async () => {
+        await authClient.signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    router.push('/')
+                }
             }
-        ] : [])
-    ];
-
-    const renderAuthButton = () => {
-        if (status === 'loading') {
-            return (
-                <Button disabled variant="stylish" className="gap-2">
-                    <Spinner /><span>Loading...</span>
-                </Button>
-            );
-        }
-
-        if (status === 'authenticated' && session) {
-            return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="gap-2 p-1">
-                            <UserAvatar user={session.user} />
-                            <span className="ml-2">{session.user?.name}</span>
-                            <ChevronDown className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem asChild>
-                            <Link href={`/${session?.user?.name}/profile`} className="flex items-center gap-2">
-                                <User className="h-4 w-4" />Account
-                            </Link>
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <SignOutDialog onSignOut={handleSignOut} />
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            );
-        }
-
-        return (
-            <Button onClick={() => signIn("github")} variant="stylish">Sign In</Button>
-        );
-    };
+        })
+    }, [router]);
 
     return (
         <nav className="fixed top-0 left-0 right-0 bg-white/5 dark:bg-transparent backdrop-blur-md z-50 border-b-[1px] border-primary/20 w-screen">
@@ -236,7 +204,35 @@ export function Navbar() {
 
                     <div className="hidden md:flex items-center gap-4">
                         <ThemeToggle />
-                        {renderAuthButton()}
+                        {error ? (
+                            <Button variant="stylish" onClick={() => signIn.social({ provider: "github" })}>Sign In</Button>
+                        ) : !session ? (
+                            <Button variant="stylish" onClick={() => signIn.social({ provider: "github" })}>Sign In</Button>
+                        ) : (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="gap-2 p-1">
+                                        <UserAvatar user={session.user} />
+                                        <span className="ml-2">{session.user?.name}</span>
+                                        <ChevronDown className="h-4 w-4" />
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-56 border-primary/20">
+                                    <DropdownMenuItem asChild>
+                                        <Link href={`/${session.user?.name}/profile`} className="flex items-center gap-2">
+                                            <UserIcon className="h-4 w-4" />Account
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem asChild>
+                                        <Link href="/community" className="flex items-center gap-2" prefetch={true}>
+                                            <GalleryVertical className="h-4 w-4" />Community
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator className="bg-primary/20" />
+                                    <SignOutDialog onSignOut={handleSignOut} />
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        )}
                     </div>
 
                     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -250,7 +246,7 @@ export function Navbar() {
                                 <SheetTitle>Menu</SheetTitle>
                             </SheetHeader>
                             <div className="flex flex-col gap-4 mt-8">
-                                {status === 'authenticated' && session && (
+                                {session && (
                                     <div className="flex items-center gap-3 px-2 py-3 mb-2 rounded-lg bg-secondary/20">
                                         <UserAvatar user={session.user} className="h-10 w-10" />
                                         <div className="flex flex-col">
@@ -290,7 +286,7 @@ export function Navbar() {
                                     ))}
                                 </div>
 
-                                {status === 'authenticated' ? (
+                                {session ? (
                                     <AlertDialog>
                                         <AlertDialogTrigger asChild>
                                             <Button variant="destructive" className="mt-2">
@@ -317,7 +313,7 @@ export function Navbar() {
                                     </AlertDialog>
                                 ) : (
                                     <Button
-                                        onClick={() => signIn("github")}
+                                        onClick={() => signIn.social({ provider: "github", callbackURL: "/" })}
                                         variant="stylish"
                                         className="mt-2"
                                     >

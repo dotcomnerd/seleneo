@@ -1,7 +1,6 @@
 'use client'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider } from 'next-themes'
 import { Provider } from 'react-wrap-balancer'
 import { Toaster } from 'sonner'
@@ -22,13 +21,10 @@ export function Providers({ children }: ProviderProps) {
     })
 
     return (
-
         <QueryClientProvider client={queryClient}>
-            <SessionProvider>
-                <ThemeProvider attribute="class" defaultTheme='dark'>
+            <ThemeProvider attribute="class" defaultTheme='dark'>
                     <Provider>{children}</Provider>
                 </ThemeProvider>
-            </SessionProvider>
             <Toaster richColors closeButton visibleToasts={1} pauseWhenPageIsHidden />
         </QueryClientProvider>
 

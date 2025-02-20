@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { useLastSavedTime } from "@/store/use-last-save";
 import { diff, Jimp } from 'jimp';
 import { revalidatePath } from "next/cache";
+import { headers } from 'next/headers';
 
 
 export const runtime = "nodejs";
@@ -157,7 +158,9 @@ async function saveOrUpdateUserImage(userId: string, imageUrl: string, identifie
 
 export async function POST(request: Request) {
     try {
-        const userData = await auth();
+        const userData = await auth.api.getSession({
+            headers: headers()
+        });
         const userId = userData?.user?.id;
 
         if (!userData?.user || !userId) {
