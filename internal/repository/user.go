@@ -67,6 +67,11 @@ func (u *UserRepo) DeleteUser(ctx context.Context, id string) error {
 			cloudflareURLs = append(cloudflareURLs, imageURL)
 		}
 
+		_, err = tx.ExecContext(ctx, `DELETE FROM "ImageHash" WHERE "imageId" IN (SELECT "id" FROM "UserImage" WHERE "userId" = $1)`, id)
+		if err != nil {
+			return err
+		}
+
 		for _, imageURL := range cloudflareURLs {
 			if err := cloudflare.DeleteImageFromCloudflare(imageURL); err != nil {
 				return err

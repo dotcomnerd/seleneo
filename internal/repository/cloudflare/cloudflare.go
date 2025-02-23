@@ -46,6 +46,7 @@ func DeleteImageFromCloudflare(imageURL string) error {
 	)
 
 	imageId := strings.Split(imageURL, "/")[4]
+	fmt.Printf("Image ID: %s\n", imageId)
 
 	// cloudflare timeout is 15 seconds anyway, but this is just a nice precausion
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
@@ -54,8 +55,11 @@ func DeleteImageFromCloudflare(imageURL string) error {
 	_, err := api.Images.V1.Delete(ctx, imageId, images.V1DeleteParams{
 		AccountID: cloudflare.F(accountID),
 	}) 
-
 	if err != nil {
+		if strings.Contains(err.Error(), "404 Not Found") {
+			fmt.Println("Image not found on Cloudflare, skipping deletion")
+			return nil
+		}
 		return fmt.Errorf("failed to delete image: %w", err)
 	}
 
