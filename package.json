@@ -85,7 +85,7 @@
     "just-throttle": "^4.2.0",
     "lucide-react": "^0.469.0",
     "match-sorter": "^6.3.4",
-    "next": "14.2.16",
+    "next": "14.2.25",
     "next-auth": "beta",
     "next-themes": "^0.4.4",
     "pngjs": "^7.0.0",
