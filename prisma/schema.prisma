@@ -1,3 +1,4 @@
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,42 +9,56 @@ datasource db {
 }
 
 model Account {
-  id                String  @id @default(cuid())
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? @db.Text
-  access_token      String? @db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? @db.Text
-  session_state     String?
+  id                   String    @id @default(cuid())
+  userId               String
+  provider             String?
+  accountId            String    @map("providerAccountId")
+  refreshToken         String?   @map("refresh_token") @db.Text
+  accessToken          String?   @map("access_token") @db.Text
+  accessTokenExpiresAt DateTime? @map("access_token_expires")
+  scope                String?
+  idToken              String?   @map("id_token") @db.Text
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([provider, providerAccountId])
+  providerId            String
+  refreshTokenExpiresAt DateTime?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@unique([provider, accountId])
+  @@map("account")
 }
 
 model Session {
-  id           String   @id @default(cuid())
-  sessionToken String   @unique
-  userId       String
-  expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  token     String   @unique @map("sessionToken")
+  userId    String
+  expiresAt DateTime @map("expires")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+
+  @@map("session")
 }
 
 model User {
   id            String    @id @default(cuid())
   name          String?
   email         String?   @unique
-  emailVerified DateTime?
+  emailVerified Boolean   @default(false)
   image         String?
   accounts      Account[]
   sessions      Session[]
 
   UserImage UserImage[]
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@map("user")
 }
 
 model VerificationToken {
@@ -60,12 +75,23 @@ enum Visibility {
 }
 
 model UserImage {
-  id              String      @id @default(cuid())
-  identifier      String      @unique @default("")
-  userId          String
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @default(now())
-  cloudflareUrl   String
-  visibility      Visibility
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id            String     @id @default(cuid())
+  identifier    String     @unique @default("")
+  userId        String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @default(now())
+  cloudflareUrl String
+  visibility    Visibility
+  user          User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
 }

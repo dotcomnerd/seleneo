@@ -17,6 +17,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { DeleteAccount } from "./delete-account";
 import { ImageModal } from "./image-modal";
+import { headers } from 'next/headers';
 
 export const dynamic = 'force-dynamic'
 
@@ -118,7 +119,9 @@ export async function generateMetadata(
 }
 
 export default async function ProfilePage({ params }: { params: { username: string } }) {
-    const currentUser = await auth();
+    const currentUser = await auth.api.getSession({
+        headers: headers()
+    });
     const profile = await getUser(params.username, currentUser?.user?.name === params.username);
     const isOwnProfile = currentUser?.user && profile && currentUser.user?.id === profile.id;
 

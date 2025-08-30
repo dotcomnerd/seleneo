@@ -3,10 +3,13 @@
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { headers } from 'next/headers';
 
 export async function deleteUserImage(id: string): Promise<Response> {
     try {
-        const userData = await auth();
+        const userData = await auth.api.getSession({
+            headers: headers()
+        });
         const name = userData?.user?.name || "";
         const userId = userData?.user?.id;
         if (!userData?.user || !userId) return new Response("Not logged in", { status: 401 });
