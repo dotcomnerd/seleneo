@@ -14,7 +14,7 @@ const footerLinks = [
         ]
     },
     {
-        title: 'Product',
+        title: 'About & Links',
         links: [
             { label: 'About', href: '/about' },
             { label: 'Contact', href: 'mailto:titandq@gmail.com' },
