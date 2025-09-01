@@ -18,7 +18,7 @@ export default function ContextMenuText({
   children: React.ReactNode
 }) {
   const { setTexts, texts } = useImageOptions()
-  const { selectedText } = useSelectedLayers()
+  const { selectedText, setSelectedText } = useSelectedLayers()
   const { showTextControls, setShowTextControls } = useMoveable()
 
   const handleTextDelete = () => {
@@ -26,18 +26,11 @@ export default function ContextMenuText({
       setTexts([])
       return
     }
-    selectedText &&
-    setTexts(
-      texts.map((text, index) =>
-        index === selectedText - 1
-          ? {
-              ...text,
-              content: '',
-              text: '',
-            }
-          : text
-      )
-    )
+    
+    if (selectedText) {
+      setTexts(texts.filter((_, index) => index !== selectedText - 1))
+      setSelectedText(null)
+    }
   }
 
   const bringToFrontOrBack = (direction: 'front' | 'back') => {
@@ -65,6 +58,13 @@ export default function ContextMenuText({
     if (showTextControls && selectedText) {
       handleTextDelete()
       setShowTextControls(false)
+    }
+  })
+
+  useHotkeys('backspace', () => {
+    if (selectedText) {
+      handleTextDelete()
+      setSelectedText(null)
     }
   })
 

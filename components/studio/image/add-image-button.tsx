@@ -61,6 +61,7 @@ export default function AddImageButton({ }: AddImageButtonProps) {
                     setResolution(newResolution.toString())
                 }
             }
+            setSelectedImage(images.length)
         }
     }
 
