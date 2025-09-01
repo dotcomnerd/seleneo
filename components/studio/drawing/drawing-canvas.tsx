@@ -17,6 +17,8 @@ export default function DrawingCanvas() {
         currentOpacity,
         isDrawing,
         setIsDrawing,
+        dragOffset,
+        selectedStrokeId,
     } = useDrawingTools()
 
     const [width, height]: number[] = React.useMemo(
@@ -48,9 +50,10 @@ export default function DrawingCanvas() {
             } else {
                 ctx.globalCompositeOperation = 'source-over'
             }
-
-            // smoothing with perfect-freehand
-            const points = path.points.map((p) => [p.x, p.y, p.pressure ?? 0.5])
+            
+            const dx = dragOffset && selectedStrokeId === path.id ? dragOffset.dx : 0
+            const dy = dragOffset && selectedStrokeId === path.id ? dragOffset.dy : 0
+            const points = path.points.map((p) => [p.x + dx, p.y + dy, p.pressure ?? 0.5])
             const stroke = getStroke(points, {
                 size: path.strokeWidth,
                 thinning: 0.6,
@@ -68,7 +71,7 @@ export default function DrawingCanvas() {
             }
             ctx.restore()
         })
-    }, [drawings, width, height])
+    }, [drawings, width, height, dragOffset, selectedStrokeId])
 
     const getRelativePoint = (e: React.PointerEvent<HTMLCanvasElement>) => {
         const rect = e.currentTarget.getBoundingClientRect()

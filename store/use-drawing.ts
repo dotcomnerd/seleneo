@@ -24,6 +24,12 @@ export const DrawingPathSchema = z.object({
 })
 export type DrawingPath = z.infer<typeof DrawingPathSchema>
 
+export const DragOffsetSchema = z.object({
+    dx: z.number(),
+    dy: z.number(),
+})
+export type DragOffset = z.infer<typeof DragOffsetSchema>
+
 interface DrawingToolsState {
     currentTool: DrawingTool
     currentColor: string
@@ -31,6 +37,7 @@ interface DrawingToolsState {
     currentOpacity: number
     isDrawing: boolean
     selectedStrokeId: string | null
+    dragOffset: DragOffset | null
 
     setCurrentTool: (tool: DrawingTool) => void
     setCurrentColor: (color: string) => void
@@ -38,6 +45,7 @@ interface DrawingToolsState {
     setCurrentOpacity: (opacity: number) => void
     setIsDrawing: (isDrawing: boolean) => void
     setSelectedStrokeId: (id: string | null) => void
+    setDragOffset: (offset: DragOffset | null) => void
 }
 
 export const useDrawingTools = create<DrawingToolsState>()((set) => ({
@@ -47,6 +55,7 @@ export const useDrawingTools = create<DrawingToolsState>()((set) => ({
     currentOpacity: 1,
     isDrawing: false,
     selectedStrokeId: null,
+    dragOffset: null,
 
     setCurrentTool: (currentTool) => set({ currentTool }),
     setCurrentColor: (currentColor) => set({ currentColor }),
@@ -54,4 +63,5 @@ export const useDrawingTools = create<DrawingToolsState>()((set) => ({
     setCurrentOpacity: (currentOpacity) => set({ currentOpacity }),
     setIsDrawing: (isDrawing) => set({ isDrawing }),
     setSelectedStrokeId: (selectedStrokeId) => set({ selectedStrokeId }),
+    setDragOffset: (dragOffset) => set({ dragOffset }),
 }))
