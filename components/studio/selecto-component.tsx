@@ -1,6 +1,5 @@
 "use client";
 
-import { useDrawingTools } from '@/store/use-drawing';
 import { useSelectedLayers } from '@/store/use-image-options';
 import { useMoveable } from '@/store/use-moveable';
 import dynamic from 'next/dynamic';
@@ -13,7 +12,6 @@ const Selecto = dynamic(
 )
 
 export default function SelectoComponent() {
-  const { currentTool } = useDrawingTools()
   const {
     setShowControls,
     showControls,
@@ -22,7 +20,7 @@ export default function SelectoComponent() {
   } = useMoveable()
   const { setSelectedImage } = useSelectedLayers()
 
-  if (showControls || currentTool !== 'select') return
+  if (showControls) return
   return (
     <Selecto
       dragContainer={'.canvas-container'}
@@ -32,6 +30,13 @@ export default function SelectoComponent() {
       toggleContinueSelect={['shift']}
       ratio={0}
       hitRate={0}
+      onDragStart={(e) => {
+        const native = (e as unknown as { inputEvent?: Event }).inputEvent as Event | undefined
+        const el = (native?.target ?? null) as Element | null
+        if (el && el.closest && el.closest('.stroke-box')) {
+          e.stop()
+        }
+      }}
       onSelectStart={() => {
         setIsSelecting(true)
       }}

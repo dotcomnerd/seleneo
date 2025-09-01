@@ -9,7 +9,7 @@ import DrawingContextMenu from './drawing-context-menu';
 
 export default function DrawingMoveable() {
     const { drawings = [], setDrawings } = useImageOptions()
-    const { currentTool, selectedStrokeId, setSelectedStrokeId } = useDrawingTools()
+    const { currentTool, selectedStrokeId, setSelectedStrokeId, setDragOffset } = useDrawingTools()
 
     const boxes = React.useMemo(() => (
         drawings.map((d) => {
@@ -48,8 +48,12 @@ export default function DrawingMoveable() {
                 <DrawingContextMenu key={b.id} id={b.id}>
                     <div
                         id={`stroke-box-${b.id}`}
-                        className="absolute border border-transparent hover:border-primary/50"
+                        className="absolute border border-transparent hover:border-primary/50 stroke-box"
                         style={{ left: b.left, top: b.top, width: b.width, height: b.height, pointerEvents: 'auto' }}
+                        onMouseDown={(e) => {
+                            e.stopPropagation()
+                            setSelectedStrokeId(b.id)
+                        }}
                         onClick={(e) => {
                             e.stopPropagation()
                             setSelectedStrokeId(b.id)
@@ -65,14 +69,16 @@ export default function DrawingMoveable() {
                     hideDefaultLines
                     throttleDrag={0}
                     origin={false}
+                    onDragStart={() => {
+                        setDragOffset({ dx: 0, dy: 0 })
+                    }}
                     onDrag={(e) => {
-                        const { target, beforeTranslate } = e
-                        if (!target) return
-                        target.style.transform = `translate(${beforeTranslate[0]}px, ${beforeTranslate[1]}px)`
+                        const { beforeTranslate } = e
+                        setDragOffset({ dx: beforeTranslate[0], dy: beforeTranslate[1] })
                     }}
                     onDragEnd={(e) => {
-                        const { target, lastEvent } = e
-                        if (!target || !lastEvent || !selectedStrokeId) return
+                        const { lastEvent } = e
+                        if (!lastEvent || !selectedStrokeId) { setDragOffset(null); return }
                         const dx = lastEvent.beforeTranslate[0]
                         const dy = lastEvent.beforeTranslate[1]
                         const updated = drawings.map((d) => {
@@ -82,8 +88,7 @@ export default function DrawingMoveable() {
                                 points: d.points.map((p) => ({ x: p.x + dx, y: p.y + dy, pressure: p.pressure })),
                             }
                         })
-                        // reset transform after committing points
-                        target.style.transform = ''
+                        setDragOffset(null)
                         setDrawings?.(updated)
                     }}
                 />
