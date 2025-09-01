@@ -269,12 +269,12 @@ const ImageUpload = () => {
 export default ImageUpload
 
 function LoadAImage() {
-    const { images, setImages, defaultStyle, setInitialImageUploaded } =
+    const { images, setImages, setTexts, defaultStyle, setInitialImageUploaded } =
         useImageOptions()
     const { setSelectedImage } = useSelectedLayers()
     const { imagesCheck, setImagesCheck } = useColorExtractor()
     const { setResolution, automaticResolution } = useResizeCanvas()
-    const { setBackground } = useBackgroundOptions()
+    const { setBackground, setImageBackground, setBackgroundType, setSolidColor, setAttribution, setHighResBackground, setIsBackgroundClicked, setNoise, setGradientAngle } = useBackgroundOptions()
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const handleImageLoad = useCallback(
@@ -282,37 +282,41 @@ function LoadAImage() {
             const file = event.target.files?.[0]
 
             if (file) {
-                const imageUrl = URL.createObjectURL(file)
+                try {        
+                    const imageUrl = URL.createObjectURL(file)
 
-                setInitialImageUploaded(true)
+                    setInitialImageUploaded(true)
 
-                setImagesCheck([...imagesCheck, imageUrl])
-                setImages([
-                    ...images,
-                    { image: imageUrl, id: images.length + 1, style: defaultStyle },
-                ])
-                setSelectedImage(images.length + 1)
+                    setImagesCheck([...imagesCheck, imageUrl])
+                    setImages([
+                        ...images,
+                        { image: imageUrl, id: images.length + 1, style: defaultStyle },
+                    ])
+                    setSelectedImage(images.length + 1)
 
-                if (localStorage.getItem('image-init-pro-tip') === null) {
-                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                    localStorage.setItem('image-init-pro-tip', 'true')
-                }
-
-                if (images.length > 0) return
-                if (automaticResolution) {
-                    const padding = 200
-                    const img = new Image()
-                    img.src = imageUrl
-
-                    img.onload = () => {
-                        const { naturalWidth, naturalHeight } = img
-                        const newResolution = calculateEqualCanvasSize(
-                            naturalWidth,
-                            naturalHeight,
-                            padding
-                        )
-                        setResolution(newResolution.toString())
+                    if (localStorage.getItem('image-init-pro-tip') === null) {
+                        toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                        localStorage.setItem('image-init-pro-tip', 'true')
                     }
+
+                    if (images.length > 0) return
+                    if (automaticResolution) {
+                        const padding = 200
+                        const img = new Image()
+                        img.src = imageUrl
+
+                        img.onload = () => {
+                            const { naturalWidth, naturalHeight } = img
+                            const newResolution = calculateEqualCanvasSize(
+                                naturalWidth,
+                                naturalHeight,
+                                padding
+                            )
+                            setResolution(newResolution.toString())
+                        }
+                    }
+                } catch (error) {
+                    toast.error(error as string, { position: "top-left" });
                 }
             }
         },
@@ -333,38 +337,43 @@ function LoadAImage() {
         (file: File | undefined) => {
             // const file = event.target.files?.[0]
             if (file) {
-                const imageUrl = URL.createObjectURL(file)
-                setInitialImageUploaded(true)
-
-                setImagesCheck([...imagesCheck, imageUrl])
-                setImages([
-                    ...images,
-                    { image: imageUrl, id: images.length + 1, style: defaultStyle },
-                ])
-                setSelectedImage(images.length + 1)
-
-                if (localStorage.getItem('image-init-pro-tip') === null) {
-                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                    localStorage.setItem('image-init-pro-tip', 'true')
-                }
-
-                if (images.length > 0) return
-                if (automaticResolution) {
-                    const padding = 250
-                    const img = new Image()
-                    img.src = imageUrl
-
-                    img.onload = () => {
-                        const { naturalWidth, naturalHeight } = img
-                        const newResolution = calculateEqualCanvasSize(
-                            naturalWidth,
-                            naturalHeight,
-                            padding
-                        )
-                        setResolution(newResolution.toString())
+                try {
+                    const imageUrl = URL.createObjectURL(file)
+                    setInitialImageUploaded(true)
+    
+                    setImagesCheck([...imagesCheck, imageUrl])
+                    setImages([
+                        ...images,
+                        { image: imageUrl, id: images.length + 1, style: defaultStyle },
+                    ])
+                    setSelectedImage(images.length + 1)
+    
+                    if (localStorage.getItem('image-init-pro-tip') === null) {
+                        toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                        localStorage.setItem('image-init-pro-tip', 'true')
                     }
+    
+                    if (images.length > 0) return
+                    if (automaticResolution) {
+                        const padding = 250
+                        const img = new Image()
+                        img.src = imageUrl
+    
+                        img.onload = () => {
+                            const { naturalWidth, naturalHeight } = img
+                            const newResolution = calculateEqualCanvasSize(
+                                naturalWidth,
+                                naturalHeight,
+                                padding
+                            )
+                            setResolution(newResolution.toString())
+                        }
+                    }
+                } catch (error) {
+                    toast.error("Error loading image", { position: "top-left" });
+                    return;
                 }
-            }
+            } 
         },
         [
             setInitialImageUploaded,
@@ -382,46 +391,170 @@ function LoadAImage() {
     const loadDemoImage = async (theme: "light" | "dark") => {
         if (typeof window === 'undefined') return;
 
-        const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
-        const image = new Image();
-        image.crossOrigin = 'Anonymous';
-        image.src = imageSrc;
+        try {
+            const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
+            const image = new Image();
+            image.crossOrigin = 'Anonymous';
+            image.src = imageSrc;
 
-        image.onload = async () => {
-            // NOTE: commenting for visit later, i don't really like the gradient - the idea of extracting colors is cool though
-            // const colorThief = new ColorThief();
-            // const palette = await colorThief.getPalette(image, 5);
-            // const gradientStops = palette
-            //     .map((clr, i) => `rgb(${clr.join(',')}) ${Math.floor((i / (palette.length - 1)) * 100)}%`)
-            //     .join(', ');
-            // const gradient = `linear-gradient(var(--gradient-angle), ${gradientStops})`;
+            image.onload = async () => {
+                // NOTE: commenting for visit later, i don't really like the gradient - the idea of extracting colors is cool though
+                // const colorThief = new ColorThief();
+                // const palette = await colorThief.getPalette(image, 5);
+                // const gradientStops = palette
+                //     .map((clr, i) => `rgb(${clr.join(',')}) ${Math.floor((i / (palette.length - 1)) * 100)}%`)
+                //     .join(', ');
+                // const gradient = `linear-gradient(var(--gradient-angle), ${gradientStops})`;
 
-            // setBackground(gradient);
-            // document?.documentElement.style.setProperty('--gradient-bg', gradient);
+                // setBackground(gradient);
+                // document?.documentElement.style.setProperty('--gradient-bg', gradient);
 
-            setImages([
-                ...images,
-                {
-                    image: imageSrc,
-                    id: 1,
-                    style: {
-                        ...defaultStyle,
-                        imageRoundness: 0.7,
-                        imageSize: '0.78',
+                setImages([
+                    ...images,
+                    {
+                        image: imageSrc,
+                        id: 1,
+                        style: {
+                            ...defaultStyle,
+                            imageRoundness: 0.7,
+                            imageSize: '0.78',
+                        },
                     },
-                },
-            ]);
-            setImagesCheck([...imagesCheck, imageSrc]);
+                ]);
+                setImagesCheck([...imagesCheck, imageSrc]);
 
-            if (localStorage.getItem('image-init-pro-tip') === null) {
-                toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                localStorage.setItem('image-init-pro-tip', 'true')
-            }
+                if (localStorage.getItem('image-init-pro-tip') === null) {
+                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                    localStorage.setItem('image-init-pro-tip', 'true')
+                }
 
-            setResolution('1920x1080');
-        };
+                setResolution('1920x1080');
+            };
+        } catch (error) {
+            console.error("Failed to load demo image:", error);
+        }
     };
 
+    const loadDemoImageFromJson = async () => {
+        if (typeof window === 'undefined') return;
+        try {
+            const canvasState = localStorage.getItem('canvasState');
+            if (canvasState !== null) {
+                console.log("State found");
+                
+                const { images, texts, backgroundSettings } = JSON.parse(canvasState);
+                
+                console.log(
+                    "DEBUG: ",
+                    "Text: ", texts,
+                    "\nImages: ", images,
+                    "\nbackground color: ", backgroundSettings?.backgroundColor,
+                    "\nbackground image: ", backgroundSettings?.imageBackground,
+                    "\nbackground type: ", backgroundSettings?.backgroundType,
+                    "\nnoise: ", backgroundSettings?.noise,
+                    "\ngradientAngle: ", backgroundSettings?.gradientAngle
+                );
+
+                // TODO: redo section to not use so many if statements :buster:
+                
+                if (images && images.length > 0) {
+                    setImages([...images]);
+                    setImagesCheck([...imagesCheck, ...images.map((image: any) => image.image)]);
+                }
+                
+                if (texts && texts.length > 0) {
+                    setTexts([...texts]);
+                }
+                if (backgroundSettings) {
+                    if (backgroundSettings.backgroundColor) {
+                        setBackground(backgroundSettings.backgroundColor);
+                    }
+                    if (backgroundSettings.backgroundType === 'solid') {
+                        document?.documentElement.style.setProperty('--solid-bg', backgroundSettings.backgroundColor);
+                        document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor);
+                        document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor);
+                    } else if (backgroundSettings.backgroundType === 'gradient') {
+                        document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor);
+                    } else if (backgroundSettings.backgroundType === 'mesh') {
+                        document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor);
+                    }
+                    if (backgroundSettings.imageBackground) {
+                        setImageBackground(backgroundSettings.imageBackground);
+                    }
+                    if (backgroundSettings.noise !== undefined) {
+                        setNoise(backgroundSettings.noise);
+                    }
+                    if (backgroundSettings.gradientAngle !== undefined) {
+                        setGradientAngle(backgroundSettings.gradientAngle);
+                    }
+                    if (backgroundSettings.solidColor) {
+                        setSolidColor(backgroundSettings.solidColor);
+                    }
+                    if (backgroundSettings.attribution) {
+                        setAttribution(backgroundSettings.attribution);
+                    }
+                    if (backgroundSettings.highResBackground !== undefined) {
+                        setHighResBackground(backgroundSettings.highResBackground);
+                    }
+                    if (backgroundSettings.isBackgroundClicked !== undefined) {
+                        setIsBackgroundClicked(backgroundSettings.isBackgroundClicked);
+                    }
+                }
+                
+                toast.success("Save loaded successfully", { position: "top-left" });
+                return;
+            }
+            
+            const demoData = {
+                imageSrc: "https://images.unsplash.com/photo-1563409236302-8442b5e644df?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHVja3xlbnwwfHwwfHx8MA%3D%3D",
+                canvasWidth: 1920,
+                canvasHeight: 1080,
+                style: {
+                    imageSize: '0.78',
+                    imageRoundness: 0.0,
+                    rotate: "-53.2286291681678",
+                    translateX: -34.11759505091649,
+                    translateY: -8.186003779741673,
+                }
+            };
+            
+            const image = new Image();
+            image.crossOrigin = 'Anonymous';
+            image.src = demoData.imageSrc;
+            
+            image.onload = async () => {
+                const scaleX = demoData.canvasWidth / image.width;
+                const scaleY = demoData.canvasHeight / image.height;
+                demoData.style.imageSize = (
+                    demoData.canvasWidth > demoData.canvasHeight
+                    ? Math.min(scaleX, scaleY)
+                    : Math.max(scaleX, scaleY)
+                ) as unknown as string;
+                
+                console.log("Testing scale: ", demoData.style.imageSize);
+                
+                setImages([
+                    ...images,
+                    {
+                        image: demoData.imageSrc,
+                        id: images.length + 1,
+                        style: {
+                            ...defaultStyle,
+                            ...demoData.style,
+                        },
+                    },
+                ]);
+                setImagesCheck([...imagesCheck, demoData.imageSrc]);
+                
+                toast.success("Save loaded successfully", { position: "top-left" });
+                
+                setResolution(`${demoData.canvasWidth}x${demoData.canvasHeight}`);
+            };
+        } catch (error) {
+            toast.error("Error loading demo image", { position: "top-left" });
+        }
+    };
+    
     return (
         <Dropzone
             multiple={false}
@@ -487,6 +620,14 @@ function LoadAImage() {
                                     variant="outline"
                                 >
                                     Dark mode demo
+                                    <ImageIcon className="ml-2" size={19} />
+                                </Button>
+                                <Button
+                                    onClick={loadDemoImageFromJson}
+                                    className="z-[120] max-w-52 mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
+                                    variant="outline"
+                                >
+                                    Load from JSON
                                     <ImageIcon className="ml-2" size={19} />
                                 </Button>
                             </div>

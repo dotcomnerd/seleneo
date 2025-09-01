@@ -55,6 +55,7 @@ export default function NormalGradientPicker() {
                 isMesh ? gradient.background! : gradient.gradient
             )
             setBackground(gradient.gradient)
+            console.log("DEBUG: Gradient: ", gradient.gradient, "\n\n BackgroundType: ", backgroundType)
             setBackgroundType(isMesh ? 'mesh' : 'gradient')
             setImageBackground(null)
             setAttribution({ name: null, link: null })
