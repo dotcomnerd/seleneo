@@ -1,5 +1,6 @@
 "use client";
 
+import { useDrawingTools } from '@/store/use-drawing';
 import { useSelectedLayers } from '@/store/use-image-options';
 import { useMoveable } from '@/store/use-moveable';
 import dynamic from 'next/dynamic';
@@ -19,8 +20,8 @@ export default function SelectoComponent() {
     setIsMultipleTargetSelected,
   } = useMoveable()
   const { setSelectedImage } = useSelectedLayers()
-
-  if (showControls) return
+  const { currentTool, isDrawing } = useDrawingTools()
+  if (showControls || isDrawing || currentTool !== 'select') return null
   return (
     <Selecto
       dragContainer={'.canvas-container'}

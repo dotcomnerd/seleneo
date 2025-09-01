@@ -23,8 +23,15 @@ export default function DrawingTools() {
         setCurrentStrokeWidth,
     } = useDrawingTools()
 
+    const toolLabel = currentTool === 'pen' ? 'Pen' : currentTool === 'eraser' ? 'Eraser' : 'Select'
+
     return (
         <div className="flex w-full flex-col gap-5">
+            <div className="mb-3 flex items-center px-1 md:max-w-full">
+                <h1 className="text-[0.85rem]">Tool</h1>
+                <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">{toolLabel}</p>
+            </div>
+
             <div className="grid grid-cols-3 gap-2">
                 <Button
                     variant={currentTool === 'select' ? 'default' : 'outline'}
@@ -50,7 +57,9 @@ export default function DrawingTools() {
             </div>
 
             <div className="space-y-2">
-                <h4 className="text-[0.85rem]">color</h4>
+                <div className="mb-2 mt-2 flex items-center px-1 md:max-w-full">
+                    <h1 className="text-[0.85rem]">Color</h1>
+                </div>
                 <Popover>
                     <PopoverTrigger asChild>
                         <Button
@@ -58,7 +67,7 @@ export default function DrawingTools() {
                             className="w-full justify-start gap-2"
                         >
                             <Palette className="h-4 w-4" />
-                            <span>{currentColor}</span>
+                            <span>{currentColor.toUpperCase()}</span>
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-64">
@@ -81,29 +90,39 @@ export default function DrawingTools() {
             </div>
 
             <div className="space-y-2">
-                <h4 className="text-[0.85rem]">stroke width</h4>
-                <Slider
-                    value={[currentStrokeWidth]}
-                    onValueChange={([v]) => setCurrentStrokeWidth(v)}
-                    onIncrement={() => setCurrentStrokeWidth(Math.min(32, currentStrokeWidth + 1))}
-                    onDecrement={() => setCurrentStrokeWidth(Math.max(1, currentStrokeWidth - 1))}
-                    min={1}
-                    max={32}
-                    step={1}
-                />
+                <div className="mb-2 mt-2 flex items-center px-1 md:max-w-full">
+                    <h1 className="text-[0.85rem]">Stroke Width</h1>
+                    <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">{Math.round(currentStrokeWidth)}px</p>
+                </div>
+                <div className="mb-3 flex gap-4 text-[0.85rem] md:max-w-full">
+                    <Slider
+                        value={[currentStrokeWidth]}
+                        onValueChange={([v]) => setCurrentStrokeWidth(v)}
+                        onIncrement={() => setCurrentStrokeWidth(Math.min(32, currentStrokeWidth + 1))}
+                        onDecrement={() => setCurrentStrokeWidth(Math.max(1, currentStrokeWidth - 1))}
+                        min={1}
+                        max={32}
+                        step={1}
+                    />
+                </div>
             </div>
 
             <div className="space-y-2">
-                <h4 className="text-[0.85rem]">opacity</h4>
-                <Slider
-                    value={[currentOpacity]}
-                    onValueChange={([v]) => setCurrentOpacity(v)}
-                    onIncrement={() => setCurrentOpacity(Math.min(1, currentOpacity + 0.05))}
-                    onDecrement={() => setCurrentOpacity(Math.max(0.1, currentOpacity - 0.05))}
-                    min={0.1}
-                    max={1}
-                    step={0.05}
-                />
+                <div className="mb-2 mt-2 flex items-center px-1 md:max-w-full">
+                    <h1 className="text-[0.85rem]">Opacity</h1>
+                    <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">{Math.round(currentOpacity * 100)}%</p>
+                </div>
+                <div className="mb-3 flex gap-4 text-[0.85rem] md:max-w-full">
+                    <Slider
+                        value={[currentOpacity]}
+                        onValueChange={([v]) => setCurrentOpacity(v)}
+                        onIncrement={() => setCurrentOpacity(Math.min(1, currentOpacity + 0.05))}
+                        onDecrement={() => setCurrentOpacity(Math.max(0.1, currentOpacity - 0.05))}
+                        min={0.1}
+                        max={1}
+                        step={0.05}
+                    />
+                </div>
             </div>
         </div>
     )
