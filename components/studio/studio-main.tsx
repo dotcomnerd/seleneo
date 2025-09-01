@@ -5,6 +5,7 @@ import useCanvasResizeObserver from '@/hooks/canvas-area-hooks/use-resize-observ
 import useScreenSizeWarningToast from '@/hooks/canvas-area-hooks/use-screen-size-warning-toast'
 import { useEventListener } from '@/hooks/use-event-listener'
 import { useBackgroundOptions } from '@/store/use-background-options'
+import { useDrawingTools } from '@/store/use-drawing'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
@@ -76,6 +77,7 @@ export default function Canvas() {
     } = useMoveable()
     const [width, height]: number[] = resolution.split('x').map(Number)
     const aspectRatio = width / height
+    const { currentTool, isDrawing } = useDrawingTools()
 
     let style: CSSProperties = {
         aspectRatio,
@@ -175,9 +177,11 @@ export default function Canvas() {
                     )}
 
                     <div
-                        className="selecto-area relative flex h-full w-full place-items-center items-center justify-center"
+                        className={`selecto-area relative flex h-full w-full place-items-center items-center justify-center ${currentTool !== 'select' || isDrawing ? 'no-user-select' : ''}`}
                         style={{
                             scale,
+                            userSelect: currentTool !== 'select' || isDrawing ? 'none' : 'auto',
+                            WebkitUserSelect: currentTool !== 'select' || isDrawing ? 'none' as const : 'auto' as const,
                         }}
                     >
                         <ImageUpload />
