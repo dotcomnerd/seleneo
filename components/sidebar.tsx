@@ -8,12 +8,14 @@ import {
     Box,
     Image as Images,
     Locate,
+    Paintbrush,
     Palette,
     PanelTop,
     TextCursor,
 } from 'lucide-react'
 import React, { useMemo } from 'react'
 import CanvasOptions from './studio/canvas/index'
+import DrawingOptions from './studio/drawing/index'
 import FrameOptions from './studio/frame/index'
 import ImageOptions from './studio/image/index'
 import PerspectiveOptions from './studio/perspective/index'
@@ -28,6 +30,7 @@ type SidebarSection =
     | 'background'
     | 'frame'
     | 'text'
+    | 'draw'
     | '3d'
     | 'position'
 
@@ -56,6 +59,7 @@ function useSidebarButtons() {
                 component: BackgroundOptions,
             },
             { id: 'frame', text: 'Frame', icon: PanelTop, component: FrameOptions },
+            { id: 'draw', text: 'Draw', icon: Paintbrush, component: DrawingOptions },
             { id: 'text', text: 'Text', icon: TextCursor, component: TextOptions },
             { id: '3d', text: '3D', icon: Box, component: PerspectiveOptions },
             {

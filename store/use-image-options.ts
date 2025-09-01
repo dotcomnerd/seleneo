@@ -1,6 +1,6 @@
-import { create, useStore } from 'zustand'
-import { temporal, TemporalState } from 'zundo'
 import throttle from 'just-throttle'
+import { temporal, TemporalState } from 'zundo'
+import { create, useStore } from 'zustand'
 import { FrameTypes } from './use-frame-options'
 
 interface ImageOptionsState {
@@ -133,6 +133,27 @@ interface ImageOptionsState {
     }[]
   ) => void
 
+  drawings?: {
+    id: string
+    type: 'pen' | 'brush' | 'eraser'
+    points: { x: number; y: number; pressure?: number }[]
+    color: string
+    strokeWidth: number
+    opacity: number
+    createdAt: number
+  }[]
+  setDrawings?: (
+    drawings: {
+      id: string
+      type: 'pen' | 'brush' | 'eraser'
+      points: { x: number; y: number; pressure?: number }[]
+      color: string
+      strokeWidth: number
+      opacity: number
+      createdAt: number
+    }[]
+  ) => void
+
   defaultStyle: {
     imageSize: string
     imageRoundness: number
@@ -237,6 +258,9 @@ export const useImageOptions = create(
 
       texts: [],
       setTexts: (texts) => set({ texts }),
+
+      drawings: [],
+      setDrawings: (drawings) => set({ drawings }),
     }),
     {
       limit: 30,

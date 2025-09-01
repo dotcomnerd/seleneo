@@ -37,6 +37,14 @@ const TiptapMoveable = dynamic(() => import('./tiptap-moveable'), {
     ssr: false
 })
 
+const DrawingCanvas = dynamic(() => import('./drawing/drawing-canvas'), {
+    ssr: false
+})
+
+const DrawingMoveable = dynamic(() => import('./drawing/drawing-moveable'), {
+    ssr: false
+})
+
 export default function Canvas() {
     const { backgroundType } = useBackgroundOptions()
     const {
@@ -174,6 +182,8 @@ export default function Canvas() {
                     >
                         <ImageUpload />
                         <TextLayers />
+                        <DrawingCanvas />
+                        <DrawingMoveable />
                     </div>
                 </div>
                 <MobileViewImageOptions />
