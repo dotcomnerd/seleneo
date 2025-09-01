@@ -135,7 +135,7 @@ interface ImageOptionsState {
 
   drawings?: {
     id: string
-    type: 'pen' | 'brush' | 'eraser'
+    type: 'pen' | 'eraser'
     points: { x: number; y: number; pressure?: number }[]
     color: string
     strokeWidth: number
@@ -145,7 +145,7 @@ interface ImageOptionsState {
   setDrawings?: (
     drawings: {
       id: string
-      type: 'pen' | 'brush' | 'eraser'
+      type: 'pen' | 'eraser'
       points: { x: number; y: number; pressure?: number }[]
       color: string
       strokeWidth: number

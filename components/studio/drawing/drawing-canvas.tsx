@@ -50,7 +50,7 @@ export default function DrawingCanvas() {
             } else {
                 ctx.globalCompositeOperation = 'source-over'
             }
-            
+
             const dx = dragOffset && selectedStrokeId === path.id ? dragOffset.dx : 0
             const dy = dragOffset && selectedStrokeId === path.id ? dragOffset.dy : 0
             const points = path.points.map((p) => [p.x + dx, p.y + dy, p.pressure ?? 0.5])
@@ -104,13 +104,15 @@ export default function DrawingCanvas() {
         const point = getRelativePoint(e)
         if (!drawings || drawings.length === 0) return
 
-        const updated = [...drawings]
-        const last = updated[updated.length - 1]
-        // adjust width with pressure for smoothing variety
-        if (point.pressure && last.type !== 'eraser') {
-            last.strokeWidth = Math.max(1, currentStrokeWidth * (0.5 + point.pressure))
-        }
-        last.points = [...last.points, point]
+        const updated = drawings.map((path, index) => {
+            if (index === drawings.length - 1) {
+                return {
+                    ...path,
+                    points: [...path.points, point]
+                }
+            }
+            return path
+        })
         setDrawings?.(updated)
     }
 
