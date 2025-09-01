@@ -1,9 +1,9 @@
 "use client";
 
-import React from 'react'
-import { useSelectedLayers } from '@/store/use-image-options'
-import { useMoveable } from '@/store/use-moveable'
-import dynamic from 'next/dynamic'
+import { useDrawingTools } from '@/store/use-drawing';
+import { useSelectedLayers } from '@/store/use-image-options';
+import { useMoveable } from '@/store/use-moveable';
+import dynamic from 'next/dynamic';
 
 const Selecto = dynamic(
   () => import('react-selecto').then((mod) => mod.default),
@@ -13,6 +13,7 @@ const Selecto = dynamic(
 )
 
 export default function SelectoComponent() {
+  const { currentTool } = useDrawingTools()
   const {
     setShowControls,
     showControls,
@@ -21,7 +22,7 @@ export default function SelectoComponent() {
   } = useMoveable()
   const { setSelectedImage } = useSelectedLayers()
 
-  if (showControls) return
+  if (showControls || currentTool !== 'select') return
   return (
     <Selecto
       dragContainer={'.canvas-container'}
