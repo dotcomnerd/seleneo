@@ -32,7 +32,6 @@ export default function CustomGradientPicker() {
       setBackgroundType('solid')
       setSolidColor(color)
       setBackground(color)
-      console.log("DEBUG: Color: ", color)
       setImageBackground(null)
       updateRootStyles(color)
     },

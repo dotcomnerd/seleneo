@@ -120,8 +120,6 @@ export default function TiptapMoveable({ id }: { id: string }) {
         // @ts-expect-error
         const yPerc = (lastEvent?.drag?.translate[1] / target.offsetHeight) * 100
 
-        console.log('DEBUG: Text Scale & Position', { scaleX, scaleY, xPerc, yPerc });
-
         if (selectedText) {
           setTexts(
             texts.map((text) =>
@@ -148,11 +146,7 @@ export default function TiptapMoveable({ id }: { id: string }) {
       }}
       onRotateEnd={({ lastEvent }) => {
         if (!lastEvent) return
-
         const rotate = lastEvent.rotate
-
-        console.log('DEBUG: Text Rotation', rotate);
-
         if (selectedText) {
           setTexts(
             texts.map((text) =>
