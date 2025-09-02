@@ -15,7 +15,6 @@ import { useFrameOptions } from '@/store/use-frame-options'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
-import ColorThief from 'colorthief'
 import { ImageIcon, Upload } from 'lucide-react'
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
@@ -23,6 +22,16 @@ import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { BrowserFrame } from './browser-frames'
 import ContextMenuImage from './image-context-menu'
+
+function loadGoogleFont(fontFamily: string) {
+    if (typeof window === 'undefined') return;
+    const existingLink = document.querySelector(`link[href*="${fontFamily.replace(/\s+/g, '+')}"]`);
+    if (existingLink) return;
+    const link = document.createElement('link');
+    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@200;300;400;500;600;700;800&display=swap`;
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+}
 
 const ImageUpload = () => {
     const targetRef = useRef<HTMLDivElement>(null)
@@ -282,7 +291,7 @@ function LoadAImage() {
             const file = event.target.files?.[0]
 
             if (file) {
-                try {        
+                try {
                     const imageUrl = URL.createObjectURL(file)
 
                     setInitialImageUploaded(true)
@@ -340,25 +349,25 @@ function LoadAImage() {
                 try {
                     const imageUrl = URL.createObjectURL(file)
                     setInitialImageUploaded(true)
-    
+
                     setImagesCheck([...imagesCheck, imageUrl])
                     setImages([
                         ...images,
                         { image: imageUrl, id: images.length + 1, style: defaultStyle },
                     ])
                     setSelectedImage(images.length + 1)
-    
+
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
                         localStorage.setItem('image-init-pro-tip', 'true')
                     }
-    
+
                     if (images.length > 0) return
                     if (automaticResolution) {
                         const padding = 250
                         const img = new Image()
                         img.src = imageUrl
-    
+
                         img.onload = () => {
                             const { naturalWidth, naturalHeight } = img
                             const newResolution = calculateEqualCanvasSize(
@@ -373,7 +382,7 @@ function LoadAImage() {
                     toast.error("Error loading image", { position: "top-left" });
                     return;
                 }
-            } 
+            }
         },
         [
             setInitialImageUploaded,
@@ -441,9 +450,9 @@ function LoadAImage() {
             const canvasState = localStorage.getItem('canvasState');
             if (canvasState !== null) {
                 console.log("State found");
-                
+
                 const { images, texts, backgroundSettings } = JSON.parse(canvasState);
-                
+
                 console.log(
                     "DEBUG: ",
                     "Text: ", texts,
@@ -456,14 +465,21 @@ function LoadAImage() {
                 );
 
                 // TODO: redo section to not use so many if statements :buster:
-                
+
                 if (images && images.length > 0) {
                     setImages([...images]);
                     setImagesCheck([...imagesCheck, ...images.map((image: any) => image.image)]);
                 }
-                
+
                 if (texts && texts.length > 0) {
                     setTexts([...texts]);
+
+                    // need to load any custom fonts that were saved
+                    texts.forEach((text: any) => {
+                        if (text.style?.fontFamily && text.style.fontFamily !== 'Inter') {
+                            loadGoogleFont(text.style.fontFamily);
+                        }
+                    });
                 }
                 if (backgroundSettings) {
                     if (backgroundSettings.backgroundColor) {
@@ -500,11 +516,11 @@ function LoadAImage() {
                         setIsBackgroundClicked(backgroundSettings.isBackgroundClicked);
                     }
                 }
-                
+
                 toast.success("Save loaded successfully", { position: "top-left" });
                 return;
             }
-            
+
             const demoData = {
                 imageSrc: "https://images.unsplash.com/photo-1563409236302-8442b5e644df?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHVja3xlbnwwfHwwfHx8MA%3D%3D",
                 canvasWidth: 1920,
@@ -517,22 +533,22 @@ function LoadAImage() {
                     translateY: -8.186003779741673,
                 }
             };
-            
+
             const image = new Image();
             image.crossOrigin = 'Anonymous';
             image.src = demoData.imageSrc;
-            
+
             image.onload = async () => {
                 const scaleX = demoData.canvasWidth / image.width;
                 const scaleY = demoData.canvasHeight / image.height;
                 demoData.style.imageSize = (
                     demoData.canvasWidth > demoData.canvasHeight
-                    ? Math.min(scaleX, scaleY)
-                    : Math.max(scaleX, scaleY)
+                        ? Math.min(scaleX, scaleY)
+                        : Math.max(scaleX, scaleY)
                 ) as unknown as string;
-                
+
                 console.log("Testing scale: ", demoData.style.imageSize);
-                
+
                 setImages([
                     ...images,
                     {
@@ -545,16 +561,16 @@ function LoadAImage() {
                     },
                 ]);
                 setImagesCheck([...imagesCheck, demoData.imageSrc]);
-                
+
                 toast.success("Save loaded successfully", { position: "top-left" });
-                
+
                 setResolution(`${demoData.canvasWidth}x${demoData.canvasHeight}`);
             };
         } catch (error) {
             toast.error("Error loading demo image", { position: "top-left" });
         }
     };
-    
+
     return (
         <Dropzone
             multiple={false}
@@ -571,7 +587,7 @@ function LoadAImage() {
                     className="absolute-center h-25 w-4/5 xl:w-2/5"
                 >
                     <div className="flex flex-col gap-4 rounded-xl text-center">
-                        <div className="flex-center flex-col rounded-xl border-2 border-dashed border-primary/40 hover:border-primary/70 backdrop-blur-md bg-background/70 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
+                        <div className="flex-center flex-col rounded-xl border-2 border-dashed border-primary/40 backdrop-blur-md bg-background/70 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
                             <Upload
                                 style={{
                                     transition: 'all 0.8s cubic-bezier(0.6, 0.6, 0, 1)',
@@ -597,7 +613,7 @@ function LoadAImage() {
                                     className="sr-only"
                                 />
                                 <p className="hidden pl-1 font-medium text-muted-foreground lg:block">
-                                 or drag and drop
+                                    or drag and drop
                                 </p>
                             </div>
 

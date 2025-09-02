@@ -2,16 +2,16 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 
 import useTiptapEditor from '@/hooks/use-editor'
+import { useOnClickOutside } from '@/hooks/use-on-click-outside'
 import { cn, convertHexToRgba } from '@/lib/utils'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { BubbleMenu, Editor, EditorContent } from '@tiptap/react'
-import { useRef } from 'react'
+import { Bold, Italic } from 'lucide-react'
+import { useEffect, useRef } from 'react'
 import { HexColorPicker } from 'react-colorful'
 import { Button } from '../ui/button'
 import ContextMenuText from './text-context-menu'
-import { Bold, Italic } from 'lucide-react'
-import { useOnClickOutside } from '@/hooks/use-on-click-outside'
 
 type MenuBarProps = {
     editor: Editor | null
@@ -60,7 +60,7 @@ const BubbleMenuComp = ({ editor }: MenuBarProps) => {
                         variant={editor.isActive('italic') ? "secondary" : "ghost"}
                         className={cn('h-8 w-8 p-0')}
                     >
-                        <Italic className={cn('h-4 w-4 dark:text-gray-100 text-black', editor.isActive('italic') ? "italic":"")} />
+                        <Italic className={cn('h-4 w-4 dark:text-gray-100 text-black', editor.isActive('italic') ? "italic" : "")} />
                     </Button>
                 </div>
 
@@ -80,11 +80,57 @@ const BubbleMenuComp = ({ editor }: MenuBarProps) => {
     )
 }
 
-function TipTapEditor() {
+function TipTapEditor({ textContent, onContentChange }: { textContent: string; onContentChange: (content: string) => void }) {
     const { setShowTextControls, isEditable, setIsEditable } = useMoveable()
-    const { defaultStyle } = useImageOptions()
+    const { defaultStyle, texts, setTexts } = useImageOptions()
+    const { selectedText } = useSelectedLayers()
     const editorRef = useRef<HTMLDivElement>(null)
-    const { editor } = useTiptapEditor()
+    const displayContent = textContent || 'Edit this text'
+    const { editor } = useTiptapEditor(displayContent)
+
+    useEffect(() => {
+        if (editor && displayContent !== editor.getText()) {
+            editor.commands.setContent(displayContent)
+        }
+    }, [editor, displayContent])
+
+    useEffect(() => {
+        // TODO: we need to listen for more than just color and content
+        if (!editor) return
+        const handleUpdate = () => {
+            const plainText = editor.getText()
+            if (plainText !== textContent) {
+                onContentChange(plainText)
+            }
+            if (selectedText) {
+                const editorColor = editor.getAttributes('textStyle').color as string | undefined
+                if (editorColor) {
+                    const current = texts.find((t) => t.id === selectedText)
+                    if (current && current.style.textColor !== editorColor) {
+                        setTexts(
+                            texts.map((t) =>
+                                t.id === selectedText
+                                    ? {
+                                        ...t,
+                                        style: {
+                                            ...t.style,
+                                            textColor: editorColor,
+                                        },
+                                    }
+                                    : t
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
+        editor.on('update', handleUpdate)
+        return () => {
+            editor.off('update', handleUpdate)
+        }
+    }, [editor, textContent, onContentChange, selectedText, texts, setTexts])
+
     // TODO: fix weird bug where highlight remains after this event
     useOnClickOutside(editorRef, () => {
         if (isEditable) {
@@ -100,6 +146,10 @@ function TipTapEditor() {
                 editor?.chain().selectAll().focus()
                 setIsEditable(true)
                 setShowTextControls(false)
+            }}
+            style={{
+                position: 'relative',
+                zIndex: isEditable ? 10 : 'auto' // bring to front when editing
             }}
         >
             <BubbleMenuComp editor={editor} />
@@ -117,7 +167,7 @@ export default function TextLayers() {
     const textRef = useRef<HTMLDivElement>(null)
 
     const { setShowTextControls, setShowControls } = useMoveable()
-    const { texts } = useImageOptions()
+    const { texts, setTexts } = useImageOptions()
     const { selectedText, setSelectedText, setSelectedImage } =
         useSelectedLayers()
 
@@ -145,6 +195,8 @@ export default function TextLayers() {
                                         text.style.shadowOpacity
                                     )})`,
                                 lineHeight: '1',
+                                transform: `translate(${text.style.translateX ?? 0}%, ${text.style.translateY ?? 0}%)`,
+                                willChange: 'transform',
                                 zIndex: `${text.style.zIndex}`,
                             }}
                             onContextMenu={() => {
@@ -159,9 +211,20 @@ export default function TextLayers() {
                                 setSelectedImage(null)
                                 setShowControls(false)
                             }}
-                            // TODO: Allow dragging without text selection?
+                        // TODO: allow dragging without text selection?
                         >
-                            <TipTapEditor />
+                            <TipTapEditor
+                                textContent={text.content}
+                                onContentChange={(content) => {
+                                    setTexts(
+                                        texts.map((t) =>
+                                            t.id === text.id
+                                                ? { ...t, content }
+                                                : t
+                                        )
+                                    )
+                                }}
+                            />
                         </div>
                     </ContextMenuText>
                 )
