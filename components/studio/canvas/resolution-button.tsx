@@ -1,16 +1,15 @@
-import { useState } from 'react'
-import { cn } from '@/lib/utils'
-import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
-import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { Button } from '@/components/ui/button'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
+import { calculateEqualCanvasSize, cn } from '@/lib/utils'
+import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
+import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { PopoverArrow } from '@radix-ui/react-popover'
 import { ChevronDown } from 'lucide-react'
-import { calculateEqualCanvasSize } from '@/lib/utils'
+import { useState } from 'react'
 
 export function ResolutionButton({
   resolutions,
@@ -87,15 +86,15 @@ export function ResolutionButton({
             setResolution(newResolution.toString())
             selectedImage &&
               setImages(
-                images.map((image, index) =>
-                  index === selectedImage - 1
+                images.map((image) =>
+                  image.id === selectedImage
                     ? {
-                        ...image,
-                        style: {
-                          ...image.style,
-                          imageSize: '0.75',
-                        },
-                      }
+                      ...image,
+                      style: {
+                        ...image.style,
+                        imageSize: '0.75',
+                      },
+                    }
                     : image
                 )
               )
@@ -132,15 +131,15 @@ export function ResolutionButton({
             setResolution(newResolution.toString())
             selectedImage &&
               setImages(
-                images.map((image, index) =>
-                  index === selectedImage - 1
+                images.map((image) =>
+                  image.id === selectedImage
                     ? {
-                        ...image,
-                        style: {
-                          ...image.style,
-                          imageSize: '0.75',
-                        },
-                      }
+                      ...image,
+                      style: {
+                        ...image.style,
+                        imageSize: '0.75',
+                      },
+                    }
                     : image
                 )
               )

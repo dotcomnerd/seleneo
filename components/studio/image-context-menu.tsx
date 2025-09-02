@@ -65,17 +65,12 @@ export default function ContextMenuImage({
 
 
     const handleImageDelete = () => {
-        // const newImages = images.filter((image) => image.id !== id)
-        // setImages(newImages)
-
         if (images.length === 1) {
             setImages([])
             setSelectedImage(null)
             return
         }
-        /*
-        {"images":[{"image":"https://images.unsplash.com/photo-1563409236302-8442b5e644df?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHVja3xlbnwwfHwwfHx8MA%3D%3D","id":1,"style":{"imageSize":0.24032042723631508,"imageRoundness":0,"imageShadow":"0px 19px 60px 10px","shadowPreview":"0px 10px 60px 0px #000000","shadowOpacity":1,"shadowName":"X-Large","shadowColor":"#000","borderSize":"0","borderColor":"#ffffff50","insetSize":"0","insetColor":"rgb(254,254,254)","rotate":225.23315561554188,"rotateX":0.0001,"rotateY":0,"rotateZ":0,"perspective":2000,"translateX":null,"translateY":null,"hasFrame":false,"zIndex":2},"extractedColors":[{"color":"rgb(254,254,254)","count":42510},{"color":"rgb(251,252,254)","count":24129},{"color":"rgb(243,248,251)","count":12642},{"color":"rgb(252,253,255)","count":12540},{"color":"rgb(249,250,254)","count":12036},{"color":"rgb(249,253,254)","count":11017},{"color":"rgb(250,251,255)","count":9103},{"color":"rgb(249,250,252)","count":9016},{"color":"rgb(240,245,248)","count":8358},{"color":"rgb(252,254,251)","count":7986},{"color":"rgb(250,251,253)","count":7911},{"color":"rgb(242,247,250)","count":7770}]}],"backgroundColor":"linear-gradient(var(--gradient-angle), rgb(204, 228, 247) 11.2%, rgb(237, 246, 250) 100.2%)","texts":[{"content":"","id":1,"style":{"textSize":"2","textColor":"#ffffff","textAlign":"center","fontWeight":500,"fontFamily":"Inter","letterSpacing":-0.03,"textShadow":"1px 1px 8px","shadowName":"Bottom","shadowColor":"#000","shadowOpacity":0.16,"hasBackground":false,"backgroundColor":"#ffffff50","padding":"0","zIndex":2,"position":""},"text":""},{"content":"","id":2,"style":{"textSize":"2","textColor":"#ffffff","textAlign":"center","fontWeight":500,"fontFamily":"Inter","letterSpacing":-0.03,"textShadow":"1px 1px 8px","shadowName":"Bottom","shadowColor":"#000","shadowOpacity":0.16,"hasBackground":false,"backgroundColor":"#ffffff50","padding":"0","zIndex":2,"position":""},"text":""}],"imageBackground":null}
-        */
+
         if (selectedImage) {
             const newImages = images.filter((image) => image.id !== selectedImage)
             setImages(newImages)
@@ -87,8 +82,8 @@ export default function ContextMenuImage({
     const bringToFrontOrBack = (direction: 'front' | 'back') => {
         if (selectedImage) {
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             style: {
@@ -190,8 +185,8 @@ export default function ContextMenuImage({
         const base64Image = canvas.toDataURL('image/png')
         selectedImage &&
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             image: base64Image,
@@ -217,9 +212,11 @@ export default function ContextMenuImage({
                         onClick={() => {
                             bringToFrontOrBack('back')
                         }}
-                    // disabled={
-                    //   !selectedImage || images[selectedImage - 1].style.zIndex === 2
-                    // }
+                        disabled={
+                            !selectedImage ||
+                            !images.find(image => image.id === selectedImage) ||
+                            images.find(image => image.id === selectedImage)?.style.zIndex === 2
+                        }
                     >
                         Send back
                         <ContextMenuShortcut>
@@ -290,14 +287,11 @@ export default function ContextMenuImage({
                             crop={crop}
                             onChange={(c) => setCrop(c)}
                             disabled={!enableCrop || !selectedImage}
-                            onComplete={(c) => {
-                                cropImageNow()
-                            }}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 ref={imgRef}
-                                src={images[selectedImage - 1].image}
+                                src={images.find((image) => image.id === selectedImage)?.image}
                                 alt="Crop selected image"
                                 className="h-full w-full object-cover"
                             />
@@ -349,12 +343,12 @@ function ReplaceImage() {
 
             selectedImage &&
                 setImages(
-                    images.map((image, index) =>
-                        index === selectedImage - 1
+                    images.map((image) =>
+                        image.id === selectedImage
                             ? {
                                 ...image,
                                 image: imageUrl,
-                                colors: extractedColors,
+                                extractedColors,
                             }
                             : image
                     )

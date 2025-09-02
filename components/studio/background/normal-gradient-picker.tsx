@@ -168,7 +168,7 @@ export default function NormalGradientPicker() {
                 className="mt-4"
                 style={{
                     // @ts-ignore
-                    display: !images[selectedImage - 1]?.linearGradients ? '' : 'none',
+                    display: !selectedImage || !images.find(img => img.id === selectedImage)?.linearGradients ? '' : 'none',
                 }}
             >
                 <TooltipProvider>
@@ -196,10 +196,10 @@ export default function NormalGradientPicker() {
                 </TooltipProvider>
             </div>
 
-            {selectedImage && images[selectedImage - 1]?.linearGradients && (
+            {selectedImage && images.find(img => img.id === selectedImage)?.linearGradients && (
                 <>
                     <div className="mt-4 flex grid-cols-7 flex-wrap gap-[0.5rem] md:grid">
-                        {images[selectedImage - 1]?.linearGradients?.map(
+                        {images.find(img => img.id === selectedImage)?.linearGradients?.map(
                             (gradient: string) => (
                                 <Button
                                     key={gradient}

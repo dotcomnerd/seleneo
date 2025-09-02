@@ -26,7 +26,7 @@ export default function InsetOption() {
                                 className="ml-2 h-5 w-5 rounded-md"
                                 style={{
                                     backgroundColor: selectedImage
-                                        ? images[selectedImage - 1]?.style.insetColor
+                                        ? images.find(img => img.id === selectedImage)?.style.insetColor
                                         : '#fff',
                                 }}
                                 variant="outline"
@@ -89,8 +89,8 @@ export default function InsetOption() {
                         setShowControls(false)
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -104,7 +104,7 @@ export default function InsetOption() {
                     }}
                     value={
                         images.length !== 0 && selectedImage
-                            ? [+images[selectedImage - 1]?.style.insetSize]
+                            ? [+(images.find(img => img.id === selectedImage)?.style.insetSize ?? 0)]
                             : [10]
                     }
                     onValueCommit={() => setShowControls(true)}
@@ -112,8 +112,8 @@ export default function InsetOption() {
                         setShowControls(false)
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -132,8 +132,8 @@ export default function InsetOption() {
                         setShowControls(false)
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {

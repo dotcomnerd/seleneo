@@ -19,8 +19,8 @@ export default function FramePicker() {
     const frameChangeHandler = (frame: FrameTypes) => {
         selectedImage &&
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             frame,
@@ -119,18 +119,18 @@ export default function FramePicker() {
             </div>
 
             {selectedImage &&
-                images[selectedImage - 1]?.frame !== 'Shadow' &&
-                images[selectedImage - 1]?.frame !== 'None' && (
+                images.find(img => img.id === selectedImage)?.frame !== 'Shadow' &&
+                images.find(img => img.id === selectedImage)?.frame !== 'None' && (
                     <div
                         className={`mt-8 flex flex-col gap-3 px-1 md:max-w-full ${selectedImage ? '' : 'pointer-events-none opacity-40'
                             }`}
                     >
                         <h1 className="text-[0.85rem]">Frame Size</h1>
-                    <Select
+                        <Select
                             defaultValue={frameHeight}
                             onValueChange={(value) => setFrameHeight(value)}
                         >
-                        <SelectTrigger className="w-[7rem] border border-primary/30">
+                            <SelectTrigger className="w-[7rem] border border-primary/30">
                                 <SelectValue placeholder="Medium" />
                             </SelectTrigger>
                             <SelectContent className="w-[7rem]">
@@ -163,9 +163,9 @@ export function FrameContainer({
         <div className={`${selectedImage ? '' : 'pointer-events-none opacity-40'}`}>
             <button
                 onClick={onClick}
-                className={`relative h-[3.55rem] w-[4.6rem] overflow-hidden whitespace-nowrap rounded-lg border border-border/80 bg-gray-300 ring-offset-background transition-colors focus:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${selectedImage && images[selectedImage - 1]?.frame === text
-                        ? 'ring-2 ring-ring ring-offset-2'
-                        : ''
+                className={`relative h-[3.55rem] w-[4.6rem] overflow-hidden whitespace-nowrap rounded-lg border border-border/80 bg-gray-300 ring-offset-background transition-colors focus:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 ${selectedImage && images.find(img => img.id === selectedImage)?.frame === text
+                    ? 'ring-2 ring-ring ring-offset-2'
+                    : ''
                     }`}
             >
                 <div

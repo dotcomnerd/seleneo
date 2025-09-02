@@ -15,7 +15,7 @@ export default function TranslateOption() {
                 <h1 className="text-[0.85rem]">Translate X</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.translateX || 0 : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.translateX || 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -26,8 +26,8 @@ export default function TranslateOption() {
                     onClick={() => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -51,13 +51,13 @@ export default function TranslateOption() {
                     min={-1000}
                     step={0.001}
                     value={
-                        selectedImage ? [images[selectedImage - 1]?.style.translateX] : [0]
+                        selectedImage ? [images.find(img => img.id === selectedImage)?.style.translateX ?? 0] : [0]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -73,10 +73,10 @@ export default function TranslateOption() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         selectedImage &&
-                            (images[selectedImage - 1]?.style.translateX >= 1000 ||
+                            ((images.find(img => img.id === selectedImage)?.style.translateX ?? 0) >= 1000 ||
                                 setImages(
-                                    images.map((image, index) =>
-                                        index === selectedImage - 1
+                                    images.map((image) =>
+                                        image.id === selectedImage
                                             ? {
                                                 ...image,
                                                 style: {
@@ -90,10 +90,10 @@ export default function TranslateOption() {
                     }}
                     onDecrement={() => {
                         selectedImage &&
-                            (images[selectedImage - 1]?.style.translateX <= -1000 ||
+                            ((images.find(img => img.id === selectedImage)?.style.translateX ?? 0) <= -1000 ||
                                 setImages(
-                                    images.map((image, index) =>
-                                        index === selectedImage - 1
+                                    images.map((image) =>
+                                        image.id === selectedImage
                                             ? {
                                                 ...image,
                                                 style: {
@@ -112,7 +112,7 @@ export default function TranslateOption() {
                 <h1 className="text-[0.85rem]">Translate Y</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.translateY : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.translateY : 0
                     )}px`}
                 </p>
                 <Button
@@ -123,8 +123,8 @@ export default function TranslateOption() {
                     onClick={() => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -148,13 +148,13 @@ export default function TranslateOption() {
                     min={-500}
                     step={0.001}
                     value={
-                        selectedImage ? [images[selectedImage - 1]?.style.translateY] : [0]
+                        selectedImage ? [images.find(img => img.id === selectedImage)?.style.translateY ?? 0] : [0]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -170,10 +170,10 @@ export default function TranslateOption() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         selectedImage &&
-                            (images[selectedImage - 1]?.style.translateY >= 500 ||
+                            ((images.find(img => img.id === selectedImage)?.style.translateY ?? 0) >= 500 ||
                                 setImages(
-                                    images.map((image, index) =>
-                                        index === selectedImage - 1
+                                    images.map((image) =>
+                                        image.id === selectedImage
                                             ? {
                                                 ...image,
                                                 style: {
@@ -187,10 +187,10 @@ export default function TranslateOption() {
                     }}
                     onDecrement={() => {
                         selectedImage &&
-                            (images[selectedImage - 1]?.style.translateY <= -500 ||
+                            ((images.find(img => img.id === selectedImage)?.style.translateY ?? 0) <= -500 ||
                                 setImages(
-                                    images.map((image, index) =>
-                                        index === selectedImage - 1
+                                    images.map((image) =>
+                                        image.id === selectedImage
                                             ? {
                                                 ...image,
                                                 style: {

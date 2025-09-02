@@ -1,11 +1,11 @@
 "use client";
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
-import React from 'react'
-import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
-import { useResizeCanvas } from '@/store/use-resize-canvas'
-import { useImageQualityStore } from '@/store/use-image-quality'
-import { useMoveable } from '@/store/use-moveable'
+import { useImageOptions, useSelectedLayers } from '@/store/use-image-options';
+import { useImageQualityStore } from '@/store/use-image-quality';
+import { useMoveable } from '@/store/use-moveable';
+import { useResizeCanvas } from '@/store/use-resize-canvas';
+import React from 'react';
 import {
   Draggable,
   DraggableProps,
@@ -18,15 +18,15 @@ import {
   Snappable,
   SnappableProps,
   makeMoveable,
-} from 'react-moveable'
+} from 'react-moveable';
 
 const Moveable = makeMoveable<
   DraggableProps &
-    ScalableProps &
-    RotatableProps &
-    SnappableProps &
-    GroupableProps
-  // @ts-ignore
+  ScalableProps &
+  RotatableProps &
+  SnappableProps &
+  GroupableProps
+// @ts-ignore
 >([Draggable, Scalable, Rotatable, Snappable])
 
 export default function MoveableComponent({ id }: { id: string }) {
@@ -35,7 +35,7 @@ export default function MoveableComponent({ id }: { id: string }) {
   const { setImages, images } = useImageOptions()
   const { selectedImage } = useSelectedLayers()
   const moveableRef = React.useRef<typeof Moveable>()
-//   const { width, height } = splitWidthHeight(exactDomResolution)
+  //   const { width, height } = splitWidthHeight(exactDomResolution)
   const { isMultipleTargetSelected } = useMoveable()
 
   const otherImages = images.filter((image) => image.id !== selectedImage)
@@ -48,15 +48,15 @@ export default function MoveableComponent({ id }: { id: string }) {
 
   const [domWidth, domHeight]: number[] = domResolution.split('x').map(Number)
   return (
-      <Moveable
+    <Moveable
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ref={moveableRef as any}
       target={
         isMultipleTargetSelected
           ? '.selected'
           : typeof document !== 'undefined'
-          ? document?.getElementById(id)
-          : ''
+            ? document?.getElementById(id)
+            : ''
       }
       hideChildMoveableDefaultLines={true}
       draggable={true}
@@ -75,13 +75,10 @@ export default function MoveableComponent({ id }: { id: string }) {
         const rotateY = target.style.transform.match(/rotateY\((.*?)\)/)
         const rotateZ = target.style.transform.match(/rotateZ\((.*?)\)/)
 
-        target.style.transform = `${
-          perspective ? perspective[0] : ''
-        } translate(${xPerc}%, ${yPerc}%) ${scale ? scale[0] : ''} ${
-          rotate ? rotate[0] : ''
-        } ${rotateX ? rotateX[0] : ''} ${rotateY ? rotateY[0] : ''} ${
-          rotateZ ? rotateZ[0] : ''
-        } `
+        target.style.transform = `${perspective ? perspective[0] : ''
+          } translate(${xPerc}%, ${yPerc}%) ${scale ? scale[0] : ''} ${rotate ? rotate[0] : ''
+          } ${rotateX ? rotateX[0] : ''} ${rotateY ? rotateY[0] : ''} ${rotateZ ? rotateZ[0] : ''
+          } `
       }}
       onDragEnd={({ target, lastEvent }) => {
         // @ts-expect-error
@@ -90,16 +87,16 @@ export default function MoveableComponent({ id }: { id: string }) {
         const yPerc = (lastEvent?.translate[1] / target?.offsetHeight) * 100
         selectedImage &&
           setImages(
-            images.map((image, index) =>
-              index === selectedImage - 1
+            images.map((image) =>
+              image.id === selectedImage
                 ? {
-                    ...image,
-                    style: {
-                      ...image.style,
-                      translateX: xPerc,
-                      translateY: yPerc,
-                    },
-                  }
+                  ...image,
+                  style: {
+                    ...image.style,
+                    translateX: xPerc,
+                    translateY: yPerc,
+                  },
+                }
                 : image
             )
           )
@@ -123,13 +120,10 @@ export default function MoveableComponent({ id }: { id: string }) {
         // @ts-expect-error
         const yPerc = (drag.beforeTranslate[1] / target.offsetHeight) * 100
 
-        target.style.transform = `${
-          perspective ? perspective[0] : ''
-        } translate(${xPerc}%, ${yPerc}%) scale(${scaleX}, ${scaleY}) ${
-          rotate ? rotate[0] : ''
-        } ${rotateX ? rotateX[0] : ''} ${rotateY ? rotateY[0] : ''} ${
-          rotateZ ? rotateZ[0] : ''
-        }`
+        target.style.transform = `${perspective ? perspective[0] : ''
+          } translate(${xPerc}%, ${yPerc}%) scale(${scaleX}, ${scaleY}) ${rotate ? rotate[0] : ''
+          } ${rotateX ? rotateX[0] : ''} ${rotateY ? rotateY[0] : ''} ${rotateZ ? rotateZ[0] : ''
+          }`
       }}
       onScaleEnd={({ target, lastEvent }) => {
         if (!lastEvent) return
@@ -142,17 +136,17 @@ export default function MoveableComponent({ id }: { id: string }) {
 
         selectedImage &&
           setImages(
-            images.map((image, index) =>
-              index === selectedImage - 1
+            images.map((image) =>
+              image.id === selectedImage
                 ? {
-                    ...image,
-                    style: {
-                      ...image.style,
-                      translateX: xPerc,
-                      translateY: yPerc,
-                      imageSize: `${scaleX}`,
-                    },
-                  }
+                  ...image,
+                  style: {
+                    ...image.style,
+                    translateX: xPerc,
+                    translateY: yPerc,
+                    imageSize: `${scaleX}`,
+                  },
+                }
                 : image
             )
           )
@@ -170,25 +164,23 @@ export default function MoveableComponent({ id }: { id: string }) {
 
         const rotate = beforeRotate || ''
 
-        target.style.transform = `${perspective ? perspective[0] : ''} ${
-          translate ? translate[0] : ''
-        } ${scale ? scale[0] : ''} ${rotate ? `rotate(${rotate}deg)` : ''} ${
-          rotateX ? rotateX[0] : ''
-        } ${rotateY ? rotateY[0] : ''} ${rotateZ ? rotateZ[0] : ''}`
+        target.style.transform = `${perspective ? perspective[0] : ''} ${translate ? translate[0] : ''
+          } ${scale ? scale[0] : ''} ${rotate ? `rotate(${rotate}deg)` : ''} ${rotateX ? rotateX[0] : ''
+          } ${rotateY ? rotateY[0] : ''} ${rotateZ ? rotateZ[0] : ''}`
       }}
       onRotateEnd={({ lastEvent }) => {
         const rotate = lastEvent.rotate
         selectedImage &&
           setImages(
-            images.map((image, index) =>
-              index === selectedImage - 1
+            images.map((image) =>
+              image.id === selectedImage
                 ? {
-                    ...image,
-                    style: {
-                      ...image.style,
-                      rotate: rotate,
-                    },
-                  }
+                  ...image,
+                  style: {
+                    ...image.style,
+                    rotate: rotate,
+                  },
+                }
                 : image
             )
           )
