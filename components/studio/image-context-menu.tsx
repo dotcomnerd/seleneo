@@ -105,6 +105,7 @@ export default function ContextMenuImage({
         }
     }
 
+    // TODO: make hotkeys use ts-key-enum
     useHotkeys('Delete', () => {
         if (selectedImage)
             if (showControls) {
@@ -116,19 +117,16 @@ export default function ContextMenuImage({
 
     // TODO: potentially move this to the correct place? but for now we can leave it here
     useHotkeys('Backspace', () => {
-        console.log('DEBUG: Delete Started...')
         if (selectedImage) {
             handleImageDelete()
             setShowControls(false)
             setSelectedImage(null)
         }
-        console.log('DEBUG: Delete Finished...')
     })
 
-    useHotkeys('e', () => {
-        console.log('e pressed for saving')
+    useHotkeys(['ctrl+shift+s', 'meta+shift+s'], () => {
         if (images.length === 0) {
-            toast.error('Cannot save empty canvas', { position: 'top-left' })
+            toast.error('Cannot Save Empty Canvas', { position: 'top-left' })
             return
         }
 
@@ -155,11 +153,9 @@ export default function ContextMenuImage({
             },
         }
 
-
-        console.log('current canvasState:', canvasState)
         localStorage.setItem('canvasState', JSON.stringify(canvasState))
 
-        toast.success('saved state to localStorage', { position: 'top-left' })
+        toast.success('Current State Saved Locally', { position: 'top-left' })
     })
 
     const cropImageNow = () => {
@@ -295,7 +291,7 @@ export default function ContextMenuImage({
                             onChange={(c) => setCrop(c)}
                             disabled={!enableCrop || !selectedImage}
                             onComplete={(c) => {
-                                console.log(c)
+                                cropImageNow()
                             }}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}

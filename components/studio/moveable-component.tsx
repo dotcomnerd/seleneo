@@ -88,9 +88,6 @@ export default function MoveableComponent({ id }: { id: string }) {
         const xPerc = (lastEvent?.translate[0] / target?.offsetWidth) * 100
         // @ts-expect-error
         const yPerc = (lastEvent?.translate[1] / target?.offsetHeight) * 100
-        
-        console.log(`DEBUG: xPerc: ${xPerc}, yPerc: ${yPerc}`);
-
         selectedImage &&
           setImages(
             images.map((image, index) =>
@@ -181,9 +178,6 @@ export default function MoveableComponent({ id }: { id: string }) {
       }}
       onRotateEnd={({ lastEvent }) => {
         const rotate = lastEvent.rotate
-
-        console.log('DEBUG: Rotation', rotate);
-
         selectedImage &&
           setImages(
             images.map((image, index) =>

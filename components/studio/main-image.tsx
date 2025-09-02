@@ -520,12 +520,12 @@ function LoadAImage() {
                     }
                 }
 
-                toast.success("Save loaded successfully", { position: "top-left" });
+                toast.success("Local State Restored Successfully", { position: "top-left" });
                 return;
             }
 
         } catch (error) {
-            toast.error("Error loading saved state", { position: "top-left" });
+            toast.error("Error Loading Saved State", { position: "top-left" });
         }
     };
 
