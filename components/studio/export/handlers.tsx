@@ -53,7 +53,7 @@ export interface NewSaveResponse {
 }
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
-    const { images, texts, setImages, setTexts, scale, setScale } = useImageOptions()
+    const { images, texts, setImages, setTexts, scale, setScale, setInitialImageUploaded } = useImageOptions()
     const {
         background,
         backgroundType,
@@ -266,7 +266,6 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         }
     }
 
-    // helper function to load google font that was used in main-image.tsx
     const loadGoogleFont = (fontFamily: string) => {
         if (typeof window === 'undefined') return
         const existingLink = document.querySelector(`link[href*="${fontFamily.replace(/\s+/g, '+')}"]`)
@@ -275,6 +274,31 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@200;300;400;500;600;700;800&display=swap`
         link.rel = 'stylesheet'
         document.head.appendChild(link)
+    }
+
+    const restoreIfDefined = (
+        value: any,
+        setter: (value: any) => void
+    ) => {
+        if (value !== undefined && value !== null) {
+            setter(value)
+        }
+    }
+
+    const restoreBackgroundType = (backgroundType: string, backgroundColor: string) => {
+        switch (backgroundType) {
+            case 'solid':
+                document?.documentElement.style.setProperty('--solid-bg', backgroundColor)
+                document?.documentElement.style.setProperty('--gradient-bg', backgroundColor)
+                document?.documentElement.style.setProperty('--mesh-bg', backgroundColor)
+                break
+            case 'gradient':
+                document?.documentElement.style.setProperty('--gradient-bg', backgroundColor)
+                break
+            case 'mesh':
+                document?.documentElement.style.setProperty('--mesh-bg', backgroundColor)
+                break
+        }
     }
 
     const handleRestoreLocalSave = async () => {
@@ -292,16 +316,14 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
 
             const { images: savedImages, texts: savedTexts, backgroundSettings, canvasSettings } = JSON.parse(canvasState)
 
-            // restore images
             if (savedImages && savedImages.length > 0) {
                 setImages([...savedImages])
+                setInitialImageUploaded(true) // hide upload image CTA
             }
 
-            // restore texts and load custom fonts
             if (savedTexts && savedTexts.length > 0) {
                 setTexts([...savedTexts])
 
-                // load any custom fonts that were saved
                 savedTexts.forEach((text: any) => {
                     if (text.style?.fontFamily && text.style.fontFamily !== 'Inter') {
                         loadGoogleFont(text.style.fontFamily)
@@ -309,60 +331,27 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 })
             }
 
-            // restore background settings
             if (backgroundSettings) {
-                if (backgroundSettings.backgroundColor) {
-                    setBackground(backgroundSettings.backgroundColor)
-                }
-                if (backgroundSettings.backgroundType === 'solid') {
-                    document?.documentElement.style.setProperty('--solid-bg', backgroundSettings.backgroundColor)
-                    document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor)
-                    document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor)
-                } else if (backgroundSettings.backgroundType === 'gradient') {
-                    document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor)
-                } else if (backgroundSettings.backgroundType === 'mesh') {
-                    document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor)
-                }
-                if (backgroundSettings.imageBackground) {
-                    setImageBackground(backgroundSettings.imageBackground)
-                }
-                if (backgroundSettings.noise !== undefined) {
-                    setNoise(backgroundSettings.noise)
-                }
-                if (backgroundSettings.gradientAngle !== undefined) {
-                    setGradientAngle(backgroundSettings.gradientAngle)
-                }
-                if (backgroundSettings.solidColor) {
-                    setSolidColor(backgroundSettings.solidColor)
-                }
-                if (backgroundSettings.attribution) {
-                    setAttribution(backgroundSettings.attribution)
-                }
-                if (backgroundSettings.highResBackground !== undefined) {
-                    setHighResBackground(backgroundSettings.highResBackground)
-                }
-                if (backgroundSettings.isBackgroundClicked !== undefined) {
-                    setIsBackgroundClicked(backgroundSettings.isBackgroundClicked)
+                restoreIfDefined(backgroundSettings.backgroundColor, setBackground)
+                restoreIfDefined(backgroundSettings.imageBackground, setImageBackground)
+                restoreIfDefined(backgroundSettings.noise, setNoise)
+                restoreIfDefined(backgroundSettings.gradientAngle, setGradientAngle)
+                restoreIfDefined(backgroundSettings.solidColor, setSolidColor)
+                restoreIfDefined(backgroundSettings.attribution, setAttribution)
+                restoreIfDefined(backgroundSettings.highResBackground, setHighResBackground)
+                restoreIfDefined(backgroundSettings.isBackgroundClicked, setIsBackgroundClicked)
+
+                if (backgroundSettings.backgroundColor && backgroundSettings.backgroundType) {
+                    restoreBackgroundType(backgroundSettings.backgroundType, backgroundSettings.backgroundColor)
                 }
             }
 
-            // restore canvas settings
             if (canvasSettings) {
-                if (canvasSettings.scale !== undefined) {
-                    setScale(canvasSettings.scale)
-                }
-                if (canvasSettings.resolution) {
-                    setResolution(canvasSettings.resolution)
-                }
-                if (canvasSettings.canvasRoundness !== undefined) {
-                    setCanvasRoundness(canvasSettings.canvasRoundness)
-                }
-                if (canvasSettings.scrollScale !== undefined) {
-                    setScrollScale(canvasSettings.scrollScale)
-                }
-                if (canvasSettings.automaticResolution !== undefined) {
-                    setAutomaticResolution(canvasSettings.automaticResolution)
-                }
+                restoreIfDefined(canvasSettings.scale, setScale)
+                restoreIfDefined(canvasSettings.resolution, setResolution)
+                restoreIfDefined(canvasSettings.canvasRoundness, setCanvasRoundness)
+                restoreIfDefined(canvasSettings.scrollScale, setScrollScale)
+                restoreIfDefined(canvasSettings.automaticResolution, setAutomaticResolution)
             }
 
             toast.success("Local State Restored Successfully")
