@@ -8,10 +8,12 @@ import TextStyle from '@tiptap/extension-text-style'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
-export default function useTiptapEditor() {
+
+
+export default function useTiptapEditor(initialContent: string = '') {
     const editor = useEditor({
         extensions: [StarterKit, Color, TextStyle, FontFamily, Document, Paragraph, Text, TextStyle, TextAlign],
-        content: 'Double click to edit',
+        content: initialContent,
     })
 
     return { editor }
