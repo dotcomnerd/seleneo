@@ -1,8 +1,8 @@
 'use client'
 
-import { Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useImageOptions } from '@/store/use-image-options'
+import { Plus } from 'lucide-react'
 
 export default function AddTextLayer() {
   const { setTexts, defaultTextStyle, texts } = useImageOptions()
@@ -14,7 +14,7 @@ export default function AddTextLayer() {
           ...texts,
           {
             content: 'Edit this text',
-            id: texts.length + 1,
+            id: texts.length > 0 ? Math.max(...texts.map(t => t.id)) + 1 : 1,
             style: defaultTextStyle,
           },
         ])
