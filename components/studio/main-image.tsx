@@ -596,14 +596,7 @@ function LoadAImage() {
                                     Dark mode demo
                                     <ImageIcon className="ml-2" size={19} />
                                 </Button>
-                                <Button
-                                    onClick={loadDemoImageFromJson}
-                                    className="z-[120] max-w-52 mt-4 hidden rounded-md bg-background/80 backdrop-blur-sm text-primary shadow-sm hover:bg-background/90 sm:inline-flex"
-                                    variant="outline"
-                                >
-                                    Load from JSON
-                                    <ImageIcon className="ml-2" size={19} />
-                                </Button>
+
                             </div>
                         </div>
                     </div>

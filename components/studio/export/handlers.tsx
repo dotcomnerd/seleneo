@@ -12,13 +12,19 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { useBackgroundOptions } from '@/store/use-background-options'
 import { useImageOptions } from '@/store/use-image-options'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
-import { Copy, Download, Eye, EyeOff, Save } from 'lucide-react'
-import { useState } from 'react'
+import { Cloud, Copy, Download, Eye, EyeOff, HardDrive, RotateCcw, Save } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
 interface ExportActionsProps {
@@ -47,15 +53,57 @@ export interface NewSaveResponse {
 }
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
-    const { images } = useImageOptions()
-    const { scaleFactor } = useResizeCanvas()
+    const { images, texts, setImages, setTexts, scale, setScale } = useImageOptions()
+    const {
+        background,
+        backgroundType,
+        imageBackground,
+        noise,
+        gradientAngle,
+        solidColor,
+        attribution,
+        highResBackground,
+        isBackgroundClicked,
+        setBackground,
+        setBackgroundType,
+        setImageBackground,
+        setNoise,
+        setGradientAngle,
+        setSolidColor,
+        setAttribution,
+        setHighResBackground,
+        setIsBackgroundClicked
+    } = useBackgroundOptions()
+    const {
+        scaleFactor,
+        resolution,
+        canvasRoundness,
+        scrollScale,
+        automaticResolution,
+        setResolution,
+        setCanvasRoundness,
+        setScrollScale,
+        setAutomaticResolution
+    } = useResizeCanvas()
     const [isCopying, setIsCopying] = useState(false)
     const [isDownloading, setIsDownloading] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [isSavingLocally, setIsSavingLocally] = useState(false)
+    const [isRestoring, setIsRestoring] = useState(false)
     const { lastSavedTime, setLastSavedTime } = useLastSavedTime()
     const [dialogOpen, setDialogOpen] = useState(false)
+    const [savePopoverOpen, setSavePopoverOpen] = useState(false)
     const [existingImage, setExistingImage] = useState<DuplicateResponse | null>(null)
-    const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">("PRIVATE");
+    const [visibility, setVisibility] = useState<"PUBLIC" | "PRIVATE">("PRIVATE")
+    const [hasLocalSave, setHasLocalSave] = useState(false)
+
+    // check if local save exists on mount
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const canvasState = localStorage.getItem('canvasState')
+            setHasLocalSave(canvasState !== null)
+        }
+    }, [])
 
     const checkExportPermission = () => {
         if (images.length === 0) {
@@ -175,6 +223,156 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         }
     }
 
+    const handleLocalSave = async () => {
+        if (!checkExportPermission() || isSavingLocally) return
+
+        setIsSavingLocally(true)
+        try {
+            if (images.length === 0) {
+                toast.error('Cannot Save Empty Canvas')
+                return
+            }
+
+            const canvasState = {
+                images: images,
+                texts: texts,
+                backgroundSettings: {
+                    backgroundColor: background,
+                    backgroundType: backgroundType,
+                    imageBackground: imageBackground,
+                    noise: noise,
+                    gradientAngle: gradientAngle,
+                    solidColor: solidColor,
+                    attribution: attribution,
+                    highResBackground: highResBackground,
+                    isBackgroundClicked: isBackgroundClicked,
+                },
+                canvasSettings: {
+                    scale: scale,
+                    resolution: resolution,
+                    canvasRoundness: canvasRoundness,
+                    scrollScale: scrollScale,
+                    automaticResolution: automaticResolution,
+                },
+            }
+
+            localStorage.setItem('canvasState', JSON.stringify(canvasState))
+            setHasLocalSave(true)
+            toast.success('Current State Saved Locally')
+        } catch (error: any) {
+            toast.error('Local save failed', { description: error.message })
+        } finally {
+            setIsSavingLocally(false)
+        }
+    }
+
+    // helper function to load google font that was used in main-image.tsx
+    const loadGoogleFont = (fontFamily: string) => {
+        if (typeof window === 'undefined') return
+        const existingLink = document.querySelector(`link[href*="${fontFamily.replace(/\s+/g, '+')}"]`)
+        if (existingLink) return
+        const link = document.createElement('link')
+        link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@200;300;400;500;600;700;800&display=swap`
+        link.rel = 'stylesheet'
+        document.head.appendChild(link)
+    }
+
+    const handleRestoreLocalSave = async () => {
+        if (isRestoring) return
+
+        setIsRestoring(true)
+        try {
+            if (typeof window === 'undefined') return
+
+            const canvasState = localStorage.getItem('canvasState')
+            if (canvasState === null) {
+                toast.error('No local save found')
+                return
+            }
+
+            const { images: savedImages, texts: savedTexts, backgroundSettings, canvasSettings } = JSON.parse(canvasState)
+
+            // restore images
+            if (savedImages && savedImages.length > 0) {
+                setImages([...savedImages])
+            }
+
+            // restore texts and load custom fonts
+            if (savedTexts && savedTexts.length > 0) {
+                setTexts([...savedTexts])
+
+                // load any custom fonts that were saved
+                savedTexts.forEach((text: any) => {
+                    if (text.style?.fontFamily && text.style.fontFamily !== 'Inter') {
+                        loadGoogleFont(text.style.fontFamily)
+                    }
+                })
+            }
+
+            // restore background settings
+            if (backgroundSettings) {
+                if (backgroundSettings.backgroundColor) {
+                    setBackground(backgroundSettings.backgroundColor)
+                }
+                if (backgroundSettings.backgroundType === 'solid') {
+                    document?.documentElement.style.setProperty('--solid-bg', backgroundSettings.backgroundColor)
+                    document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor)
+                    document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor)
+                } else if (backgroundSettings.backgroundType === 'gradient') {
+                    document?.documentElement.style.setProperty('--gradient-bg', backgroundSettings.backgroundColor)
+                } else if (backgroundSettings.backgroundType === 'mesh') {
+                    document?.documentElement.style.setProperty('--mesh-bg', backgroundSettings.backgroundColor)
+                }
+                if (backgroundSettings.imageBackground) {
+                    setImageBackground(backgroundSettings.imageBackground)
+                }
+                if (backgroundSettings.noise !== undefined) {
+                    setNoise(backgroundSettings.noise)
+                }
+                if (backgroundSettings.gradientAngle !== undefined) {
+                    setGradientAngle(backgroundSettings.gradientAngle)
+                }
+                if (backgroundSettings.solidColor) {
+                    setSolidColor(backgroundSettings.solidColor)
+                }
+                if (backgroundSettings.attribution) {
+                    setAttribution(backgroundSettings.attribution)
+                }
+                if (backgroundSettings.highResBackground !== undefined) {
+                    setHighResBackground(backgroundSettings.highResBackground)
+                }
+                if (backgroundSettings.isBackgroundClicked !== undefined) {
+                    setIsBackgroundClicked(backgroundSettings.isBackgroundClicked)
+                }
+            }
+
+            // restore canvas settings
+            if (canvasSettings) {
+                if (canvasSettings.scale !== undefined) {
+                    setScale(canvasSettings.scale)
+                }
+                if (canvasSettings.resolution) {
+                    setResolution(canvasSettings.resolution)
+                }
+                if (canvasSettings.canvasRoundness !== undefined) {
+                    setCanvasRoundness(canvasSettings.canvasRoundness)
+                }
+                if (canvasSettings.scrollScale !== undefined) {
+                    setScrollScale(canvasSettings.scrollScale)
+                }
+                if (canvasSettings.automaticResolution !== undefined) {
+                    setAutomaticResolution(canvasSettings.automaticResolution)
+                }
+            }
+
+            toast.success("Local State Restored Successfully")
+        } catch (error: any) {
+            toast.error("Error Loading Saved State", { description: error.message })
+        } finally {
+            setIsRestoring(false)
+        }
+    }
+
     return (
         <>
             <div className="flex items-center">
@@ -183,7 +381,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                         variant="ghost"
                         size="icon"
                         onClick={handleCopy}
-                        disabled={isCopying || isDownloading || isSaving}
+                        disabled={isCopying || isDownloading || isSaving || isSavingLocally || isRestoring}
                         className="hover:bg-background"
                     >
                         {isCopying ? <Spinner /> : <Copy className="h-4 w-4" />}
@@ -192,21 +390,104 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                         variant="ghost"
                         size="icon"
                         onClick={handleDownload}
-                        disabled={isCopying || isDownloading || isSaving}
+                        disabled={isCopying || isDownloading || isSaving || isSavingLocally || isRestoring}
                         className="hover:bg-background"
                     >
                         {isDownloading ? <Spinner /> : <Download className="h-4 w-4" />}
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={handleCloudSave}
-                        disabled={isCopying || isDownloading || isSaving || sessionStatus !== 'authenticated'}
-                        title={sessionStatus === 'unauthenticated' ? 'Login to save your design!' : 'Save your design to the cloud'}
-                        className="hover:bg-background"
-                    >
-                        {isSaving ? <Spinner /> : <Save className="h-4 w-4" />}
-                    </Button>
+                    <TooltipProvider>
+                        <Tooltip delayDuration={100}>
+                            <Popover open={savePopoverOpen} onOpenChange={setSavePopoverOpen}>
+                                <PopoverTrigger asChild>
+                                    <TooltipTrigger asChild>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            disabled={isCopying || isDownloading || isSaving || isSavingLocally || isRestoring}
+                                            className="hover:bg-background"
+                                        >
+                                            <Save className="h-4 w-4" />
+                                        </Button>
+                                    </TooltipTrigger>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-fit p-3" align="end">
+                                    <div
+                                        className="flex items-center gap-2"
+                                        onFocusCapture={(e) => {
+                                            e.stopPropagation();
+                                        }}
+                                    >
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={100}>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            handleCloudSave()
+                                                            setSavePopoverOpen(false)
+                                                        }}
+                                                        disabled={isSaving || sessionStatus !== 'authenticated'}
+                                                        className="h-9 w-9"
+                                                    >
+                                                        {isSaving ? <Spinner /> : <Cloud className="h-4 w-4" />}
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{sessionStatus === 'unauthenticated' ? 'Login to save your design to the cloud' : 'Save to Cloud'}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={100}>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            handleLocalSave()
+                                                            setSavePopoverOpen(false)
+                                                        }}
+                                                        disabled={isSavingLocally}
+                                                        className="h-9 w-9"
+                                                    >
+                                                        {isSavingLocally ? <Spinner /> : <HardDrive className="h-4 w-4" />}
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Save Locally</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                        <TooltipProvider>
+                                            <Tooltip delayDuration={100}>
+                                                <TooltipTrigger asChild>
+                                                    <Button
+                                                        variant="outline"
+                                                        size="icon"
+                                                        onClick={() => {
+                                                            handleRestoreLocalSave()
+                                                            setSavePopoverOpen(false)
+                                                        }}
+                                                        disabled={!hasLocalSave || isRestoring}
+                                                        className="h-9 w-9"
+                                                    >
+                                                        {isRestoring ? <Spinner /> : <RotateCcw className="h-4 w-4" />}
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>{hasLocalSave ? 'Restore Local Save' : 'No local save found'}</p>
+                                                </TooltipContent>
+                                            </Tooltip>
+                                        </TooltipProvider>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
+                            <TooltipContent>
+                                <p>Save Options</p>
+                            </TooltipContent>
+                        </Tooltip>
+                    </TooltipProvider>
                 </div>
                 <div className="h-4 w-px bg-border" />
                 <div className="flex items-center gap-1 px-4">
