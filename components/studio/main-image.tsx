@@ -325,7 +325,11 @@ function LoadAImage() {
                         }
                     }
                 } catch (error) {
-                    toast.error(error as string, { position: "top-left" });
+                    if (error instanceof Error) {
+                        toast.error(error.message, { position: "top-left" });
+                    } else {
+                        toast.error("An unknown error occurred when loading the image", { position: "top-left" });
+                    }
                 }
             }
         },
@@ -379,7 +383,11 @@ function LoadAImage() {
                         }
                     }
                 } catch (error) {
-                    toast.error("Error loading image", { position: "top-left" });
+                    if (error instanceof Error) {
+                        toast.error(error.message, { position: "top-left" });
+                    } else {
+                        toast.error("An unknown error occurred when loading the image", { position: "top-left" });
+                    }
                     return;
                 }
             }
