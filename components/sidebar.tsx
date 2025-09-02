@@ -108,7 +108,7 @@ export function Sidebar() {
 
     return (
         <aside className="flex w-[6rem] overflow-x-hidden border-r border-border/60 md:min-w-[25rem] md:max-w-[25rem]">
-            <ul className="no-scrollbar relative flex basis-[100%] flex-col items-center gap-6 overflow-x-hidden border px-4 py-8 md:max-w-[28%] md:basis-[28%] md:border-r">
+            <ul className="no-scrollbar relative flex basis-[100%] flex-col items-center gap-6 overflow-x-hidden border px-4 py-4 md:max-w-[28%] md:basis-[28%] md:border-r">
                 {sidebarButtons.map((button, index) => (
                     <SidebarButton
                         key={button.id}
