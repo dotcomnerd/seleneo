@@ -62,11 +62,9 @@ export default function TiptapMoveable({ id }: { id: string }) {
     if (selectedText && typeof document !== 'undefined') {
       const textElement = texts.find(text => text.id === selectedText)
       const domElement = document.getElementById(`text-${selectedText}`)
-      if (textElement && domElement && (textElement.style.translateX !== 0 || textElement.style.translateY !== 0)) {
-        // apply saved position to the DOM element
-        const transform = `translate(${textElement.style.translateX ?? 0}%, ${textElement.style.translateY ?? 0}%)`
+      if (textElement && domElement && (textElement.style.translateX !== 0 || textElement.style.translateY !== 0 || textElement.style.scaleX !== 1 || textElement.style.scaleY !== 1 || textElement.style.rotate !== 0 || textElement.style.rotateX !== 0 || textElement.style.rotateY !== 0 || textElement.style.rotateZ !== 0)) {
+        const transform = `perspective(${textElement.style.perspective ?? 1000}px) translate(${textElement.style.translateX ?? 0}%, ${textElement.style.translateY ?? 0}%) scale(${textElement.style.scaleX ?? 1}, ${textElement.style.scaleY ?? 1}) rotate(${textElement.style.rotate ?? 0}deg) rotateX(${textElement.style.rotateX ?? 0}deg) rotateY(${textElement.style.rotateY ?? 0}deg) rotateZ(${textElement.style.rotateZ ?? 0}deg)`
         domElement.style.transform = transform
-
         // refresh moveable to recognize new position
         if (moveableRef.current) {
           setTimeout(() => moveableRef.current?.updateRect(), 50)
@@ -112,10 +110,64 @@ export default function TiptapMoveable({ id }: { id: string }) {
       onScale={(e) => {
         e.target.style.transform = e.drag.transform
       }}
+      onScaleEnd={({ target, lastEvent }) => {
+        if (!lastEvent) return
+
+        const scaleX = lastEvent.scale[0]
+        const scaleY = lastEvent.scale[1]
+        // @ts-expect-error
+        const xPerc = (lastEvent?.drag?.translate[0] / target.offsetWidth) * 100
+        // @ts-expect-error
+        const yPerc = (lastEvent?.drag?.translate[1] / target.offsetHeight) * 100
+
+        console.log('DEBUG: Text Scale & Position', { scaleX, scaleY, xPerc, yPerc });
+
+        if (selectedText) {
+          setTexts(
+            texts.map((text) =>
+              text.id === selectedText
+                ? {
+                  ...text,
+                  style: {
+                    ...text.style,
+                    scaleX: scaleX,
+                    scaleY: scaleY,
+                    translateX: xPerc,
+                    translateY: yPerc,
+                  },
+                }
+                : text
+            )
+          )
+        }
+      }}
       rotatable={true}
       rotationPosition={'top'}
       onRotate={(e) => {
         e.target.style.transform = e.drag.transform
+      }}
+      onRotateEnd={({ lastEvent }) => {
+        if (!lastEvent) return
+
+        const rotate = lastEvent.rotate
+
+        console.log('DEBUG: Text Rotation', rotate);
+
+        if (selectedText) {
+          setTexts(
+            texts.map((text) =>
+              text.id === selectedText
+                ? {
+                  ...text,
+                  style: {
+                    ...text.style,
+                    rotate: rotate,
+                  },
+                }
+                : text
+            )
+          )
+        }
       }}
       snapRotationThreshold={5}
       snapRotationDegrees={[0, 90, 180, 270]}

@@ -278,11 +278,11 @@ const ImageUpload = () => {
 export default ImageUpload
 
 function LoadAImage() {
-    const { images, setImages, setTexts, defaultStyle, setInitialImageUploaded } =
+    const { images, setImages, setTexts, defaultStyle, setInitialImageUploaded, setScale } =
         useImageOptions()
     const { setSelectedImage } = useSelectedLayers()
     const { imagesCheck, setImagesCheck } = useColorExtractor()
-    const { setResolution, automaticResolution } = useResizeCanvas()
+    const { setResolution, automaticResolution, setCanvasRoundness, setScrollScale, setAutomaticResolution } = useResizeCanvas()
     const { setBackground, setImageBackground, setBackgroundType, setSolidColor, setAttribution, setHighResBackground, setIsBackgroundClicked, setNoise, setGradientAngle } = useBackgroundOptions()
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
@@ -449,23 +449,8 @@ function LoadAImage() {
         try {
             const canvasState = localStorage.getItem('canvasState');
             if (canvasState !== null) {
-                console.log("State found");
-
-                const { images, texts, backgroundSettings } = JSON.parse(canvasState);
-
-                console.log(
-                    "DEBUG: ",
-                    "Text: ", texts,
-                    "\nImages: ", images,
-                    "\nbackground color: ", backgroundSettings?.backgroundColor,
-                    "\nbackground image: ", backgroundSettings?.imageBackground,
-                    "\nbackground type: ", backgroundSettings?.backgroundType,
-                    "\nnoise: ", backgroundSettings?.noise,
-                    "\ngradientAngle: ", backgroundSettings?.gradientAngle
-                );
-
+                const { images, texts, backgroundSettings, canvasSettings } = JSON.parse(canvasState);
                 // TODO: redo section to not use so many if statements :buster:
-
                 if (images && images.length > 0) {
                     setImages([...images]);
                     setImagesCheck([...imagesCheck, ...images.map((image: any) => image.image)]);
@@ -517,57 +502,30 @@ function LoadAImage() {
                     }
                 }
 
+                if (canvasSettings) {
+                    if (canvasSettings.scale !== undefined) {
+                        setScale(canvasSettings.scale);
+                    }
+                    if (canvasSettings.resolution) {
+                        setResolution(canvasSettings.resolution);
+                    }
+                    if (canvasSettings.canvasRoundness !== undefined) {
+                        setCanvasRoundness(canvasSettings.canvasRoundness);
+                    }
+                    if (canvasSettings.scrollScale !== undefined) {
+                        setScrollScale(canvasSettings.scrollScale);
+                    }
+                    if (canvasSettings.automaticResolution !== undefined) {
+                        setAutomaticResolution(canvasSettings.automaticResolution);
+                    }
+                }
+
                 toast.success("Save loaded successfully", { position: "top-left" });
                 return;
             }
 
-            const demoData = {
-                imageSrc: "https://images.unsplash.com/photo-1563409236302-8442b5e644df?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8ZHVja3xlbnwwfHwwfHx8MA%3D%3D",
-                canvasWidth: 1920,
-                canvasHeight: 1080,
-                style: {
-                    imageSize: '0.78',
-                    imageRoundness: 0.0,
-                    rotate: "-53.2286291681678",
-                    translateX: -34.11759505091649,
-                    translateY: -8.186003779741673,
-                }
-            };
-
-            const image = new Image();
-            image.crossOrigin = 'Anonymous';
-            image.src = demoData.imageSrc;
-
-            image.onload = async () => {
-                const scaleX = demoData.canvasWidth / image.width;
-                const scaleY = demoData.canvasHeight / image.height;
-                demoData.style.imageSize = (
-                    demoData.canvasWidth > demoData.canvasHeight
-                        ? Math.min(scaleX, scaleY)
-                        : Math.max(scaleX, scaleY)
-                ) as unknown as string;
-
-                console.log("Testing scale: ", demoData.style.imageSize);
-
-                setImages([
-                    ...images,
-                    {
-                        image: demoData.imageSrc,
-                        id: images.length + 1,
-                        style: {
-                            ...defaultStyle,
-                            ...demoData.style,
-                        },
-                    },
-                ]);
-                setImagesCheck([...imagesCheck, demoData.imageSrc]);
-
-                toast.success("Save loaded successfully", { position: "top-left" });
-
-                setResolution(`${demoData.canvasWidth}x${demoData.canvasHeight}`);
-            };
         } catch (error) {
-            toast.error("Error loading demo image", { position: "top-left" });
+            toast.error("Error loading saved state", { position: "top-left" });
         }
     };
 
