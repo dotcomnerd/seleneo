@@ -195,7 +195,7 @@ export default function TextLayers() {
                                         text.style.shadowOpacity
                                     )})`,
                                 lineHeight: '1',
-                                transform: `translate(${text.style.translateX ?? 0}%, ${text.style.translateY ?? 0}%)`,
+                                transform: `perspective(${text.style.perspective ?? 1000}px) translate(${text.style.translateX ?? 0}%, ${text.style.translateY ?? 0}%) scale(${text.style.scaleX ?? 1}, ${text.style.scaleY ?? 1}) rotate(${text.style.rotate ?? 0}deg) rotateX(${text.style.rotateX ?? 0}deg) rotateY(${text.style.rotateY ?? 0}deg) rotateZ(${text.style.rotateZ ?? 0}deg)`,
                                 willChange: 'transform',
                                 zIndex: `${text.style.zIndex}`,
                             }}

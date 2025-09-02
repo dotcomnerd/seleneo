@@ -20,9 +20,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { useBackgroundOptions } from '@/store/use-background-options';
 import { useColorExtractor } from '@/store/use-color-extractor';
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options';
 import { useMoveable } from '@/store/use-moveable';
+import { useResizeCanvas } from '@/store/use-resize-canvas';
 import {
     BringToFront,
     CropIcon,
@@ -36,7 +38,6 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { type Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
 import { toast } from 'sonner';
-import { useBackgroundOptions } from '@/store/use-background-options'
 
 const DynamicCropComponent = dynamic(() =>
     import('react-image-crop').then((mod) => mod.ReactCrop)
@@ -55,11 +56,12 @@ export default function ContextMenuImage({
         height: 50,
     })
     const imgRef = useRef<HTMLImageElement>(null)
-    const { setImages, images, texts } = useImageOptions()
+    const { setImages, images, texts, scale } = useImageOptions()
     const { selectedImage, setSelectedImage, setEnableCrop, enableCrop } =
         useSelectedLayers()
     const { showControls, setShowControls } = useMoveable()
     const { background, imageBackground, backgroundType, noise, gradientAngle, solidColor, attribution, highResBackground, isBackgroundClicked } = useBackgroundOptions()
+    const { resolution, canvasRoundness, scrollScale, automaticResolution } = useResizeCanvas()
 
 
     const handleImageDelete = () => {
@@ -115,7 +117,7 @@ export default function ContextMenuImage({
     // TODO: potentially move this to the correct place? but for now we can leave it here
     useHotkeys('Backspace', () => {
         console.log('DEBUG: Delete Started...')
-        if (selectedImage){
+        if (selectedImage) {
             handleImageDelete()
             setShowControls(false)
             setSelectedImage(null)
@@ -125,10 +127,10 @@ export default function ContextMenuImage({
 
     useHotkeys('e', () => {
         console.log('e pressed for saving')
-        if (images.length === 0){
-            toast.error('Cannot save empty canvas', {position: 'top-left'})
-            return  
-        } 
+        if (images.length === 0) {
+            toast.error('Cannot save empty canvas', { position: 'top-left' })
+            return
+        }
 
         const canvasState = {
             images: images,
@@ -144,13 +146,20 @@ export default function ContextMenuImage({
                 highResBackground: highResBackground,
                 isBackgroundClicked: isBackgroundClicked,
             },
+            canvasSettings: {
+                scale: scale,
+                resolution: resolution,
+                canvasRoundness: canvasRoundness,
+                scrollScale: scrollScale,
+                automaticResolution: automaticResolution,
+            },
         }
-        
+
 
         console.log('current canvasState:', canvasState)
         localStorage.setItem('canvasState', JSON.stringify(canvasState))
 
-        toast.success('saved state to localStorage', {position: 'top-left'})
+        toast.success('saved state to localStorage', { position: 'top-left' })
     })
 
     const cropImageNow = () => {
