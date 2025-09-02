@@ -112,7 +112,7 @@ export default function TranslateOption() {
                 <h1 className="text-[0.85rem]">Translate Y</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images.find(img => img.id === selectedImage)?.style.translateY : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.translateY ?? 0 : 0
                     )}px`}
                 </p>
                 <Button
