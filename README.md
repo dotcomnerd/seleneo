@@ -52,8 +52,11 @@ docker-compose up -d
 Next, push the database schema to the database:
 
 ```bash
-bun db:push
+bunx dotenv-cli -e .env.local -- bun db:push
 ```
+
+> [!NOTE]
+> We use `dotenv-cli` to load the environment variables from the `.env.local` file since Prisma does not [natively support custom filenames](https://github.com/prisma/prisma/issues/25183).
 
 You're all set! 🎉
 
@@ -109,6 +112,9 @@ bun start
 6. **Browse Other Designs**: View and submit visuals created by other users of Seleneo. Get inspired by the community and share your creations.
 
 ## Extra Scripts
+
+> [!IMPORTANT]
+> We recommend using `dotenv-cli` to load the env variables if you're not using `.env`
 
 In the directory, you can run the following scripts to help you with development:
 
