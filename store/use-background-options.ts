@@ -35,8 +35,7 @@ interface BackgroundOptionsState {
 }
 
 export const useBackgroundOptions = create<BackgroundOptionsState>()((set) => ({
-  background:
-    'linear-gradient(var(--gradient-angle), rgb(202, 194, 255), rgb(242, 231, 248) 100%)',
+  background:'',
   setBackground: (background) => set({ background }),
 
   solidColor: '',
