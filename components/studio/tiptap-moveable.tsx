@@ -1,8 +1,9 @@
 'use client'
 
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
-import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { useImageQualityStore } from '@/store/use-image-quality'
+import { useResizeCanvas } from '@/store/use-resize-canvas'
+import { useEffect, useRef } from 'react'
 import {
   Draggable,
   DraggableProps,
@@ -16,16 +17,17 @@ import {
 } from 'react-moveable'
 
 const Moveable = makeMoveable<
-    DraggableProps & ScalableProps & RotatableProps & SnappableProps
-    // @ts-expect-error - more hax yay
+  DraggableProps & ScalableProps & RotatableProps & SnappableProps
+// @ts-expect-error - more hacks yay
 >([Draggable, Scalable, Rotatable, Snappable])
 
 export default function TiptapMoveable({ id }: { id: string }) {
   const { quality } = useImageQualityStore()
   const { domResolution, scaleFactor } = useResizeCanvas()
-  const { images, texts } = useImageOptions()
-  const {  selectedText } = useSelectedLayers()
-//   const { width, height } = splitWidthHeight(exactDomResolution)
+  const { images, texts, setTexts } = useImageOptions()
+  const { selectedText } = useSelectedLayers()
+  const moveableRef = useRef<any>(null)
+  //   const { width, height } = splitWidthHeight(exactDomResolution)
 
   const [domWidth, domHeight]: number[] = domResolution.split('x').map(Number)
 
@@ -45,21 +47,65 @@ export default function TiptapMoveable({ id }: { id: string }) {
     })),
   ]
 
+  // refresh moveable when text state changes
+  useEffect(() => {
+    if (moveableRef.current) {
+      // i put this delay to let the font load and DOM update
+      setTimeout(() => {
+        moveableRef.current?.updateRect()
+      }, 100)
+    }
+  }, [texts])
+
+  // make sure saved position is applied when text is restored from JSON
+  useEffect(() => {
+    if (selectedText && typeof document !== 'undefined') {
+      const textElement = texts.find(text => text.id === selectedText)
+      const domElement = document.getElementById(`text-${selectedText}`)
+      if (textElement && domElement && (textElement.style.translateX !== 0 || textElement.style.translateY !== 0)) {
+        // apply saved position to the DOM element
+        const transform = `translate(${textElement.style.translateX ?? 0}%, ${textElement.style.translateY ?? 0}%)`
+        domElement.style.transform = transform
+
+        // refresh moveable to recognize new position
+        if (moveableRef.current) {
+          setTimeout(() => moveableRef.current?.updateRect(), 50)
+        }
+      }
+    }
+  }, [selectedText, texts, moveableRef])
+
   return (
     <Moveable
+      ref={moveableRef}
       target={
         typeof document !== 'undefined' ? document?.getElementById(id) : ''
       }
       draggable={true}
       onDrag={(e) => {
         e.target.style.transform = e.transform
-        // const x = e.beforeTranslate[0]
-        // const y = e.beforeTranslate[1]
-        // // Calculate percentage values based on the parent dimensions
-        // const translateXPercent = (x / +width) * 100
-        // const translateYPercent = (y / +height) * 100
-        // // Apply the translate with percentage values
-        // e.target.style.transform = `translate(${translateXPercent}%, ${translateYPercent}%)`
+      }}
+      onDragEnd={({ target, lastEvent }) => {
+        // @ts-expect-error
+        const xPerc = (lastEvent?.translate[0] / target?.offsetWidth) * 100
+        // @ts-expect-error
+        const yPerc = (lastEvent?.translate[1] / target?.offsetHeight) * 100
+        if (selectedText) {
+          setTexts(
+            texts.map((text) =>
+              text.id === selectedText
+                ? {
+                  ...text,
+                  style: {
+                    ...text.style,
+                    translateX: xPerc,
+                    translateY: yPerc,
+                  },
+                }
+                : text
+            )
+          )
+        }
       }}
       scalable={true}
       keepRatio={true}
