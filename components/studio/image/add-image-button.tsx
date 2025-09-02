@@ -30,7 +30,7 @@ export default function AddImageButton({ }: AddImageButtonProps) {
                 ...images,
                 {
                     image: imageUrl,
-                    id: images.length + 1,
+                    id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
                     style:
                         images.length < 1
                             ? defaultStyle

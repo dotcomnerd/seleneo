@@ -107,7 +107,7 @@ const ImageUpload = () => {
                     ...images,
                     {
                         image: imageUrl,
-                        id: images.length + 1,
+                        id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
                         style: images.length < 1
                             ? defaultStyle
                             : {
@@ -299,9 +299,9 @@ function LoadAImage() {
                     setImagesCheck([...imagesCheck, imageUrl])
                     setImages([
                         ...images,
-                        { image: imageUrl, id: images.length + 1, style: defaultStyle },
+                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
                     ])
-                    setSelectedImage(images.length + 1)
+                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
 
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
@@ -357,9 +357,9 @@ function LoadAImage() {
                     setImagesCheck([...imagesCheck, imageUrl])
                     setImages([
                         ...images,
-                        { image: imageUrl, id: images.length + 1, style: defaultStyle },
+                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
                     ])
-                    setSelectedImage(images.length + 1)
+                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
 
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
