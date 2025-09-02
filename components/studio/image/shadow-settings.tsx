@@ -28,7 +28,7 @@ export default function ShadowSettings() {
 
     const boxShadowPreview = {
         boxShadow: selectedImage
-            ? images[selectedImage - 1]?.style.shadowPreview
+            ? images.find(img => img.id === selectedImage)?.style.shadowPreview
             : '',
     }
 
@@ -45,8 +45,8 @@ export default function ShadowSettings() {
     }) => {
         selectedImage &&
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             style: {
@@ -64,8 +64,8 @@ export default function ShadowSettings() {
     const handleColorChange = (color: string) => {
         selectedImage &&
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             style: {
@@ -75,7 +75,7 @@ export default function ShadowSettings() {
                                     shadows.find(
                                         (shadow) =>
                                             shadow.fullName ===
-                                            (images[selectedImage - 1]?.style.shadowName ?? '')
+                                            (images.find(img => img.id === selectedImage)?.style.shadowName ?? '')
                                     )?.shadow ?? '',
                             },
                         }
@@ -101,12 +101,12 @@ export default function ShadowSettings() {
                         <div className="flex w-full flex-col items-start">
                             <p className="text-[0.85rem] font-medium text-dark/70">
                                 {selectedImage
-                                    ? images[selectedImage - 1]?.style.shadowName
+                                    ? images.find(img => img.id === selectedImage)?.style.shadowName
                                     : 'None'}
                             </p>
                             <p className="text-[0.7rem] font-bold text-dark/50">
                                 {selectedImage
-                                    ? images[selectedImage - 1]?.style.shadowColor.slice(0, 7)
+                                    ? images.find(img => img.id === selectedImage)?.style.shadowColor.slice(0, 7)
                                     : '#000'}
                             </p>
                         </div>
@@ -149,7 +149,7 @@ export default function ShadowSettings() {
                     {Math.round(
                         Number(
                             selectedImage
-                                ? images[selectedImage - 1]?.style.shadowOpacity
+                                ? images.find(img => img.id === selectedImage)?.style.shadowOpacity
                                 : 0.5
                         ) * 100
                     )}
@@ -167,7 +167,7 @@ export default function ShadowSettings() {
                         selectedImage &&
                             setImages(
                                 images.map((image, index) =>
-                                    index === selectedImage - 1
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -181,16 +181,16 @@ export default function ShadowSettings() {
                     }}
                     value={
                         images.length !== 0 && selectedImage
-                            ? [+images[selectedImage - 1]?.style.shadowOpacity]
+                            ? [+(images.find(img => img.id === selectedImage)?.style.shadowOpacity ?? 0)]
                             : [1]
                     }
                     onIncrement={() => {
                         if (images.length === 0 || !selectedImage) return
-                        if (Number(images[selectedImage - 1]?.style.shadowOpacity) >= 1)
+                        if (Number(images.find(img => img.id === selectedImage)?.style.shadowOpacity ?? 0) >= 1)
                             return
                         setImages(
                             images.map((image, index) =>
-                                index === selectedImage - 1
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {
@@ -204,11 +204,11 @@ export default function ShadowSettings() {
                     }}
                     onDecrement={() => {
                         if (images.length === 0 || !selectedImage) return
-                        if (Number(images[selectedImage - 1]?.style.shadowOpacity) <= 0)
+                        if (Number(images.find(img => img.id === selectedImage)?.style.shadowOpacity ?? 0) <= 0)
                             return
                         setImages(
                             images.map((image, index) =>
-                                index === selectedImage - 1
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {
@@ -235,7 +235,7 @@ export default function ShadowSettings() {
                         <Palette className="h-4 w-4" />
                         <span>
                             {selectedImage
-                                ? images[selectedImage - 1]?.style.shadowColor
+                                ? images.find(img => img.id === selectedImage)?.style.shadowColor
                                 : 'Pick a color'}
                         </span>
                     </Button>
@@ -244,7 +244,7 @@ export default function ShadowSettings() {
                     <HexColorPicker
                         color={
                             selectedImage
-                                ? images[selectedImage - 1]?.style.shadowColor
+                                ? images.find(img => img.id === selectedImage)?.style.shadowColor
                                 : '#fff'
                         }
                         onChange={handleColorChange}
@@ -256,7 +256,7 @@ export default function ShadowSettings() {
                             prefixed
                             color={
                                 selectedImage
-                                    ? images[selectedImage - 1]?.style.shadowColor
+                                    ? images.find(img => img.id === selectedImage)?.style.shadowColor
                                     : '#fff'
                             }
                             onChange={handleColorChange}
