@@ -23,7 +23,7 @@ import { useImageOptions } from '@/store/use-image-options'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
-import { Cloud, Copy, Download, Eye, EyeOff, HardDrive, RotateCcw, Save } from 'lucide-react'
+import { ChevronDown, ChevronUp, Cloud, Copy, Download, Eye, EyeOff, HardDrive, RotateCcw, Save } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 
@@ -393,9 +393,14 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                                             variant="ghost"
                                             size="icon"
                                             disabled={isCopying || isDownloading || isSaving || isSavingLocally || isRestoring}
-                                            className="hover:bg-background"
+                                            className="hover:bg-background flex items-center gap-1 px-2"
                                         >
                                             <Save className="h-4 w-4" />
+                                            {savePopoverOpen ? (
+                                                <ChevronUp className="h-3 w-3" />
+                                            ) : (
+                                                <ChevronDown className="h-3 w-3" />
+                                            )}
                                         </Button>
                                     </TooltipTrigger>
                                 </PopoverTrigger>
@@ -473,7 +478,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                                 </PopoverContent>
                             </Popover>
                             <TooltipContent>
-                                <p>Save Options</p>
+                                <p>Save Options (Click to see more)</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
