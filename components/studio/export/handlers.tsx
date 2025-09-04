@@ -478,7 +478,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                                 </PopoverContent>
                             </Popover>
                             <TooltipContent>
-                                <p>Save Options (Click to see more)</p>
+                                <p>Save Options</p>
                             </TooltipContent>
                         </Tooltip>
                     </TooltipProvider>
