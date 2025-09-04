@@ -219,6 +219,62 @@ export default function Canvas() {
         }
     }
 
+    const RestoreToast = ({ toastId, onRestore, onDismiss }: { toastId: any, onRestore: () => void, onDismiss: () => void }) => {
+        const [progress, setProgress] = React.useState(100)
+        const autoDismissTime = 8000 
+        const progressUpdateInterval = 50
+
+        useEffect(() => {
+            const progressTimer = setInterval(() => {
+                setProgress(prev => {
+                    const newProgress = prev - (progressUpdateInterval / autoDismissTime) * 100
+                    if (newProgress <= 0) {
+                        clearInterval(progressTimer)
+                        onDismiss()
+                        return 0
+                    }
+                    return newProgress
+                })
+            }, progressUpdateInterval)
+
+            return () => clearInterval(progressTimer)
+        }, [onDismiss])
+
+        return (
+            <div className="pointer-events-auto z-[60] flex max-w-sm flex-col rounded-md border bg-background shadow-lg">
+                <div className="h-1 w-full bg-muted/20 rounded-t-md">
+                    <div 
+                        className="h-full bg-primary transition-all duration-75 ease-linear ml-auto"
+                        style={{ width: `${Math.max(0, progress)}%` }}
+                    />
+                </div>
+                <div className="flex items-start gap-3 p-3">
+                    <div className="flex-1">
+                        <p className="text-sm font-medium">Restore your previous design?</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">We found a canvas you saved. Do you want to load it?</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90"
+                            onClick={() => {
+                                onRestore()
+                                onDismiss()
+                            }}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
+                            onClick={onDismiss}
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     useEffect(() => {
         if (typeof window === 'undefined') return
         const hasLocal = localStorage.getItem('canvasState') !== null
@@ -227,30 +283,15 @@ export default function Canvas() {
         // probably a better way to do this
         const timer = setTimeout(() => {
             toast.custom((t) => (
-            <div className="pointer-events-auto z-[60] flex max-w-sm items-start gap-3 rounded-md border bg-background p-3 shadow-lg">
-                <div className="flex-1">
-                    <p className="text-sm font-medium">Restore your previous design?</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">We found a canvas you saved. Do you want to load it?</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button
-                        className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90"
-                        onClick={() => {
-                            restoreLocalCanvasState()
-                            toast.dismiss(t)
-                        }}
-                    >
-                        Yes
-                    </button>
-                    <button
-                        className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
-                        onClick={() => toast.dismiss(t)}
-                    >
-                        No
-                    </button>
-                </div>
-            </div>
-        ), { position: 'top-right' })
+                <RestoreToast 
+                    toastId={t}
+                    onRestore={restoreLocalCanvasState}
+                    onDismiss={() => toast.dismiss(t)}
+                />
+            ), { 
+                position: 'bottom-right',
+                duration: 8000
+            })
         }, 100)
         
         return () => clearTimeout(timer)
