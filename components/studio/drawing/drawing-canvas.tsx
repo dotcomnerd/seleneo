@@ -56,9 +56,17 @@ export default function DrawingCanvas() {
             const points = path.points.map((p) => [p.x + dx, p.y + dy, p.pressure ?? 0.5])
             const stroke = getStroke(points, {
                 size: path.strokeWidth,
-                thinning: 0.6,
-                smoothing: 0.6,
-                streamline: 0.4,
+                thinning: 0.5,
+                smoothing: 0.5,
+                streamline: 0.5,
+                start: {
+                    cap: true,
+                    taper: 0,
+                },
+                end: {
+                    cap: true,
+                    taper: 0,
+                },
             })
 
             if (stroke.length > 1) {
@@ -67,7 +75,8 @@ export default function DrawingCanvas() {
                 for (let i = 1; i < stroke.length; i += 1) {
                     ctx.lineTo(stroke[i][0], stroke[i][1])
                 }
-                ctx.stroke()
+                ctx.closePath()
+                ctx.fill()
             }
             ctx.restore()
         })
@@ -107,9 +116,16 @@ export default function DrawingCanvas() {
 
         const updated = drawings.map((path, index) => {
             if (index === drawings.length - 1) {
-                return {
-                    ...path,
-                    points: [...path.points, point]
+                const lastPoint = path.points[path.points.length - 1]
+                const isDuplicate = lastPoint && 
+                    Math.abs(lastPoint.x - point.x) < 0.5 && 
+                    Math.abs(lastPoint.y - point.y) < 0.5
+                
+                if (!isDuplicate) {
+                    return {
+                        ...path,
+                        points: [...path.points, point]
+                    }
                 }
             }
             return path
