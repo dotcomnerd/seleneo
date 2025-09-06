@@ -293,9 +293,11 @@ export default function Canvas() {
             toast.error('Failed to restore local state')
         }
 
+        let toastId: string | number | undefined
+
         // probably a better way to do this
         const timer = setTimeout(() => {
-            toast.custom((t) => (
+            toastId = toast.custom((t) => (
                 <RestoreToast 
                     toastId={t}
                     onRestore={restoreLocalCanvasState}
@@ -307,7 +309,10 @@ export default function Canvas() {
             })
         }, 100)
         
-        return () => clearTimeout(timer)
+        return () => {
+            clearTimeout(timer)
+            if (toastId) toast.dismiss(toastId)
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
