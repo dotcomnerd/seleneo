@@ -53,7 +53,7 @@ export interface NewSaveResponse {
 }
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
-    const { images, texts, setImages, setTexts, scale, setScale, setInitialImageUploaded } = useImageOptions()
+    const { images, texts, drawings, scale, setImages, setTexts, setScale, setInitialImageUploaded } = useImageOptions()
     const {
         background,
         backgroundType,
@@ -105,12 +105,16 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         }
     }, [])
 
-    const checkExportPermission = () => {
-        if (images.length === 0) {
-            toast.error('No image to export', { description: 'Please upload an image first' })
-            return false
-        }
-        return true
+    const checkExportPermission = () => {             
+        const hasImages = images.length > 0  
+        const hasTexts = texts.length > 0 && texts.some(text => text.content.trim() !== '')  
+        const hasDrawings = drawings && drawings.length > 0  
+          
+        if (!hasImages && !hasTexts && !hasDrawings) {  
+            toast.error('No content to export', { description: 'Please add an image, text, or drawing first' })  
+            return false  
+        }  
+        return true  
     }
 
     const toggleVisibility = () => {

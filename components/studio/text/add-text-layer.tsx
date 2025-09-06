@@ -5,7 +5,7 @@ import { useImageOptions } from '@/store/use-image-options'
 import { Plus } from 'lucide-react'
 
 export default function AddTextLayer() {
-  const { setTexts, defaultTextStyle, texts } = useImageOptions()
+  const { setTexts, defaultTextStyle, texts, setInitialImageUploaded } = useImageOptions()
 
   return (
     <Button
@@ -18,6 +18,7 @@ export default function AddTextLayer() {
             style: defaultTextStyle,
           },
         ])
+        setInitialImageUploaded(true)
       }}
       size="lg"
       variant="stylish"

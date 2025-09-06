@@ -41,6 +41,8 @@ const ImageUpload = () => {
         defaultStyle,
         setInitialImageUploaded,
         initialImageUploaded,
+        texts,
+        drawings,
     } = useImageOptions()
     const { selectedImage, setSelectedImage } = useSelectedLayers()
     const { setShowControls, isSelecting, isMultipleTargetSelected } =
@@ -142,9 +144,11 @@ const ImageUpload = () => {
 
     useEventListener('paste', handlePaste);
 
+    const hasAnyContent = images.length > 0 || texts.length > 0 || (drawings && drawings.length > 0) || initialImageUploaded 
+
     return (
         <>
-            {!initialImageUploaded && <LoadAImage />}
+            {!hasAnyContent && <LoadAImage />}
             {images && (
                 <>
                     {images.map((image, index) => {
