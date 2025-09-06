@@ -9,7 +9,7 @@ export default function RoundnessOption() {
     const { setShowControls } = useMoveable()
     const { selectedImage } = useSelectedLayers()
 
-    const browserFrame = selectedImage ? images[selectedImage - 1]?.frame : 'None'
+    const browserFrame = selectedImage ? images.find(img => img.id === selectedImage)?.frame : 'None'
 
     return (
         <div className={`${selectedImage ? '' : 'pointer-events-none opacity-40'}`}>
@@ -19,7 +19,7 @@ export default function RoundnessOption() {
                     {`${Math.round(
                         Number(
                             selectedImage
-                                ? images[selectedImage - 1]?.style.imageRoundness
+                                ? images.find(img => img.id === selectedImage)?.style.imageRoundness
                                 : 0.2
                         ) * 10
                     )} `}
@@ -36,8 +36,8 @@ export default function RoundnessOption() {
                         setShowControls(false)
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -51,18 +51,18 @@ export default function RoundnessOption() {
                     }}
                     value={
                         images.length !== 0 && selectedImage
-                            ? [+images[selectedImage - 1]?.style.imageRoundness]
+                            ? [+(images.find(img => img.id === selectedImage)?.style.imageRoundness ?? 0)]
                             : [1]
                     }
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         if (images.length === 0 || !selectedImage) return
-                        if (Number(images[selectedImage - 1]?.style.imageRoundness) >= 5)
+                        if (Number(images.find(img => img.id === selectedImage)?.style.imageRoundness ?? 0) >= 5)
                             return
                         setShowControls(false)
                         setImages(
-                            images.map((image, index) =>
-                                index === selectedImage - 1
+                            images.map((image) =>
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {
@@ -77,12 +77,12 @@ export default function RoundnessOption() {
                     }}
                     onDecrement={() => {
                         if (images.length === 0 || !selectedImage) return
-                        if (Number(images[selectedImage - 1]?.style.imageRoundness) <= 0)
+                        if (Number(images.find(img => img.id === selectedImage)?.style.imageRoundness ?? 0) <= 0)
                             return
                         setShowControls(false)
                         setImages(
-                            images.map((image, index) =>
-                                index === selectedImage - 1
+                            images.map((image) =>
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {

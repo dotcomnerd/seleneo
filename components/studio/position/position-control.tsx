@@ -23,15 +23,15 @@ export default function PositionControl() {
             selectedImage &&
                 setImages(
                     images.map((image, index) =>
-                        index === selectedImage - 1
+                        image.id === selectedImage
                             ? {
                                 ...image,
                                 style: {
                                     ...image.style,
                                     translateX:
-                                        images[selectedImage - 1]?.style.translateX + deltaX,
+                                        (images.find(img => img.id === selectedImage)?.style.translateX ?? 0) + deltaX,
                                     translateY:
-                                        images[selectedImage - 1]?.style.translateY + deltaY,
+                                        (images.find(img => img.id === selectedImage)?.style.translateY ?? 0) + deltaY,
                                 },
                             }
                             : image
@@ -70,8 +70,8 @@ export default function PositionControl() {
     const centerImage = () => {
         selectedImage &&
             setImages(
-                images.map((image, index) =>
-                    index === selectedImage - 1
+                images.map((image) =>
+                    image.id === selectedImage
                         ? {
                             ...image,
                             style: {

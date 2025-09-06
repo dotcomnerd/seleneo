@@ -20,8 +20,6 @@ export function LoginModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission
-    console.log("Form submitted")
   }
 
   return (
@@ -83,4 +81,3 @@ export function LoginModal() {
     </Dialog>
   )
 }
-

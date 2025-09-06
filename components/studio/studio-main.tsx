@@ -10,9 +10,10 @@ import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import dynamic from 'next/dynamic'
-import React, { CSSProperties, useRef } from 'react'
+import React, { CSSProperties, useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { BackgroundImageCanvas } from './bg-image'
+import { toast } from 'sonner'
 
 const MoveableComponent = dynamic(() => import('./moveable-component'), {
     ssr: false
@@ -47,15 +48,35 @@ const DrawingMoveable = dynamic(() => import('./drawing/drawing-moveable'), {
 })
 
 export default function Canvas() {
-    const { backgroundType } = useBackgroundOptions()
+    const {
+        backgroundType,
+        setBackground,
+        setBackgroundType,
+        setImageBackground,
+        setNoise,
+        setGradientAngle,
+        setSolidColor,
+        setAttribution,
+        setHighResBackground,
+        setIsBackgroundClicked,
+    } = useBackgroundOptions()
     const {
         resolution,
         exactDomResolution,
         scrollScale,
         setScrollScale,
         canvasRoundness,
+        setResolution,
+        setCanvasRoundness,
+        setAutomaticResolution,
     } = useResizeCanvas()
-    const { scale } = useImageOptions()
+    const {
+        scale,
+        setScale,
+        setImages,
+        setInitialImageUploaded,
+        setTexts,
+    } = useImageOptions()
     const {
         selectedImage,
         selectedText,
@@ -105,6 +126,197 @@ export default function Canvas() {
         screenshotRef,
     })
     useScreenSizeWarningToast()
+
+    // TODO: move to utils function, but like im too lazy rn
+    const restoreIfDefined = (
+        value: any,
+        setter: (value: any) => void
+    ) => {
+        if (value !== undefined && value !== null) {
+            setter(value)
+        }
+    }
+
+    const restoreBackgroundVars = (bgType: string, backgroundColor: string) => {
+        switch (bgType) {
+            case 'solid':
+                document?.documentElement.style.setProperty('--solid-bg', backgroundColor)
+                document?.documentElement.style.setProperty('--gradient-bg', backgroundColor)
+                document?.documentElement.style.setProperty('--mesh-bg', backgroundColor)
+                break
+            case 'gradient':
+                document?.documentElement.style.setProperty('--gradient-bg', backgroundColor)
+                break
+            case 'mesh':
+                document?.documentElement.style.setProperty('--mesh-bg', backgroundColor)
+                break
+        }
+    }
+
+    const loadGoogleFont = (fontFamily: string) => {
+        if (typeof window === 'undefined') return
+        const existingLink = document.querySelector(
+            `link[href*="${fontFamily.replace(/\s+/g, '+')}" ]`
+        ) as HTMLLinkElement | null
+        if (existingLink) return
+        const link = document.createElement('link')
+        link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@200;300;400;500;600;700;800&display=swap`
+        link.rel = 'stylesheet'
+        document.head.appendChild(link)
+    }
+
+    const restoreLocalCanvasState = async () => {
+        try {
+            if (typeof window === 'undefined') return
+            const canvasState = localStorage.getItem('canvasState')
+            if (canvasState === null) {
+                toast.error('No local save found')
+                return
+            }
+
+            const { images: savedImages, texts: savedTexts, backgroundSettings, canvasSettings } = JSON.parse(canvasState)
+
+            if (savedImages && savedImages.length > 0) {
+                setImages([...savedImages])
+                setInitialImageUploaded(true)
+            }
+
+            if (savedTexts && savedTexts.length > 0) {
+                setTexts([...savedTexts])
+                savedTexts.forEach((text: any) => {
+                    if (text.style?.fontFamily && text.style.fontFamily !== 'Inter') {
+                        loadGoogleFont(text.style.fontFamily)
+                    }
+                })
+            }
+
+            if (backgroundSettings) {
+                restoreIfDefined(backgroundSettings.backgroundColor, setBackground)
+                restoreIfDefined(backgroundSettings.imageBackground, setImageBackground)
+                restoreIfDefined(backgroundSettings.noise, setNoise)
+                restoreIfDefined(backgroundSettings.gradientAngle, setGradientAngle)
+                restoreIfDefined(backgroundSettings.solidColor, setSolidColor)
+                restoreIfDefined(backgroundSettings.attribution, setAttribution)
+                restoreIfDefined(backgroundSettings.highResBackground, setHighResBackground)
+                restoreIfDefined(backgroundSettings.isBackgroundClicked, setIsBackgroundClicked)
+                if (backgroundSettings.backgroundType) restoreIfDefined(backgroundSettings.backgroundType, setBackgroundType)
+                if (backgroundSettings.backgroundColor && backgroundSettings.backgroundType) {
+                    restoreBackgroundVars(backgroundSettings.backgroundType, backgroundSettings.backgroundColor)
+                }
+            }
+
+            if (canvasSettings) {
+                restoreIfDefined(canvasSettings.scale, setScale)
+                restoreIfDefined(canvasSettings.resolution, setResolution)
+                restoreIfDefined(canvasSettings.canvasRoundness, setCanvasRoundness)
+                restoreIfDefined(canvasSettings.scrollScale, setScrollScale)
+                restoreIfDefined(canvasSettings.automaticResolution, setAutomaticResolution)
+            }
+
+            toast.success('Local State Restored Successfully')
+        } catch (error) {
+            toast.error('Failed to restore local state')
+        }
+    }
+
+    const RestoreToast = ({ toastId, onRestore, onDismiss }: { toastId: any, onRestore: () => void, onDismiss: () => void }) => {
+        const [progress, setProgress] = React.useState(100)
+        const autoDismissTime = 8000 
+        const progressUpdateInterval = 50
+
+        useEffect(() => {
+            const progressTimer = setInterval(() => {
+                setProgress(prev => {
+                    const newProgress = prev - (progressUpdateInterval / autoDismissTime) * 100
+                    if (newProgress <= 0) {
+                        clearInterval(progressTimer)
+                        onDismiss()
+                        return 0
+                    }
+                    return newProgress
+                })
+            }, progressUpdateInterval)
+
+            return () => clearInterval(progressTimer)
+        }, [onDismiss])
+
+        return (
+            <div className="pointer-events-auto z-[60] flex max-w-sm flex-col rounded-md border bg-background shadow-lg">
+                <div className="h-1 w-full bg-muted/20 rounded-t-md">
+                    <div 
+                        className="h-full bg-primary transition-all duration-75 ease-linear ml-auto"
+                        style={{ width: `${Math.max(0, progress)}%` }}
+                    />
+                </div>
+                <div className="flex items-start gap-3 p-3">
+                    <div className="flex-1">
+                        <p className="text-sm font-medium">Restore your previous design?</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">We found a canvas you saved. Do you want to load it?</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <button
+                            className="rounded-md bg-primary px-2 py-1 text-xs text-primary-foreground hover:opacity-90"
+                            onClick={() => {
+                                onRestore()
+                                onDismiss()
+                            }}
+                        >
+                            Yes
+                        </button>
+                        <button
+                            className="rounded-md border px-2 py-1 text-xs hover:bg-accent"
+                            onClick={onDismiss}
+                        >
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        const hasLocal = localStorage.getItem('canvasState') !== null
+        if (!hasLocal) return
+        
+        try {
+            const textObj = JSON.parse(localStorage.getItem('canvasState') || '{}')
+
+            if (Array.isArray(textObj.texts) && textObj.texts.length > 0) {
+                const uniqueFonts: string[] = Array.from(new Set(textObj.texts.map((text: any) => text.style.fontFamily)));
+                uniqueFonts.forEach((font: string) => {
+                    loadGoogleFont(font)
+                })
+            }
+        } catch (error) {
+            toast.error('Failed to restore local state')
+        }
+
+        let toastId: string | number | undefined
+
+        // probably a better way to do this
+        const timer = setTimeout(() => {
+            toastId = toast.custom((t) => (
+                <RestoreToast 
+                    toastId={t}
+                    onRestore={restoreLocalCanvasState}
+                    onDismiss={() => toast.dismiss(t)}
+                />
+            ), { 
+                position: 'bottom-right',
+                duration: 8000
+            })
+        }, 100)
+        
+        return () => {
+            clearTimeout(timer)
+            if (toastId) toast.dismiss(toastId)
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+
 
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         if (typeof window !== 'undefined' && window.innerWidth <= 768) {

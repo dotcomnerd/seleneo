@@ -15,7 +15,6 @@ import { useFrameOptions } from '@/store/use-frame-options'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
-import ColorThief from 'colorthief'
 import { ImageIcon, Upload } from 'lucide-react'
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react'
 import Dropzone from 'react-dropzone'
@@ -23,6 +22,16 @@ import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { BrowserFrame } from './browser-frames'
 import ContextMenuImage from './image-context-menu'
+
+function loadGoogleFont(fontFamily: string) {
+    if (typeof window === 'undefined') return;
+    const existingLink = document.querySelector(`link[href*="${fontFamily.replace(/\s+/g, '+')}"]`);
+    if (existingLink) return;
+    const link = document.createElement('link');
+    link.href = `https://fonts.googleapis.com/css2?family=${fontFamily.replace(/\s+/g, '+')}:wght@200;300;400;500;600;700;800&display=swap`;
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+}
 
 const ImageUpload = () => {
     const targetRef = useRef<HTMLDivElement>(null)
@@ -32,6 +41,8 @@ const ImageUpload = () => {
         defaultStyle,
         setInitialImageUploaded,
         initialImageUploaded,
+        texts,
+        drawings,
     } = useImageOptions()
     const { selectedImage, setSelectedImage } = useSelectedLayers()
     const { setShowControls, isSelecting, isMultipleTargetSelected } =
@@ -98,7 +109,7 @@ const ImageUpload = () => {
                     ...images,
                     {
                         image: imageUrl,
-                        id: images.length + 1,
+                        id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
                         style: images.length < 1
                             ? defaultStyle
                             : {
@@ -133,9 +144,11 @@ const ImageUpload = () => {
 
     useEventListener('paste', handlePaste);
 
+    const hasAnyContent = images.length > 0 || texts.length > 0 || (drawings && drawings.length > 0) || initialImageUploaded 
+
     return (
         <>
-            {!initialImageUploaded && <LoadAImage />}
+            {!hasAnyContent && <LoadAImage />}
             {images && (
                 <>
                     {images.map((image, index) => {
@@ -269,12 +282,12 @@ const ImageUpload = () => {
 export default ImageUpload
 
 function LoadAImage() {
-    const { images, setImages, defaultStyle, setInitialImageUploaded } =
+    const { images, setImages, setTexts, defaultStyle, setInitialImageUploaded, setScale } =
         useImageOptions()
     const { setSelectedImage } = useSelectedLayers()
     const { imagesCheck, setImagesCheck } = useColorExtractor()
-    const { setResolution, automaticResolution } = useResizeCanvas()
-    const { setBackground } = useBackgroundOptions()
+    const { setResolution, automaticResolution, setCanvasRoundness, setScrollScale, setAutomaticResolution } = useResizeCanvas()
+    const { setBackground, setImageBackground, setBackgroundType, setSolidColor, setAttribution, setHighResBackground, setIsBackgroundClicked, setNoise, setGradientAngle } = useBackgroundOptions()
     const [isDragging, setIsDragging] = useState<boolean>(false)
 
     const handleImageLoad = useCallback(
@@ -282,36 +295,44 @@ function LoadAImage() {
             const file = event.target.files?.[0]
 
             if (file) {
-                const imageUrl = URL.createObjectURL(file)
+                try {
+                    const imageUrl = URL.createObjectURL(file)
 
-                setInitialImageUploaded(true)
+                    setInitialImageUploaded(true)
 
-                setImagesCheck([...imagesCheck, imageUrl])
-                setImages([
-                    ...images,
-                    { image: imageUrl, id: images.length + 1, style: defaultStyle },
-                ])
-                setSelectedImage(images.length + 1)
+                    setImagesCheck([...imagesCheck, imageUrl])
+                    setImages([
+                        ...images,
+                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
+                    ])
+                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
 
-                if (localStorage.getItem('image-init-pro-tip') === null) {
-                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                    localStorage.setItem('image-init-pro-tip', 'true')
-                }
+                    if (localStorage.getItem('image-init-pro-tip') === null) {
+                        toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                        localStorage.setItem('image-init-pro-tip', 'true')
+                    }
 
-                if (images.length > 0) return
-                if (automaticResolution) {
-                    const padding = 200
-                    const img = new Image()
-                    img.src = imageUrl
+                    if (images.length > 0) return
+                    if (automaticResolution) {
+                        const padding = 200
+                        const img = new Image()
+                        img.src = imageUrl
 
-                    img.onload = () => {
-                        const { naturalWidth, naturalHeight } = img
-                        const newResolution = calculateEqualCanvasSize(
-                            naturalWidth,
-                            naturalHeight,
-                            padding
-                        )
-                        setResolution(newResolution.toString())
+                        img.onload = () => {
+                            const { naturalWidth, naturalHeight } = img
+                            const newResolution = calculateEqualCanvasSize(
+                                naturalWidth,
+                                naturalHeight,
+                                padding
+                            )
+                            setResolution(newResolution.toString())
+                        }
+                    }
+                } catch (error) {
+                    if (error instanceof Error) {
+                        toast.error(error.message, { position: "top-left" });
+                    } else {
+                        toast.error("An unknown error occurred when loading the image", { position: "top-left" });
                     }
                 }
             }
@@ -333,36 +354,45 @@ function LoadAImage() {
         (file: File | undefined) => {
             // const file = event.target.files?.[0]
             if (file) {
-                const imageUrl = URL.createObjectURL(file)
-                setInitialImageUploaded(true)
+                try {
+                    const imageUrl = URL.createObjectURL(file)
+                    setInitialImageUploaded(true)
 
-                setImagesCheck([...imagesCheck, imageUrl])
-                setImages([
-                    ...images,
-                    { image: imageUrl, id: images.length + 1, style: defaultStyle },
-                ])
-                setSelectedImage(images.length + 1)
+                    setImagesCheck([...imagesCheck, imageUrl])
+                    setImages([
+                        ...images,
+                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
+                    ])
+                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
 
-                if (localStorage.getItem('image-init-pro-tip') === null) {
-                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                    localStorage.setItem('image-init-pro-tip', 'true')
-                }
-
-                if (images.length > 0) return
-                if (automaticResolution) {
-                    const padding = 250
-                    const img = new Image()
-                    img.src = imageUrl
-
-                    img.onload = () => {
-                        const { naturalWidth, naturalHeight } = img
-                        const newResolution = calculateEqualCanvasSize(
-                            naturalWidth,
-                            naturalHeight,
-                            padding
-                        )
-                        setResolution(newResolution.toString())
+                    if (localStorage.getItem('image-init-pro-tip') === null) {
+                        toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                        localStorage.setItem('image-init-pro-tip', 'true')
                     }
+
+                    if (images.length > 0) return
+                    if (automaticResolution) {
+                        const padding = 250
+                        const img = new Image()
+                        img.src = imageUrl
+
+                        img.onload = () => {
+                            const { naturalWidth, naturalHeight } = img
+                            const newResolution = calculateEqualCanvasSize(
+                                naturalWidth,
+                                naturalHeight,
+                                padding
+                            )
+                            setResolution(newResolution.toString())
+                        }
+                    }
+                } catch (error) {
+                    if (error instanceof Error) {
+                        toast.error(error.message, { position: "top-left" });
+                    } else {
+                        toast.error("An unknown error occurred when loading the image", { position: "top-left" });
+                    }
+                    return;
                 }
             }
         },
@@ -382,46 +412,50 @@ function LoadAImage() {
     const loadDemoImage = async (theme: "light" | "dark") => {
         if (typeof window === 'undefined') return;
 
-        const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
-        const image = new Image();
-        image.crossOrigin = 'Anonymous';
-        image.src = imageSrc;
+        try {
+            const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
+            const image = new Image();
+            image.crossOrigin = 'Anonymous';
+            image.src = imageSrc;
 
-        image.onload = async () => {
-            // NOTE: commenting for visit later, i don't really like the gradient - the idea of extracting colors is cool though
-            // const colorThief = new ColorThief();
-            // const palette = await colorThief.getPalette(image, 5);
-            // const gradientStops = palette
-            //     .map((clr, i) => `rgb(${clr.join(',')}) ${Math.floor((i / (palette.length - 1)) * 100)}%`)
-            //     .join(', ');
-            // const gradient = `linear-gradient(var(--gradient-angle), ${gradientStops})`;
+            image.onload = async () => {
+                // NOTE: commenting for visit later, i don't really like the gradient - the idea of extracting colors is cool though
+                // const colorThief = new ColorThief();
+                // const palette = await colorThief.getPalette(image, 5);
+                // const gradientStops = palette
+                //     .map((clr, i) => `rgb(${clr.join(',')}) ${Math.floor((i / (palette.length - 1)) * 100)}%`)
+                //     .join(', ');
+                // const gradient = `linear-gradient(var(--gradient-angle), ${gradientStops})`;
 
-            // setBackground(gradient);
-            // document?.documentElement.style.setProperty('--gradient-bg', gradient);
+                // setBackground(gradient);
+                // document?.documentElement.style.setProperty('--gradient-bg', gradient);
 
-            setImages([
-                ...images,
-                {
-                    image: imageSrc,
-                    id: 1,
-                    style: {
-                        ...defaultStyle,
-                        imageRoundness: 0.7,
-                        imageSize: '0.78',
+                setImages([
+                    ...images,
+                    {
+                        image: imageSrc,
+                        id: 1,
+                        style: {
+                            ...defaultStyle,
+                            imageRoundness: 0.7,
+                            imageSize: '0.78',
+                        },
                     },
-                },
-            ]);
-            setImagesCheck([...imagesCheck, imageSrc]);
+                ]);
+                setImagesCheck([...imagesCheck, imageSrc]);
 
-            if (localStorage.getItem('image-init-pro-tip') === null) {
-                toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
-                localStorage.setItem('image-init-pro-tip', 'true')
-            }
+                if (localStorage.getItem('image-init-pro-tip') === null) {
+                    toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
+                    localStorage.setItem('image-init-pro-tip', 'true')
+                }
 
-            setResolution('1920x1080');
-        };
+                setResolution('1920x1080');
+            };
+        } catch (error) {
+            console.error("Failed to load demo image:", error);
+        }
     };
-
+    
     return (
         <Dropzone
             multiple={false}
@@ -438,7 +472,7 @@ function LoadAImage() {
                     className="absolute-center h-25 w-4/5 xl:w-2/5"
                 >
                     <div className="flex flex-col gap-4 rounded-xl text-center">
-                        <div className="flex-center flex-col rounded-xl border-2 border-dashed border-primary/40 hover:border-primary/70 backdrop-blur-md bg-background/70 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
+                        <div className="flex-center flex-col rounded-xl border-2 border-dashed border-primary/40 backdrop-blur-md bg-background/70 shadow-xl px-4 py-10 transition-all duration-300 hover:border-border/70 hover:bg-background/70">
                             <Upload
                                 style={{
                                     transition: 'all 0.8s cubic-bezier(0.6, 0.6, 0, 1)',
@@ -464,7 +498,7 @@ function LoadAImage() {
                                     className="sr-only"
                                 />
                                 <p className="hidden pl-1 font-medium text-muted-foreground lg:block">
-                                 or drag and drop
+                                    or drag and drop
                                 </p>
                             </div>
 
@@ -489,6 +523,7 @@ function LoadAImage() {
                                     Dark mode demo
                                     <ImageIcon className="ml-2" size={19} />
                                 </Button>
+
                             </div>
                         </div>
                     </div>

@@ -40,8 +40,8 @@ export default function FontSettings() {
     const handleColorChange = (color: string) => {
         selectedText &&
             setTexts(
-                texts.map((text, index) =>
-                    index === selectedText - 1
+                texts.map((text) =>
+                    text.id === selectedText
                         ? {
                             ...text,
                             style: {
@@ -57,8 +57,8 @@ export default function FontSettings() {
     const handleShadowColorChange = (color: string) => {
         selectedText &&
             setTexts(
-                texts.map((text, index) =>
-                    index === selectedText - 1
+                texts.map((text) =>
+                    text.id === selectedText
                         ? {
                             ...text,
                             style: {
@@ -74,8 +74,8 @@ export default function FontSettings() {
     const handleAlignmentChange = (alignment: 'left' | 'center' | 'right') => {
         selectedText &&
             setTexts(
-                texts.map((text, index) =>
-                    index === selectedText - 1
+                texts.map((text) =>
+                    text.id === selectedText
                         ? {
                             ...text,
                             style: {
@@ -91,8 +91,8 @@ export default function FontSettings() {
     const handleFontWeight = (weight: number) => {
         selectedText &&
             setTexts(
-                texts.map((text, index) =>
-                    index === selectedText - 1
+                texts.map((text) =>
+                    text.id === selectedText
                         ? {
                             ...text,
                             style: {
@@ -102,7 +102,8 @@ export default function FontSettings() {
                         }
                         : text
                 )
-    )}
+            )
+    }
 
     return (
         <Card className="border-none shadow-none">
@@ -112,13 +113,13 @@ export default function FontSettings() {
                         <h3 className="text-sm font-medium">Font Family</h3>
                         <FontPicker
                             apiKey={process.env.NEXT_PUBLIC_GOOGLE_FONTS_API_KEY!}
-                            activeFontFamily={selectedText ? texts[selectedText - 1]?.style.fontFamily : 'Inter'}
+                            activeFontFamily={selectedText ? texts.find(t => t.id === selectedText)?.style.fontFamily : 'Inter'}
                             variants={['200', '300', 'regular', '500', '600', '700', '800']}
                             onChange={(font) => {
                                 selectedText &&
                                     setTexts(
                                         texts.map((text, index) =>
-                                            index === selectedText - 1
+                                            text.id === selectedText
                                                 ? {
                                                     ...text,
                                                     style: {
@@ -141,23 +142,23 @@ export default function FontSettings() {
                                 size="icon"
                                 className="rounded-none rounded-l-md border-r px-2"
                                 onClick={() =>
-                                    selectedText && texts[selectedText - 1]?.style.fontWeight > 200
-                                        ? handleFontWeight(texts[selectedText - 1]?.style.fontWeight - 100)
+                                    selectedText && (texts.find(t => t.id === selectedText)?.style.fontWeight ?? 0) > 200
+                                        ? handleFontWeight((texts.find(t => t.id === selectedText)?.style.fontWeight ?? 0) - 100)
                                         : handleFontWeight(200)
                                 }
                             >
                                 <Minus className="h-4 w-4" />
                             </Button>
                             <div className="flex-1 text-center text-sm">
-                                {selectedText ? texts[selectedText - 1]?.style.fontWeight : 400}
+                                {selectedText ? texts.find(t => t.id === selectedText)?.style.fontWeight : 400}
                             </div>
                             <Button
                                 variant="ghost"
                                 size="icon"
                                 className="rounded-none rounded-r-md border-l px-2"
                                 onClick={() =>
-                                    selectedText && texts[selectedText - 1]?.style.fontWeight < 800
-                                        ? handleFontWeight(texts[selectedText - 1]?.style.fontWeight + 100)
+                                    selectedText && (texts.find(t => t.id === selectedText)?.style.fontWeight ?? 0) < 800
+                                        ? handleFontWeight((texts.find(t => t.id === selectedText)?.style.fontWeight ?? 0) + 100)
                                         : handleFontWeight(800)
                                 }
                             >
@@ -175,17 +176,17 @@ export default function FontSettings() {
                                     className="w-full justify-start gap-2"
                                 >
                                     <Palette className="h-4 w-4" />
-                                    {selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                    {selectedText ? texts.find(t => t.id === selectedText)?.style.textColor : '#fff'}
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-64">
                                 <HexColorPicker
-                                    color={selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                    color={selectedText ? texts.find(t => t.id === selectedText)?.style.textColor : '#fff'}
                                     onChange={handleColorChange}
                                 />
                                 <div className="mt-4">
                                     <HexColorInput
-                                        color={selectedText ? texts[selectedText - 1]?.style.textColor : '#fff'}
+                                        color={selectedText ? texts.find(t => t.id === selectedText)?.style.textColor : '#fff'}
                                         onChange={handleColorChange}
                                         className="w-full rounded-md border px-2 py-1"
                                     />
@@ -199,7 +200,7 @@ export default function FontSettings() {
                             <h3 className="text-sm font-medium">Letter Spacing</h3>
                             <span className="text-sm text-muted-foreground">
                                 {selectedText
-                                    ? Math.round(texts[selectedText - 1]?.style.letterSpacing * 100) / 100
+                                    ? Math.round((texts.find(t => t.id === selectedText)?.style.letterSpacing ?? 0) * 100) / 100
                                     : 0}
                             </span>
                         </div>
@@ -208,11 +209,11 @@ export default function FontSettings() {
                             max={0.2}
                             min={-0.05}
                             step={0.001}
-                            onIncrement={()=>{}}
-                            onDecrement={()=>{}}
+                            onIncrement={() => { }}
+                            onDecrement={() => { }}
                             value={
                                 texts.length !== 0 && selectedText
-                                    ? [+texts[selectedText - 1]?.style.letterSpacing]
+                                    ? [+(texts.find(t => t.id === selectedText)?.style.letterSpacing ?? 0)]
                                     : [0]
                             }
                             onValueChange={(value: number[]) => {
@@ -220,7 +221,7 @@ export default function FontSettings() {
                                 selectedText &&
                                     setTexts(
                                         texts.map((text, index) =>
-                                            index === selectedText - 1
+                                            text.id === selectedText
                                                 ? {
                                                     ...text,
                                                     style: {
@@ -299,7 +300,7 @@ export default function FontSettings() {
                                 <h3 className="text-sm font-medium">Opacity</h3>
                                 <span className="text-sm text-muted-foreground">
                                     {Math.round(
-                                        Number(selectedText ? texts[selectedText - 1]?.style.shadowOpacity : 0.1) * 100
+                                        Number(selectedText ? texts.find(t => t.id === selectedText)?.style.shadowOpacity : 0.1) * 100
                                     )}
                                     %
                                 </span>
@@ -309,18 +310,18 @@ export default function FontSettings() {
                                 min={0}
                                 max={1}
                                 step={0.01}
-                                onIncrement={()=>{}}
-                                onDecrement={()=>{}}
+                                onIncrement={() => { }}
+                                onDecrement={() => { }}
                                 value={
                                     texts.length !== 0 && selectedText
-                                        ? [texts[selectedText - 1]?.style.shadowOpacity]
+                                        ? [texts.find(t => t.id === selectedText)?.style.shadowOpacity ?? 0]
                                         : [0.1]
                                 }
                                 onValueChange={(value) => {
                                     selectedText &&
                                         setTexts(
                                             texts.map((text, index) =>
-                                                index === selectedText - 1
+                                                text.id === selectedText
                                                     ? {
                                                         ...text,
                                                         style: {
@@ -344,17 +345,17 @@ export default function FontSettings() {
                                         className="w-full justify-start gap-2"
                                     >
                                         <Palette className="h-4 w-4" />
-                                        {selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                        {selectedText ? texts.find(t => t.id === selectedText)?.style.shadowColor : '#333'}
                                     </Button>
                                 </PopoverTrigger>
                                 <PopoverContent className="w-64">
                                     <HexColorPicker
-                                        color={selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                        color={selectedText ? texts.find(t => t.id === selectedText)?.style.shadowColor : '#333'}
                                         onChange={handleShadowColorChange}
                                     />
                                     <div className="mt-4">
                                         <HexColorInput
-                                            color={selectedText ? texts[selectedText - 1]?.style.shadowColor : '#333'}
+                                            color={selectedText ? texts.find(t => t.id === selectedText)?.style.shadowColor : '#333'}
                                             onChange={handleShadowColorChange}
                                             className="w-full rounded-md border px-2 py-1"
                                         />

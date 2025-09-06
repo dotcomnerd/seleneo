@@ -41,8 +41,6 @@ export const metadata: Metadata = {
         images: [
             {
                 url: 'http://freedesign.fyi/api/og?title=Seleneo',
-                width: 1800,
-                height: 1600,
                 alt: 'Seleneo Open Graph Image',
             },
         ],

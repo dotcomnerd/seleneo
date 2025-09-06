@@ -1,8 +1,6 @@
 "use client";
 
-import React, { PureComponent } from 'react'
-import { Check, ChevronsUpDown, Loader2, AlertCircle } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Button } from '@/components/ui/button';
 import {
     Command,
     CommandEmpty,
@@ -10,13 +8,13 @@ import {
     CommandInput,
     CommandItem,
     CommandList,
-} from '@/components/ui/command'
+} from '@/components/ui/command';
 import {
     Popover,
     PopoverContent,
     PopoverTrigger,
-} from '@/components/ui/popover'
-import { ScrollArea } from '@/components/ui/scroll-area'
+} from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
     Category,
     Font,
@@ -27,7 +25,9 @@ import {
     Script,
     SortOption,
     Variant,
-} from "@samuelmeuli/font-manager"
+} from "@samuelmeuli/font-manager";
+import { AlertCircle, Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { PureComponent } from 'react';
 
 interface Props {
     apiKey: string
@@ -122,7 +122,6 @@ export default class FontPicker extends PureComponent<Props, State> {
                     loadingStatus: "finished",
                     fonts
                 }, () => {
-                    // Validate initial activeFontFamily after fonts are loaded
                     this.validateAndSetActiveFont(this.props.activeFontFamily)
                 })
             })

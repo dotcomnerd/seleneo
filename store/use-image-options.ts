@@ -105,6 +105,15 @@ interface ImageOptionsState {
       hasBackground: boolean
       backgroundColor: string
       padding: string
+      translateX: number
+      translateY: number
+      scaleX: number
+      scaleY: number
+      rotate: number
+      rotateX: number
+      rotateY: number
+      rotateZ: number
+      perspective: number
       zIndex: number
       position: string
     }
@@ -127,6 +136,15 @@ interface ImageOptionsState {
         hasBackground: boolean
         backgroundColor: string
         padding: string
+        translateX: number
+        translateY: number
+        scaleX: number
+        scaleY: number
+        rotate: number
+        rotateX: number
+        rotateY: number
+        rotateZ: number
+        perspective: number
         zIndex: number
         position: string
       }
@@ -190,6 +208,15 @@ interface ImageOptionsState {
     hasBackground: boolean
     backgroundColor: string
     padding: string
+    translateX: number
+    translateY: number
+    scaleX: number
+    scaleY: number
+    rotate: number
+    rotateX: number
+    rotateY: number
+    rotateZ: number
+    perspective: number
     zIndex: number
     position: string
   }
@@ -249,6 +276,15 @@ export const useImageOptions = create(
         hasBackground: false,
         backgroundColor: '#ffffff50',
         padding: '0',
+        translateX: 0,
+        translateY: 0,
+        scaleX: 1,
+        scaleY: 1,
+        rotate: 0,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+        perspective: 1000,
         zIndex: 2,
         position: '',
       },

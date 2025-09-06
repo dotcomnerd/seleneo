@@ -1,13 +1,13 @@
-import { JoystickIcon, Rotate3d } from 'lucide-react'
-import RotateOptions from './rotate-options'
-import { Joystick } from 'react-joystick-component'
-import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useMoveable } from '@/store/use-moveable'
+import { JoystickIcon, Rotate3d } from 'lucide-react'
+import { Joystick } from 'react-joystick-component'
+import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick'
+import RotateOptions from './rotate-options'
 
 export default function PerspectiveOptions() {
   const { images, setImages } = useImageOptions()
-   const { selectedImage } = useSelectedLayers()
+  const { selectedImage } = useSelectedLayers()
   const { setShowControls } = useMoveable()
 
   return (
@@ -32,16 +32,16 @@ export default function PerspectiveOptions() {
             setShowControls(false)
             selectedImage &&
               setImages(
-                images.map((image, index) =>
-                  index === selectedImage - 1
+                images.map((image) =>
+                  image.id === selectedImage
                     ? {
-                        ...image,
-                        style: {
-                          ...image.style,
-                          rotateX: y! * 20,
-                          rotateY: x! * 20,
-                        },
-                      }
+                      ...image,
+                      style: {
+                        ...image.style,
+                        rotateX: y! * 20,
+                        rotateY: x! * 20,
+                      },
+                    }
                     : image
                 )
               )

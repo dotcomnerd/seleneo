@@ -1,17 +1,38 @@
 import { Color } from '@tiptap/extension-color'
-import Document from '@tiptap/extension-document'
 import FontFamily from '@tiptap/extension-font-family'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
 import TextAlign from '@tiptap/extension-text-align'
 import TextStyle from '@tiptap/extension-text-style'
 import { useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 
-export default function useTiptapEditor() {
+export default function useTiptapEditor(initialContent: string = '') {
     const editor = useEditor({
-        extensions: [StarterKit, Color, TextStyle, FontFamily, Document, Paragraph, Text, TextStyle, TextAlign],
-        content: 'Double click to edit',
+        extensions: [
+            StarterKit.configure({
+                paragraph: {
+                    HTMLAttributes: {
+                        style: 'margin: 0; padding: 0;'
+                    }
+                }
+            }),
+            TextStyle,
+            Color.configure({
+                types: ['textStyle'],
+            }),
+            FontFamily.configure({
+                types: ['textStyle'],
+            }),
+            TextAlign.configure({
+                types: ['heading', 'paragraph'],
+
+            }),
+        ],
+        content: initialContent,
+        editorProps: {
+            attributes: {
+                style: 'outline: none; margin: 0; padding: 0; width: 100%; height: 100%; overflow: visible;'
+            }
+        }
     })
 
     return { editor }

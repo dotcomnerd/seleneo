@@ -23,7 +23,7 @@ export default function AdditionalFrameOptions() {
     const { selectedImage } = useSelectedLayers()
     const { images } = useImageOptions()
 
-    const browserFrame = selectedImage ? images[selectedImage - 1]?.frame : 'None'
+    const browserFrame = selectedImage ? images.find(img => img.id === selectedImage)?.frame : 'None'
 
     if (browserFrame !== 'None')
         return (

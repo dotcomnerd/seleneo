@@ -19,7 +19,7 @@ export default function RotateOptions() {
                 <h1 className="text-[0.85rem]">3D Depth</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.perspective : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.perspective ?? 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -30,8 +30,8 @@ export default function RotateOptions() {
                     onClick={() =>
                         selectedImage &&
                         setImages(
-                            images.map((image, index) =>
-                                index === selectedImage - 1
+                            images.map((image) =>
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {
@@ -56,14 +56,14 @@ export default function RotateOptions() {
                     step={0.0001}
                     value={
                         selectedImage
-                            ? [images[selectedImage - 1]?.style.perspective]
+                            ? [images.find(img => img.id === selectedImage)?.style.perspective ?? 2000]
                             : [2000]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -79,11 +79,11 @@ export default function RotateOptions() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.perspective >= 6500) return
+                            if ((images.find(img => img.id === selectedImage)?.style.perspective ?? 0) >= 6500) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -98,11 +98,11 @@ export default function RotateOptions() {
                     }}
                     onDecrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.perspective <= 0) return
+                            if ((images.find(img => img.id === selectedImage)?.style.perspective ?? 0) <= 0) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -125,7 +125,7 @@ export default function RotateOptions() {
                 <h1 className="text-[0.85rem]">Rotate X</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.rotateX : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.rotateX ?? 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -136,8 +136,8 @@ export default function RotateOptions() {
                     onClick={() => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -161,13 +161,13 @@ export default function RotateOptions() {
                     min={-180}
                     step={0.0001}
                     value={
-                        selectedImage ? [images[selectedImage - 1]?.style.rotateX] : [0]
+                        selectedImage ? [images.find(img => img.id === selectedImage)?.style.rotateX ?? 0] : [0]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -183,11 +183,11 @@ export default function RotateOptions() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateX >= 180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateX ?? 0) >= 180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -202,11 +202,11 @@ export default function RotateOptions() {
                     }}
                     onDecrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateX <= -180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateX ?? 0) <= -180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -227,7 +227,7 @@ export default function RotateOptions() {
                 <h1 className="text-[0.85rem]">Rotate Y</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.rotateY : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.rotateY ?? 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -238,8 +238,8 @@ export default function RotateOptions() {
                     onClick={() => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -263,13 +263,13 @@ export default function RotateOptions() {
                     min={-180}
                     step={0.0001}
                     value={
-                        selectedImage ? [images[selectedImage - 1]?.style.rotateY] : [0]
+                        selectedImage ? [images.find(img => img.id === selectedImage)?.style.rotateY ?? 0] : [0]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -285,11 +285,11 @@ export default function RotateOptions() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateY >= 180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateY ?? 0) >= 180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -304,11 +304,11 @@ export default function RotateOptions() {
                     }}
                     onDecrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateY <= -180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateY ?? 0) <= -180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -329,7 +329,7 @@ export default function RotateOptions() {
                 <h1 className="text-[0.85rem]">Rotate Z</h1>
                 <p className="ml-2 rounded-md bg-primary/10 p-[0.4rem] text-[0.8rem] text-dark/70">
                     {`${Math.round(
-                        selectedImage ? images[selectedImage - 1]?.style.rotateZ : 0
+                        selectedImage ? images.find(img => img.id === selectedImage)?.style.rotateZ ?? 0 : 0
                     )}px`}
                 </p>
                 <Button
@@ -340,8 +340,8 @@ export default function RotateOptions() {
                     onClick={() =>
                         selectedImage &&
                         setImages(
-                            images.map((image, index) =>
-                                index === selectedImage - 1
+                            images.map((image) =>
+                                image.id === selectedImage
                                     ? {
                                         ...image,
                                         style: {
@@ -365,13 +365,13 @@ export default function RotateOptions() {
                     min={-180}
                     step={0.0001}
                     value={
-                        selectedImage ? [images[selectedImage - 1]?.style.rotateZ] : [0]
+                        selectedImage ? [images.find(img => img.id === selectedImage)?.style.rotateZ ?? 0] : [0]
                     }
                     onValueChange={(value: number[]) => {
                         selectedImage &&
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -387,11 +387,11 @@ export default function RotateOptions() {
                     onValueCommit={() => setShowControls(true)}
                     onIncrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateZ >= 180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateZ ?? 0) >= 180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {
@@ -406,11 +406,11 @@ export default function RotateOptions() {
                     }}
                     onDecrement={() => {
                         if (selectedImage) {
-                            if (images[selectedImage - 1]?.style.rotateZ <= -180) return
+                            if ((images.find(img => img.id === selectedImage)?.style.rotateZ ?? 0) <= -180) return
 
                             setImages(
-                                images.map((image, index) =>
-                                    index === selectedImage - 1
+                                images.map((image) =>
+                                    image.id === selectedImage
                                         ? {
                                             ...image,
                                             style: {

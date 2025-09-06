@@ -18,7 +18,7 @@ export default function ContextMenuText({
   children: React.ReactNode
 }) {
   const { setTexts, texts } = useImageOptions()
-  const { selectedText } = useSelectedLayers()
+  const { selectedText, setSelectedText } = useSelectedLayers()
   const { showTextControls, setShowTextControls } = useMoveable()
 
   const handleTextDelete = () => {
@@ -26,35 +26,28 @@ export default function ContextMenuText({
       setTexts([])
       return
     }
-    selectedText &&
-    setTexts(
-      texts.map((text, index) =>
-        index === selectedText - 1
-          ? {
-              ...text,
-              content: '',
-              text: '',
-            }
-          : text
-      )
-    )
+
+    if (selectedText) {
+      setTexts(texts.filter((text) => text.id !== selectedText))
+      setSelectedText(null)
+    }
   }
 
   const bringToFrontOrBack = (direction: 'front' | 'back') => {
     if (selectedText) {
       setTexts(
-        texts.map((text, index) =>
-          index === selectedText - 1
+        texts.map((text) =>
+          text.id === selectedText
             ? {
-                ...text,
-                style: {
-                  ...text.style,
-                  zIndex:
-                    direction === 'front'
-                      ? text.style.zIndex + 1
-                      : text.style.zIndex - 1,
-                },
-              }
+              ...text,
+              style: {
+                ...text.style,
+                zIndex:
+                  direction === 'front'
+                    ? text.style.zIndex + 1
+                    : text.style.zIndex - 1,
+              },
+            }
             : text
         )
       )
@@ -68,6 +61,13 @@ export default function ContextMenuText({
     }
   })
 
+  useHotkeys('backspace', () => {
+    if (selectedText) {
+      handleTextDelete()
+      setSelectedText(null)
+    }
+  })
+
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>{children}</ContextMenuTrigger>
@@ -77,7 +77,11 @@ export default function ContextMenuText({
           onClick={() => {
             bringToFrontOrBack('back')
           }}
-          // disabled={!selectedText || texts[selectedText - 1].style.zIndex === 2}
+          disabled={
+            !selectedText ||
+            !texts.find(text => text.id === selectedText) ||
+            texts.find(text => text.id === selectedText)?.style.zIndex === 2
+          }
         >
           Send back
           <ContextMenuShortcut>
@@ -89,12 +93,7 @@ export default function ContextMenuText({
           onClick={() => {
             bringToFrontOrBack('front')
           }}
-          // disabled={
-          // TODO:
-          //   // !selectedText ||
-          //   // texts[selectedText - 1].style.zIndex === texts.length
-          //   // do disbaled by adding length of both images and texts and check
-          // }
+        // TODO: implement proper max z-index check using combined images and texts length
         >
           Bring forward
           <ContextMenuShortcut>
