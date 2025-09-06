@@ -9,7 +9,7 @@ import React from 'react'
 export default function DrawingCanvas() {
     const canvasRef = React.useRef<HTMLCanvasElement | null>(null)
     const { resolution, scrollScale } = useResizeCanvas()
-    const { drawings = [], setDrawings } = useImageOptions()
+    const { drawings = [], setDrawings, setInitialImageUploaded } = useImageOptions()
     const {
         currentTool,
         currentColor,
@@ -96,6 +96,7 @@ export default function DrawingCanvas() {
             createdAt: Date.now(),
         }
         setDrawings?.([...(drawings || []), newPath])
+        setInitialImageUploaded(true)
     }
 
     const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
