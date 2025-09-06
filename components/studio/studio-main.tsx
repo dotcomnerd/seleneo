@@ -280,6 +280,19 @@ export default function Canvas() {
         const hasLocal = localStorage.getItem('canvasState') !== null
         if (!hasLocal) return
         
+        try {
+            const textObj = JSON.parse(localStorage.getItem('canvasState') || '{}')
+
+            if (Array.isArray(textObj.texts) && textObj.texts.length > 0) {
+                const uniqueFonts: string[] = Array.from(new Set(textObj.texts.map((text: any) => text.style.fontFamily)));
+                uniqueFonts.forEach((font: string) => {
+                    loadGoogleFont(font)
+                })
+            }
+        } catch (error) {
+            toast.error('Failed to restore local state')
+        }
+
         // probably a better way to do this
         const timer = setTimeout(() => {
             toast.custom((t) => (
@@ -297,6 +310,8 @@ export default function Canvas() {
         return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+
 
     const handleScroll = (e: React.WheelEvent<HTMLDivElement>) => {
         if (typeof window !== 'undefined' && window.innerWidth <= 768) {
