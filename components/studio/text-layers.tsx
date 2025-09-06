@@ -82,7 +82,7 @@ const BubbleMenuComp = ({ editor }: MenuBarProps) => {
 
 function TipTapEditor({ textContent, onContentChange }: { textContent: string; onContentChange: (content: string) => void }) {
     const { setShowTextControls, isEditable, setIsEditable } = useMoveable()
-    const { defaultStyle, texts, setTexts } = useImageOptions()
+    const { texts, setTexts } = useImageOptions()
     const { selectedText } = useSelectedLayers()
     const editorRef = useRef<HTMLDivElement>(null)
     const displayContent = textContent || 'Edit this text'
@@ -139,25 +139,36 @@ function TipTapEditor({ textContent, onContentChange }: { textContent: string; o
         }
     })
 
+    const handleDoubleClick = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        editor?.chain().selectAll().focus()
+        setIsEditable(true)
+        setShowTextControls(false)
+    }
+
     return (
         <div
             ref={editorRef}
-            onDoubleClick={() => {
-                editor?.chain().selectAll().focus()
-                setIsEditable(true)
-                setShowTextControls(false)
-            }}
+            onDoubleClick={handleDoubleClick}
+            className="relative w-full h-full min-w-fit min-h-fit"
             style={{
                 position: 'relative',
-                zIndex: isEditable ? 10 : 'auto' // bring to front when editing
+                zIndex: isEditable ? 10 : 'auto',
+                margin: 0,
+                padding: 0,
             }}
         >
             <BubbleMenuComp editor={editor} />
             <div
-                className={`${isEditable ? 'pointer-events-auto cursor-text' : 'pointer-events-none'
-                    }`}
+                className={cn(
+                    "w-full h-full relative min-w-fit min-h-fit",
+                    isEditable ? 'pointer-events-auto cursor-text' : 'pointer-events-none cursor-move'
+                )}
             >
-                <EditorContent style={defaultStyle} editor={editor} />
+                <EditorContent
+                    editor={editor}
+                    className="h-full w-full relative"
+                />
             </div>
         </div>
     )
@@ -180,8 +191,11 @@ export default function TextLayers() {
                             key={`text-${text.id}`}
                             id={`text-${text.id}`}
                             ref={text.id === selectedText ? textRef : null}
-                            className={`text apply-font absolute flex-1 cursor-pointer  ${text.content === '' ? 'pointer-events-none hidden' : 'image'
-                                }`}
+                            className={cn(
+                                "text apply-font absolute cursor-pointer image",
+                                text.content === '' ? 'pointer-events-none hidden' : ''
+                            )}
+                            // transformations? handled by moveable
                             style={{
                                 fontSize: `${text.style.textSize}rem`,
                                 fontFamily: text.style.fontFamily,
@@ -195,23 +209,33 @@ export default function TextLayers() {
                                         text.style.shadowOpacity
                                     )})`,
                                 lineHeight: '1',
-                                transform: `perspective(${text.style.perspective ?? 1000}px) translate(${text.style.translateX ?? 0}%, ${text.style.translateY ?? 0}%) scale(${text.style.scaleX ?? 1}, ${text.style.scaleY ?? 1}) rotate(${text.style.rotate ?? 0}deg) rotateX(${text.style.rotateX ?? 0}deg) rotateY(${text.style.rotateY ?? 0}deg) rotateZ(${text.style.rotateZ ?? 0}deg)`,
-                                willChange: 'transform',
                                 zIndex: `${text.style.zIndex}`,
+                                width: 'fit-content',
+                                height: 'fit-content',
+                                minWidth: '2ch',
+                                minHeight: '1em',
+                                // only apply transforms when text is NOT selected
+                                ...(selectedText !== text.id && (text.style.translateX !== 0 || text.style.translateY !== 0 ||
+                                    text.style.scaleX !== 1 || text.style.scaleY !== 1 ||
+                                    text.style.rotate !== 0) ? {
+                                    transform: `perspective(${text.style.perspective ?? 1000}px) translate(${text.style.translateX ?? 0}px, ${text.style.translateY ?? 0}px) scale(${text.style.scaleX ?? 1}, ${text.style.scaleY ?? 1}) rotate(${text.style.rotate ?? 0}deg) rotateX(${text.style.rotateX ?? 0}deg) rotateY(${text.style.rotateY ?? 0}deg) rotateZ(${text.style.rotateZ ?? 0}deg)`,
+                                    willChange: 'transform',
+                                } : {}),
                             }}
-                            onContextMenu={() => {
+                            onContextMenu={(e) => {
+                                e.stopPropagation()
                                 setShowTextControls(true)
                                 setSelectedText(text.id)
                                 setSelectedImage(null)
                                 setShowControls(false)
                             }}
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.stopPropagation()
                                 setShowTextControls(true)
                                 setSelectedText(text.id)
                                 setSelectedImage(null)
                                 setShowControls(false)
                             }}
-                        // TODO: allow dragging without text selection?
                         >
                             <TipTapEditor
                                 textContent={text.content}

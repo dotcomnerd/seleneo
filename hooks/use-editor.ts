@@ -8,7 +8,13 @@ import StarterKit from '@tiptap/starter-kit'
 export default function useTiptapEditor(initialContent: string = '') {
     const editor = useEditor({
         extensions: [
-            StarterKit,
+            StarterKit.configure({
+                paragraph: {
+                    HTMLAttributes: {
+                        style: 'margin: 0; padding: 0;'
+                    }
+                }
+            }),
             TextStyle,
             Color.configure({
                 types: ['textStyle'],
@@ -18,13 +24,14 @@ export default function useTiptapEditor(initialContent: string = '') {
             }),
             TextAlign.configure({
                 types: ['heading', 'paragraph'],
-                defaultAlignment: 'center',
+
             }),
         ],
         content: initialContent,
-        onCreate: ({ editor }) => {
-            editor.commands.selectAll()
-            editor.commands.setTextAlign('center')
+        editorProps: {
+            attributes: {
+                style: 'outline: none; margin: 0; padding: 0; width: 100%; height: 100%; overflow: visible;'
+            }
         }
     })
 
