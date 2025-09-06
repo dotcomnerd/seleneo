@@ -27,7 +27,6 @@ export default function TiptapMoveable({ id }: { id: string }) {
   const { images, texts, setTexts } = useImageOptions()
   const { selectedText } = useSelectedLayers()
   const moveableRef = useRef<any>(null)
-  //   const { width, height } = splitWidthHeight(exactDomResolution)
 
   const [domWidth, domHeight]: number[] = domResolution.split('x').map(Number)
 
@@ -53,25 +52,31 @@ export default function TiptapMoveable({ id }: { id: string }) {
       // i put this delay to let the font load and DOM update
       setTimeout(() => {
         moveableRef.current?.updateRect()
-      }, 100)
+      }, 50)
     }
-  }, [texts])
+  }, [texts, selectedText])
 
   // make sure saved position is applied when text is restored from JSON
   useEffect(() => {
     if (selectedText && typeof document !== 'undefined') {
       const textElement = texts.find(text => text.id === selectedText)
       const domElement = document.getElementById(`text-${selectedText}`)
-      if (textElement && domElement && (textElement.style.translateX !== 0 || textElement.style.translateY !== 0 || textElement.style.scaleX !== 1 || textElement.style.scaleY !== 1 || textElement.style.rotate !== 0 || textElement.style.rotateX !== 0 || textElement.style.rotateY !== 0 || textElement.style.rotateZ !== 0)) {
-        const transform = `perspective(${textElement.style.perspective ?? 1000}px) translate(${textElement.style.translateX ?? 0}%, ${textElement.style.translateY ?? 0}%) scale(${textElement.style.scaleX ?? 1}, ${textElement.style.scaleY ?? 1}) rotate(${textElement.style.rotate ?? 0}deg) rotateX(${textElement.style.rotateX ?? 0}deg) rotateY(${textElement.style.rotateY ?? 0}deg) rotateZ(${textElement.style.rotateZ ?? 0}deg)`
-        domElement.style.transform = transform
-        // refresh moveable to recognize new position
-        if (moveableRef.current) {
-          setTimeout(() => moveableRef.current?.updateRect(), 50)
+
+      if (textElement && domElement && moveableRef.current) {
+        if (textElement.style.translateX !== 0 || textElement.style.translateY !== 0 ||
+          textElement.style.scaleX !== 1 || textElement.style.scaleY !== 1 ||
+          textElement.style.rotate !== 0) {
+          const transform = `perspective(${textElement.style.perspective ?? 1000}px) translate(${textElement.style.translateX ?? 0}px, ${textElement.style.translateY ?? 0}px) scale(${textElement.style.scaleX ?? 1}, ${textElement.style.scaleY ?? 1}) rotate(${textElement.style.rotate ?? 0}deg) rotateX(${textElement.style.rotateX ?? 0}deg) rotateY(${textElement.style.rotateY ?? 0}deg) rotateZ(${textElement.style.rotateZ ?? 0}deg)`
+          domElement.style.transform = transform
         }
+
+        // let DOM update first then update moveable
+        setTimeout(() => {
+          moveableRef.current?.updateRect()
+        }, 10)
       }
     }
-  }, [selectedText, texts, moveableRef])
+  }, [selectedText])
 
   return (
     <Moveable
@@ -80,15 +85,24 @@ export default function TiptapMoveable({ id }: { id: string }) {
         typeof document !== 'undefined' ? document?.getElementById(id) : ''
       }
       draggable={true}
+      onDragStart={({ set }) => {
+        if (selectedText) {
+          const textElement = texts.find(text => text.id === selectedText)
+          if (textElement) {
+            set([textElement.style.translateX || 0, textElement.style.translateY || 0])
+          }
+        } else {
+          set([0, 0])
+        }
+      }}
       onDrag={(e) => {
         e.target.style.transform = e.transform
       }}
       onDragEnd={({ target, lastEvent }) => {
-        // @ts-expect-error
-        const xPerc = (lastEvent?.translate[0] / target?.offsetWidth) * 100
-        // @ts-expect-error
-        const yPerc = (lastEvent?.translate[1] / target?.offsetHeight) * 100
-        if (selectedText) {
+        if (selectedText && lastEvent?.translate) {
+          const translateX = lastEvent.translate[0]
+          const translateY = lastEvent.translate[1]
+
           setTexts(
             texts.map((text) =>
               text.id === selectedText
@@ -96,8 +110,8 @@ export default function TiptapMoveable({ id }: { id: string }) {
                   ...text,
                   style: {
                     ...text.style,
-                    translateX: xPerc,
-                    translateY: yPerc,
+                    translateX: translateX,
+                    translateY: translateY,
                   },
                 }
                 : text
@@ -107,61 +121,87 @@ export default function TiptapMoveable({ id }: { id: string }) {
       }}
       scalable={true}
       keepRatio={true}
+      onScaleStart={({ set, dragStart }) => {
+        if (selectedText) {
+          const textElement = texts.find(text => text.id === selectedText)
+          if (textElement) {
+            set([textElement.style.scaleX || 1, textElement.style.scaleY || 1])
+            if (dragStart) {
+              dragStart.set([textElement.style.translateX || 0, textElement.style.translateY || 0])
+            }
+          }
+        } else {
+          set([1, 1])
+          if (dragStart) {
+            dragStart.set([0, 0])
+          }
+        }
+      }}
       onScale={(e) => {
         e.target.style.transform = e.drag.transform
       }}
       onScaleEnd={({ target, lastEvent }) => {
-        if (!lastEvent) return
+        if (!lastEvent || !selectedText) return
 
         const scaleX = lastEvent.scale[0]
         const scaleY = lastEvent.scale[1]
-        // @ts-expect-error
-        const xPerc = (lastEvent?.drag?.translate[0] / target.offsetWidth) * 100
-        // @ts-expect-error
-        const yPerc = (lastEvent?.drag?.translate[1] / target.offsetHeight) * 100
+        const translateX = lastEvent.drag?.translate[0] || 0
+        const translateY = lastEvent.drag?.translate[1] || 0
 
-        if (selectedText) {
-          setTexts(
-            texts.map((text) =>
-              text.id === selectedText
-                ? {
-                  ...text,
-                  style: {
-                    ...text.style,
-                    scaleX: scaleX,
-                    scaleY: scaleY,
-                    translateX: xPerc,
-                    translateY: yPerc,
-                  },
-                }
-                : text
-            )
+        setTexts(
+          texts.map((text) =>
+            text.id === selectedText
+              ? {
+                ...text,
+                style: {
+                  ...text.style,
+                  scaleX: scaleX,
+                  scaleY: scaleY,
+                  translateX: translateX,
+                  translateY: translateY,
+                },
+              }
+              : text
           )
-        }
+        )
       }}
       rotatable={true}
       rotationPosition={'top'}
+      onRotateStart={({ set }) => {
+        if (selectedText) {
+          const textElement = texts.find(text => text.id === selectedText)
+          if (textElement) {
+            set(textElement.style.rotate || 0)
+          }
+        } else {
+          set(0)
+        }
+      }}
       onRotate={(e) => {
         e.target.style.transform = e.drag.transform
       }}
       onRotateEnd={({ lastEvent }) => {
-        if (!lastEvent) return
-        const rotate = lastEvent.rotate
-        if (selectedText) {
-          setTexts(
-            texts.map((text) =>
-              text.id === selectedText
-                ? {
-                  ...text,
-                  style: {
-                    ...text.style,
-                    rotate: rotate,
-                  },
-                }
-                : text
-            )
+        if (!lastEvent || !selectedText) return
+
+        const rotate = lastEvent.rotate || 0
+        const translateX = lastEvent.drag?.translate[0] || 0
+        const translateY = lastEvent.drag?.translate[1] || 0
+
+        setTexts(
+          texts.map((text) =>
+            text.id === selectedText
+              ? {
+                ...text,
+                style: {
+                  ...text.style,
+                  rotate: rotate,
+                  translateX: translateX,
+                  translateY: translateY,
+                },
+              }
+              : text
           )
-        }
+        )
       }}
       snapRotationThreshold={5}
       snapRotationDegrees={[0, 90, 180, 270]}
