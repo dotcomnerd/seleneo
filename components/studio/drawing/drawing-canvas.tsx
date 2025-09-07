@@ -150,10 +150,19 @@ export default function DrawingCanvas() {
         <canvas
             ref={canvasRef}
             className="absolute inset-0 z-10"
-            onPointerDown={handlePointerDown}
+            onPointerDown={(e) => {
+                e.currentTarget.setPointerCapture(e.pointerId)
+                handlePointerDown(e)
+            }}
             onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerLeave={handlePointerUp}
+            onPointerUp={(e) => {
+                e.currentTarget.setPointerCapture(e.pointerId)
+                handlePointerUp()
+            }}
+            onPointerLeave={(e) => {
+                e.currentTarget.setPointerCapture(e.pointerId)
+                handlePointerUp()
+            }}
             style={{ touchAction: 'none', cursor, pointerEvents }}
         />
     )
