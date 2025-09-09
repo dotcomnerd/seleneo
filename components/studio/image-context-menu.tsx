@@ -182,18 +182,23 @@ export default function ContextMenuImage({
             crop.height * scaleY
         )
 
-        const base64Image = canvas.toDataURL('image/png')
-        selectedImage &&
-            setImages(
-                images.map((image) =>
-                    image.id === selectedImage
-                        ? {
-                            ...image,
-                            image: base64Image,
-                        }
-                        : image
+        try {
+            const base64Image = canvas.toDataURL('image/png')
+            selectedImage &&
+                setImages(
+                    images.map((image) =>
+                        image.id === selectedImage
+                            ? {
+                                ...image,
+                                image: base64Image,
+                            }
+                            : image
+                    )
                 )
-            )
+        } catch (error) {
+            console.error('Failed to crop image:', error)
+            toast.error('Failed to crop image, please try again later.')
+        }
     }
 
     return (
@@ -294,6 +299,7 @@ export default function ContextMenuImage({
                                 src={images.find((image) => image.id === selectedImage)?.image}
                                 alt="Crop selected image"
                                 className="h-full w-full object-cover"
+                                crossOrigin="anonymous"
                             />
                         </DynamicCropComponent>
                     )}
