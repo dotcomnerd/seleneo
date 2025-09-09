@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBackgroundOptions } from '@/store/use-background-options'
-import { useImageOptions } from '@/store/use-image-options'
+import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
@@ -54,6 +54,7 @@ export interface NewSaveResponse {
 
 export function ExportActions({ quality, fileType, sessionStatus }: ExportActionsProps) {
     const { images, texts, drawings, scale, setImages, setTexts, setScale, setInitialImageUploaded } = useImageOptions()
+    const { setSelectedImage } = useSelectedLayers()
     const {
         background,
         backgroundType,
@@ -105,16 +106,16 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
         }
     }, [])
 
-    const checkExportPermission = () => {             
-        const hasImages = images.length > 0  
-        const hasTexts = texts.length > 0 && texts.some(text => text.content.trim() !== '')  
-        const hasDrawings = drawings && drawings.length > 0  
-          
-        if (!hasImages && !hasTexts && !hasDrawings) {  
-            toast.error('No content to export', { description: 'Please add an image, text, or drawing first' })  
-            return false  
-        }  
-        return true  
+    const checkExportPermission = () => {
+        const hasImages = images.length > 0
+        const hasTexts = texts.length > 0 && texts.some(text => text.content.trim() !== '')
+        const hasDrawings = drawings && drawings.length > 0
+
+        if (!hasImages && !hasTexts && !hasDrawings) {
+            toast.error('No content to export', { description: 'Please add an image, text, or drawing first' })
+            return false
+        }
+        return true
     }
 
     const toggleVisibility = () => {
@@ -237,8 +238,28 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
                 return
             }
 
+            const toDataUrl = async (url: string): Promise<string> => {
+                const res = await fetch(url)
+                const blob = await res.blob()
+                return await new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onloadend = () => resolve(reader.result as string)
+                    reader.onerror = reject
+                    reader.readAsDataURL(blob)
+                })
+            }
+
+            const imagesForSave = await Promise.all(
+                images.map(async (img) => {
+                    if (typeof img.image === 'string' && img.image.startsWith('blob:')) {
+                        return { ...img, image: await toDataUrl(img.image) }
+                    }
+                    return img
+                })
+            )
+
             const canvasState = {
-                images: images,
+                images: imagesForSave,
                 texts: texts,
                 backgroundSettings: {
                     backgroundColor: background,
@@ -323,6 +344,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             if (savedImages && savedImages.length > 0) {
                 setImages([...savedImages])
                 setInitialImageUploaded(true) // hide upload image CTA
+                setSelectedImage(savedImages[0]?.id ?? null)
             }
 
             if (savedTexts && savedTexts.length > 0) {

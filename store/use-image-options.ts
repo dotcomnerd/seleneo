@@ -24,6 +24,7 @@ interface ImageOptionsState {
   images: {
     id: number
     image: string
+    identifier?: string
     extractedColors?: { color: string; count: number }[]
     linearGradients?: string[]
     meshGradients?: string[]
@@ -57,6 +58,7 @@ interface ImageOptionsState {
     images: {
       id: number
       image: string
+      identifier?: string
       extractedColors?: { color: string; count: number }[]
       linearGradients?: string[]
       meshGradients?: string[]

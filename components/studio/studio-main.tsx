@@ -12,8 +12,8 @@ import { useResizeCanvas } from '@/store/use-resize-canvas'
 import dynamic from 'next/dynamic'
 import React, { CSSProperties, useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { BackgroundImageCanvas } from './bg-image'
 import { toast } from 'sonner'
+import { BackgroundImageCanvas } from './bg-image'
 
 const MoveableComponent = dynamic(() => import('./moveable-component'), {
     ssr: false
@@ -179,6 +179,7 @@ export default function Canvas() {
             if (savedImages && savedImages.length > 0) {
                 setImages([...savedImages])
                 setInitialImageUploaded(true)
+                setSelectedImage(savedImages[0]?.id ?? null)
             }
 
             if (savedTexts && savedTexts.length > 0) {
@@ -221,7 +222,7 @@ export default function Canvas() {
 
     const RestoreToast = ({ toastId, onRestore, onDismiss }: { toastId: any, onRestore: () => void, onDismiss: () => void }) => {
         const [progress, setProgress] = React.useState(100)
-        const autoDismissTime = 8000 
+        const autoDismissTime = 8000
         const progressUpdateInterval = 50
 
         useEffect(() => {
@@ -243,7 +244,7 @@ export default function Canvas() {
         return (
             <div className="pointer-events-auto z-[60] flex max-w-sm flex-col rounded-md border bg-background shadow-lg">
                 <div className="h-1 w-full bg-muted/20 rounded-t-md">
-                    <div 
+                    <div
                         className="h-full bg-primary transition-all duration-75 ease-linear ml-auto"
                         style={{ width: `${Math.max(0, progress)}%` }}
                     />
@@ -279,7 +280,7 @@ export default function Canvas() {
         if (typeof window === 'undefined') return
         const hasLocal = localStorage.getItem('canvasState') !== null
         if (!hasLocal) return
-        
+
         try {
             const textObj = JSON.parse(localStorage.getItem('canvasState') || '{}')
 
@@ -298,22 +299,22 @@ export default function Canvas() {
         // probably a better way to do this
         const timer = setTimeout(() => {
             toastId = toast.custom((t) => (
-                <RestoreToast 
+                <RestoreToast
                     toastId={t}
                     onRestore={restoreLocalCanvasState}
                     onDismiss={() => toast.dismiss(t)}
                 />
-            ), { 
+            ), {
                 position: 'bottom-right',
                 duration: 8000
             })
         }, 100)
-        
+
         return () => {
             clearTimeout(timer)
             if (toastId) toast.dismiss(toastId)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
 

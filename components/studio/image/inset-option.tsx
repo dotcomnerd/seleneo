@@ -43,11 +43,11 @@ export default function InsetOption() {
                                     </h4>
                                     <hr className="border-border pt-2" />
                                     <div className="flex flex-wrap gap-2">
-                                        {images[selectedImage! - 1]?.extractedColors?.map(
+                                        {images.find(img => img.id === selectedImage)?.extractedColors?.map(
                                             (color) => (
                                                 <button
                                                     key={color.color}
-                                                    className={`h-7 w-7 rounded-sm ${images[selectedImage! - 1]?.style.insetColor ===
+                                                    className={`h-7 w-7 rounded-sm ${images.find(img => img.id === selectedImage)?.style.insetColor ===
                                                         color.color
                                                         ? 'ring-2 ring-ring ring-offset-2'
                                                         : ''
@@ -56,7 +56,7 @@ export default function InsetOption() {
                                                     onClick={() => {
                                                         setImages(
                                                             images.map((image, index) =>
-                                                                index === selectedImage! - 1
+                                                                image.id === selectedImage
                                                                     ? {
                                                                         ...image,
                                                                         style: {
