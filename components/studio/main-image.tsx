@@ -105,11 +105,12 @@ const ImageUpload = () => {
                 const file = item.getAsFile();
                 if (!file) continue;
                 const imageUrl = URL.createObjectURL(file);
+                const pastedImageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
                 setImages([
                     ...images,
                     {
                         image: imageUrl,
-                        id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
+                        id: pastedImageId,
                         style: images.length < 1
                             ? defaultStyle
                             : {
@@ -301,12 +302,13 @@ function LoadAImage() {
 
                     setInitialImageUploaded(true)
 
+                    const loadedImageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
                     setImagesCheck([...imagesCheck, imageUrl])
                     setImages([
                         ...images,
-                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
+                        { image: imageUrl, id: loadedImageId, style: defaultStyle },
                     ])
-                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
+                    setSelectedImage(loadedImageId)
 
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
@@ -359,13 +361,13 @@ function LoadAImage() {
                 try {
                     const imageUrl = URL.createObjectURL(file)
                     setInitialImageUploaded(true)
-
+                    const newImageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
                     setImagesCheck([...imagesCheck, imageUrl])
                     setImages([
                         ...images,
-                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
+                        { image: imageUrl, id: newImageId, style: defaultStyle },
                     ])
-                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
+                    setSelectedImage(newImageId)
 
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
@@ -435,13 +437,13 @@ function LoadAImage() {
                 // setBackground(gradient);
                 // document?.documentElement.style.setProperty('--gradient-bg', gradient);
 
-                const nextId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
+                const demoImageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
                 setInitialImageUploaded(true)
                 setImages([
                     ...images,
                     {
                         image: imageSrc,
-                        id: nextId,
+                        id: demoImageId,
                         style: {
                             ...defaultStyle,
                             imageRoundness: 0.7,
@@ -449,7 +451,7 @@ function LoadAImage() {
                         },
                     },
                 ]);
-                setSelectedImage(nextId)
+                setSelectedImage(demoImageId)
                 setImagesCheck([...imagesCheck, imageSrc]);
 
                 if (localStorage.getItem('image-init-pro-tip') === null) {
