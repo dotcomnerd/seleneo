@@ -23,7 +23,6 @@ import {
 import { useBackgroundOptions } from '@/store/use-background-options';
 import { useColorExtractor } from '@/store/use-color-extractor';
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options';
-import { uploadAndUpdateImage, prepImagesForSave } from '@/lib/image-upload';
 import { useMoveable } from '@/store/use-moveable';
 import { useResizeCanvas } from '@/store/use-resize-canvas';
 import {
@@ -127,7 +126,7 @@ export default function ContextMenuImage({
         }
 
         const canvasState = {
-            images: prepImagesForSave(images),
+            images: images,
             texts: texts,
             backgroundSettings: {
                 backgroundColor: background,
@@ -183,18 +182,23 @@ export default function ContextMenuImage({
             crop.height * scaleY
         )
 
-        const base64Image = canvas.toDataURL('image/png')
-        selectedImage &&
-            setImages(
-                images.map((image) =>
-                    image.id === selectedImage
-                        ? {
-                            ...image,
-                            image: base64Image,
-                        }
-                        : image
+        try {
+            const base64Image = canvas.toDataURL('image/png')
+            selectedImage &&
+                setImages(
+                    images.map((image) =>
+                        image.id === selectedImage
+                            ? {
+                                ...image,
+                                image: base64Image,
+                            }
+                            : image
+                    )
                 )
-            )
+        } catch (error) {
+            console.error('Failed to crop image:', error)
+            toast.error('Failed to crop image, please try again later.')
+        }
     }
 
     return (
@@ -295,6 +299,7 @@ export default function ContextMenuImage({
                                 src={images.find((image) => image.id === selectedImage)?.image}
                                 alt="Crop selected image"
                                 className="h-full w-full object-cover"
+                                crossOrigin="anonymous"
                             />
                         </DynamicCropComponent>
                     )}
@@ -334,41 +339,28 @@ function ReplaceImage() {
 
     const onDrop = async (file: File | undefined) => {
         const analyze = (await import('rgbaster')).default
-        if (file && selectedImage) {
-            const blobUrl = URL.createObjectURL(file)
+        if (file) {
+            const imageUrl = URL.createObjectURL(file)
 
-            const updatedImages = images.map((image) =>
-                image.id === selectedImage
-                    ? {
-                        ...image,
-                        image: blobUrl,
-                        isUploaded: false,
-                        isUploading: true,
-                    }
-                    : image
-            )
-            setImages(updatedImages)
-            setImagesCheck([...imagesCheck, blobUrl])
+            const result = await analyze(imageUrl, {
+                scale: 0.3,
+            })
+            const extractedColors = result.slice(0, 12)
 
-            try {
-                const result = await analyze(blobUrl, {
-                    scale: 0.3,
-                })
-                const extractedColors = result.slice(0, 12)
+            selectedImage &&
+                setImages(
+                    images.map((image) =>
+                        image.id === selectedImage
+                            ? {
+                                ...image,
+                                image: imageUrl,
+                                extractedColors,
+                            }
+                            : image
+                    )
+                )
 
-                setImages(updatedImages.map((image) =>
-                    image.id === selectedImage
-                        ? {
-                            ...image,
-                            extractedColors,
-                        }
-                        : image
-                ))
-            } catch (error) {
-                console.error('Error extracting colors:', error)
-            }
-
-            uploadAndUpdateImage(selectedImage, file, setImages, updatedImages)
+            setImagesCheck([...imagesCheck, imageUrl])
         }
     }
     return (

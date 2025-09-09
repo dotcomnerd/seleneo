@@ -5,7 +5,6 @@ import {
     TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { calculateEqualCanvasSize } from '@/lib/utils'
-import { createImageObject, uploadAndUpdateImage, cleanupAllBlobUrls } from '@/lib/image-upload'
 import { useColorExtractor } from '@/store/use-color-extractor'
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
@@ -22,28 +21,35 @@ export default function AddImageButton({ }: AddImageButtonProps) {
     const { automaticResolution, setResolution } = useResizeCanvas()
     const { setSelectedImage, setSelectedText } = useSelectedLayers()
 
-    const handleImageChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
 
         if (file) {
-            const imageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
-            const isFirstImage = images.length === 0
-            
-            const newImage = createImageObject(file, imageId, defaultStyle, isFirstImage)
-            
-            const updatedImages = [...images, newImage]
-            setImages(updatedImages)
-            setImagesCheck([...imagesCheck, newImage.image!])
-            
+            const imageUrl = URL.createObjectURL(file)
+            setImages([
+                ...images,
+                {
+                    image: imageUrl,
+                    id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
+                    style:
+                        images.length < 1
+                            ? defaultStyle
+                            : {
+                                ...defaultStyle,
+                                imageSize: '0.5',
+                            },
+                },
+            ])
+            setImagesCheck([...imagesCheck, imageUrl])
             if (localStorage.getItem('image-init-pro-tip') === null) {
                 toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
                 localStorage.setItem('image-init-pro-tip', 'true')
             }
-            
-            if (isFirstImage && automaticResolution) {
+            if (images.length > 0) return
+            if (automaticResolution) {
                 const padding = 200
                 const img = new Image()
-                img.src = newImage.image!
+                img.src = imageUrl
 
                 img.onload = () => {
                     const { naturalWidth, naturalHeight } = img
@@ -55,10 +61,7 @@ export default function AddImageButton({ }: AddImageButtonProps) {
                     setResolution(newResolution.toString())
                 }
             }
-            
-            setSelectedImage(imageId)
-            
-            uploadAndUpdateImage(imageId, file, setImages, updatedImages)
+            setSelectedImage(images.length)
         }
     }
 
@@ -109,7 +112,6 @@ export default function AddImageButton({ }: AddImageButtonProps) {
                         <div
                             className="relative flex gap-2 h-full w-full cursor-pointer items-center justify-center rounded-xl border-2 border-primary/30 p-1 hover:border-primary/60"
                             onClick={() => {
-                                cleanupAllBlobUrls(images)
                                 setImages([])
                                 setImagesCheck([])
                                 setInitialImageUploaded(false)

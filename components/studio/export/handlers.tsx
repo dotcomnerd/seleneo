@@ -20,7 +20,6 @@ import {
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useBackgroundOptions } from '@/store/use-background-options'
 import { useImageOptions } from '@/store/use-image-options'
-import { prepImagesForSave } from '@/lib/image-upload'
 import { useLastSavedTime } from '@/store/use-last-save'
 import { useResizeCanvas } from '@/store/use-resize-canvas'
 import { saveAs } from 'file-saver'
@@ -239,7 +238,7 @@ export function ExportActions({ quality, fileType, sessionStatus }: ExportAction
             }
 
             const canvasState = {
-                images: prepImagesForSave(images),
+                images: images,
                 texts: texts,
                 backgroundSettings: {
                     backgroundColor: background,
