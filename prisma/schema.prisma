@@ -44,6 +44,7 @@ model User {
   sessions      Session[]
 
   UserImage UserImage[]
+  CanvasImage CanvasImage[]
 }
 
 model VerificationToken {
@@ -67,5 +68,16 @@ model UserImage {
   updatedAt       DateTime    @default(now())
   cloudflareUrl   String
   visibility      Visibility
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model CanvasImage {
+  id              String      @id @default(cuid())
+  identifier      String      @unique @default("")
+  userId          String      
+  projectId       String?     // null for now to save space
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @default(now())
+  cloudflareUrl   String
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

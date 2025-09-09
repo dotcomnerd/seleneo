@@ -23,7 +23,9 @@ interface ImageOptionsState {
 
   images: {
     id: number
-    image: string
+    image: string 
+    identifier?: string
+    isUploaded?: boolean 
     extractedColors?: { color: string; count: number }[]
     linearGradients?: string[]
     meshGradients?: string[]
@@ -57,6 +59,8 @@ interface ImageOptionsState {
     images: {
       id: number
       image: string
+      identifier?: string
+      isUploaded?: boolean 
       extractedColors?: { color: string; count: number }[]
       linearGradients?: string[]
       meshGradients?: string[]
@@ -290,7 +294,20 @@ export const useImageOptions = create(
       },
 
       images: [],
-      setImages: (images) => set({ images }),
+      setImages: (images) => {
+        const currentImages = useImageOptions.getState().images;
+        const removedImages = currentImages.filter(currentImg => 
+          !images.find(newImg => newImg.id === currentImg.id)
+        );
+        
+        removedImages.forEach(img => {
+          if (img.image.startsWith('blob:')) {
+            URL.revokeObjectURL(img.image);
+          }
+        });
+        
+        set({ images });
+      },
 
       texts: [],
       setTexts: (texts) => set({ texts }),

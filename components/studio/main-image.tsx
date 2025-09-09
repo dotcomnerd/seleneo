@@ -7,6 +7,7 @@ import {
     calculateEqualCanvasSize,
     convertHexToRgba,
 } from '@/lib/utils'
+import { createImageObject, uploadAndUpdateImage } from '@/lib/image-upload'
 import demoImage from '@/public/demo.png'
 import lightDemoImage from '@/public/light-demo.png'
 import { useBackgroundOptions } from '@/store/use-background-options'
@@ -104,43 +105,40 @@ const ImageUpload = () => {
             if (item.type.indexOf('image') !== -1) {
                 const file = item.getAsFile();
                 if (!file) continue;
-                const imageUrl = URL.createObjectURL(file);
-                setImages([
-                    ...images,
-                    {
-                        image: imageUrl,
-                        id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
-                        style: images.length < 1
-                            ? defaultStyle
-                            : {
-                                ...defaultStyle,
-                                imageSize: '0.5',
-                            },
-                    },
-                ]);
-                setImagesCheck([...imagesCheck, imageUrl]);
+                
+                const imageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
+                const isFirstImage = images.length === 0
+                
+                const newImage = createImageObject(file, imageId, defaultStyle, isFirstImage)
+                
+                const updatedImages = [...images, newImage]
+                setImages(updatedImages)
+                setImagesCheck([...imagesCheck, newImage.image!])
+                
                 if (localStorage.getItem('image-init-pro-tip') === null) {
                     toast.info("Pro Tip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-center" });
                     localStorage.setItem('image-init-pro-tip', 'true')
                 }
-                if (images.length > 0) return;
-                if (automaticResolution) {
-                    const padding = 200;
-                    const img = new Image();
-                    img.src = imageUrl;
+                
+                if (isFirstImage && automaticResolution) {
+                    const padding = 200
+                    const img = new Image()
+                    img.src = newImage.image!
                     img.onload = () => {
-                        const { naturalWidth, naturalHeight } = img;
+                        const { naturalWidth, naturalHeight } = img
                         const newResolution = calculateEqualCanvasSize(
                             naturalWidth,
                             naturalHeight,
                             padding
-                        );
-                        setResolution(newResolution.toString());
-                    };
+                        )
+                        setResolution(newResolution.toString())
+                    }
                 }
+                
+                uploadAndUpdateImage(imageId, file, setImages, updatedImages)
             }
         }
-    }, [images, imagesCheck, automaticResolution]);
+    }, [images, imagesCheck, automaticResolution, defaultStyle, setImages, setImagesCheck, setResolution]);
 
     useEventListener('paste', handlePaste);
 
@@ -296,27 +294,27 @@ function LoadAImage() {
 
             if (file) {
                 try {
-                    const imageUrl = URL.createObjectURL(file)
-
+                    const imageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
+                    const isFirstImage = images.length === 0
+                    
+                    const newImage = createImageObject(file, imageId, defaultStyle, isFirstImage)
+                    
                     setInitialImageUploaded(true)
-
-                    setImagesCheck([...imagesCheck, imageUrl])
-                    setImages([
-                        ...images,
-                        { image: imageUrl, id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1, style: defaultStyle },
-                    ])
-                    setSelectedImage(images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1)
+                    
+                    const updatedImages = [...images, newImage]
+                    setImages(updatedImages)
+                    setImagesCheck([...imagesCheck, newImage.image!])
+                    setSelectedImage(imageId)
 
                     if (localStorage.getItem('image-init-pro-tip') === null) {
                         toast.info("Pro Trip!", { description: "If you right click on the image, you can replace it, delete it, or even crop it!", position: "top-left" });
                         localStorage.setItem('image-init-pro-tip', 'true')
                     }
 
-                    if (images.length > 0) return
-                    if (automaticResolution) {
+                    if (isFirstImage && automaticResolution) {
                         const padding = 200
                         const img = new Image()
-                        img.src = imageUrl
+                        img.src = newImage.image!
 
                         img.onload = () => {
                             const { naturalWidth, naturalHeight } = img
@@ -328,6 +326,8 @@ function LoadAImage() {
                             setResolution(newResolution.toString())
                         }
                     }
+                    
+                    uploadAndUpdateImage(imageId, file, setImages, updatedImages)
                 } catch (error) {
                     if (error instanceof Error) {
                         toast.error(error.message, { position: "top-left" });

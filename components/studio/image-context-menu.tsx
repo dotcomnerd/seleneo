@@ -23,6 +23,7 @@ import {
 import { useBackgroundOptions } from '@/store/use-background-options';
 import { useColorExtractor } from '@/store/use-color-extractor';
 import { useImageOptions, useSelectedLayers } from '@/store/use-image-options';
+import { uploadAndUpdateImage, prepImagesForSave } from '@/lib/image-upload';
 import { useMoveable } from '@/store/use-moveable';
 import { useResizeCanvas } from '@/store/use-resize-canvas';
 import {
@@ -126,7 +127,7 @@ export default function ContextMenuImage({
         }
 
         const canvasState = {
-            images: images,
+            images: prepImagesForSave(images),
             texts: texts,
             backgroundSettings: {
                 backgroundColor: background,
@@ -333,28 +334,41 @@ function ReplaceImage() {
 
     const onDrop = async (file: File | undefined) => {
         const analyze = (await import('rgbaster')).default
-        if (file) {
-            const imageUrl = URL.createObjectURL(file)
+        if (file && selectedImage) {
+            const blobUrl = URL.createObjectURL(file)
 
-            const result = await analyze(imageUrl, {
-                scale: 0.3,
-            })
-            const extractedColors = result.slice(0, 12)
+            const updatedImages = images.map((image) =>
+                image.id === selectedImage
+                    ? {
+                        ...image,
+                        image: blobUrl,
+                        isUploaded: false,
+                        isUploading: true,
+                    }
+                    : image
+            )
+            setImages(updatedImages)
+            setImagesCheck([...imagesCheck, blobUrl])
 
-            selectedImage &&
-                setImages(
-                    images.map((image) =>
-                        image.id === selectedImage
-                            ? {
-                                ...image,
-                                image: imageUrl,
-                                extractedColors,
-                            }
-                            : image
-                    )
-                )
+            try {
+                const result = await analyze(blobUrl, {
+                    scale: 0.3,
+                })
+                const extractedColors = result.slice(0, 12)
 
-            setImagesCheck([...imagesCheck, imageUrl])
+                setImages(updatedImages.map((image) =>
+                    image.id === selectedImage
+                        ? {
+                            ...image,
+                            extractedColors,
+                        }
+                        : image
+                ))
+            } catch (error) {
+                console.error('Error extracting colors:', error)
+            }
+
+            uploadAndUpdateImage(selectedImage, file, setImages, updatedImages)
         }
     }
     return (
