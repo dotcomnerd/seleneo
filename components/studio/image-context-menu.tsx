@@ -50,10 +50,10 @@ export default function ContextMenuImage({
 }) {
     const [crop, setCrop] = useState<Crop>({
         unit: '%', // Can be 'px' or '%'
-        x: 25,
-        y: 25,
-        width: 50,
-        height: 50,
+        x: 10,
+        y: 10,
+        width: 80,
+        height: 80,
     })
     const imgRef = useRef<HTMLImageElement>(null)
     const { setImages, images, texts, scale } = useImageOptions()
@@ -175,38 +175,92 @@ export default function ContextMenuImage({
         })()
     })
 
-    const cropImageNow = () => {
+    const cropImageNow = async () => {
         if (typeof window === 'undefined') return;
-        const canvas = document?.createElement('canvas')
+
         const image = imgRef.current
-        if (!image) return
-        const scaleX = image.naturalWidth / image.width
-        const scaleY = image.naturalHeight / image.height
-        canvas.width = crop.width
-        canvas.height = crop.height
-        const ctx: CanvasRenderingContext2D | null = canvas.getContext('2d') as CanvasRenderingContext2D // hacky
+        if (!image) {
+            toast.error('No image found to crop')
+            return
+        }
 
-        const pixelRatio = window.devicePixelRatio
-        canvas.width = crop.width * pixelRatio * scaleX
-        canvas.height = crop.height * pixelRatio * scaleY
-        ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
-        ctx.imageSmoothingQuality = 'high'
+        let cropWidth, cropHeight
+        if (crop.unit === '%') {
+            cropWidth = (crop.width / 100) * image.width
+            cropHeight = (crop.height / 100) * image.height
+        } else {
+            cropWidth = crop.width
+            cropHeight = crop.height
+        }
 
-        ctx.drawImage(
-            image,
-            crop.x * scaleX,
-            crop.y * scaleY,
-            crop.width * scaleX,
-            crop.height * scaleY,
-            0,
-            0,
-            crop.width * scaleX,
-            crop.height * scaleY
-        )
+        if (!image.naturalWidth || !image.naturalHeight) {
+            toast.error('Image not fully loaded, please try again')
+            return
+        }
 
         try {
-            const base64Image = canvas.toDataURL('image/png')
-            selectedImage &&
+            const canvas = document.createElement('canvas')
+            const ctx = canvas.getContext('2d')
+
+            if (!ctx) {
+                toast.error('Failed to create canvas context')
+                return
+            }
+
+            const currentImageSrc = images.find((img) => img.id === selectedImage)?.image || ''
+            let imageToCrop: HTMLImageElement
+            if (currentImageSrc.startsWith('data:') || currentImageSrc.startsWith('blob:')) {
+                imageToCrop = image
+            } else {
+                // for external URLs we need a new image element to avoid CORS issues
+                // (https://issues.chromium.org/issues/40381978)
+                imageToCrop = new Image()
+                imageToCrop.crossOrigin = 'anonymous'
+                await new Promise((resolve, reject) => {
+                    imageToCrop.onload = resolve
+                    imageToCrop.onerror = reject
+                    imageToCrop.src = currentImageSrc
+                })
+            }
+
+            // convert percentage crop to pixel coordinates
+            let cropX, cropY, cropWidth, cropHeight
+
+            if (crop.unit === '%') {
+                cropX = (crop.x / 100) * image.width
+                cropY = (crop.y / 100) * image.height
+                cropWidth = (crop.width / 100) * image.width
+                cropHeight = (crop.height / 100) * image.height
+            } else {
+                // cuz its already in pixels
+                cropX = crop.x
+                cropY = crop.y
+                cropWidth = crop.width
+                cropHeight = crop.height
+            }
+
+            const scaleX = imageToCrop.naturalWidth / image.width
+            const scaleY = imageToCrop.naturalHeight / image.height
+            const pixelRatio = window.devicePixelRatio || 1
+            canvas.width = cropWidth * pixelRatio * scaleX
+            canvas.height = cropHeight * pixelRatio * scaleY
+            ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+            ctx.imageSmoothingEnabled = true
+            ctx.imageSmoothingQuality = 'high'
+            ctx.drawImage(
+                imageToCrop,
+                cropX * scaleX,
+                cropY * scaleY,
+                cropWidth * scaleX,
+                cropHeight * scaleY,
+                0,
+                0,
+                cropWidth * scaleX,
+                cropHeight * scaleY
+            )
+
+            const base64Image = canvas.toDataURL('image/png', 1.0)
+            if (selectedImage) {
                 setImages(
                     images.map((image) =>
                         image.id === selectedImage
@@ -217,9 +271,13 @@ export default function ContextMenuImage({
                             : image
                     )
                 )
+            }
         } catch (error) {
-            console.error('Failed to crop image:', error)
-            toast.error('Failed to crop image, please try again later.')
+            if (error instanceof Error && error.message.includes('CORS')) {
+                toast.error('Cannot crop this image due to security restrictions. Try uploading the image again.')
+            } else {
+                toast.error('Failed to crop image, please try again later.')
+            }
         }
     }
 
@@ -227,8 +285,18 @@ export default function ContextMenuImage({
         <Dialog
             open={enableCrop}
             onOpenChange={(open) => {
-                if (open === false) setEnableCrop(false)
-                setEnableCrop(open)
+                if (open === false) {
+                    setEnableCrop(false)
+                } else {
+                    setEnableCrop(open)
+                    setCrop({
+                        unit: '%',
+                        x: 10,
+                        y: 10,
+                        width: 80,
+                        height: 80,
+                    })
+                }
             }}
         >
             <ContextMenu>
@@ -312,7 +380,8 @@ export default function ContextMenuImage({
                     {selectedImage && (
                         <DynamicCropComponent
                             crop={crop}
-                            onChange={(c) => setCrop(c)}
+                            onChange={(crop, percentCrop) => setCrop(percentCrop)}
+                            onComplete={(crop, percentCrop) => setCrop(percentCrop)}
                             disabled={!enableCrop || !selectedImage}
                         >
                             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -343,9 +412,9 @@ export default function ContextMenuImage({
                     </Button>
 
                     <Button
-                        onClick={() => {
+                        onClick={async () => {
                             setEnableCrop(false)
-                            cropImageNow()
+                            await cropImageNow()
                         }}
                         className="flex-center gap-1.5"
                     >
