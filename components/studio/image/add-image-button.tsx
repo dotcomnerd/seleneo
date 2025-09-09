@@ -26,11 +26,13 @@ export default function AddImageButton({ }: AddImageButtonProps) {
 
         if (file) {
             const imageUrl = URL.createObjectURL(file)
+            const newImageId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
+
             setImages([
                 ...images,
                 {
                     image: imageUrl,
-                    id: images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1,
+                    id: newImageId,
                     style:
                         images.length < 1
                             ? defaultStyle
@@ -62,7 +64,7 @@ export default function AddImageButton({ }: AddImageButtonProps) {
                     setResolution(newResolution.toString())
                 }
             }
-            setSelectedImage(images.length)
+            setSelectedImage(newImageId)
         }
     }
 
