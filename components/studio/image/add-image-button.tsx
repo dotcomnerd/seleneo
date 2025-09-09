@@ -49,6 +49,7 @@ export default function AddImageButton({ }: AddImageButtonProps) {
             if (automaticResolution) {
                 const padding = 200
                 const img = new Image()
+                img.crossOrigin = 'Anonymous'
                 img.src = imageUrl
 
                 img.onload = () => {

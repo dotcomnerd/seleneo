@@ -127,6 +127,7 @@ const ImageUpload = () => {
                 if (automaticResolution) {
                     const padding = 200;
                     const img = new Image();
+                    img.crossOrigin = 'Anonymous'
                     img.src = imageUrl;
                     img.onload = () => {
                         const { naturalWidth, naturalHeight } = img;
@@ -144,7 +145,7 @@ const ImageUpload = () => {
 
     useEventListener('paste', handlePaste);
 
-    const hasAnyContent = images.length > 0 || texts.length > 0 || (drawings && drawings.length > 0) || initialImageUploaded 
+    const hasAnyContent = images.length > 0 || texts.length > 0 || (drawings && drawings.length > 0) || initialImageUploaded
 
     return (
         <>
@@ -316,6 +317,7 @@ function LoadAImage() {
                     if (automaticResolution) {
                         const padding = 200
                         const img = new Image()
+                        img.crossOrigin = 'Anonymous'
                         img.src = imageUrl
 
                         img.onload = () => {
@@ -416,7 +418,10 @@ function LoadAImage() {
             const imageSrc = theme === 'light' ? lightDemoImage.src : demoImage.src;
             const image = new Image();
             image.crossOrigin = 'Anonymous';
-            image.src = imageSrc;
+            image.src = (() => {
+                const sep = imageSrc.includes('?') ? '&' : '?'
+                return `${imageSrc}${sep}not-from-cache-please=${Date.now()}`
+            })();
 
             image.onload = async () => {
                 // NOTE: commenting for visit later, i don't really like the gradient - the idea of extracting colors is cool though
@@ -430,11 +435,13 @@ function LoadAImage() {
                 // setBackground(gradient);
                 // document?.documentElement.style.setProperty('--gradient-bg', gradient);
 
+                const nextId = images.length > 0 ? Math.max(...images.map(img => img.id)) + 1 : 1
+                setInitialImageUploaded(true)
                 setImages([
                     ...images,
                     {
                         image: imageSrc,
-                        id: 1,
+                        id: nextId,
                         style: {
                             ...defaultStyle,
                             imageRoundness: 0.7,
@@ -442,6 +449,7 @@ function LoadAImage() {
                         },
                     },
                 ]);
+                setSelectedImage(nextId)
                 setImagesCheck([...imagesCheck, imageSrc]);
 
                 if (localStorage.getItem('image-init-pro-tip') === null) {
@@ -455,7 +463,7 @@ function LoadAImage() {
             console.error("Failed to load demo image:", error);
         }
     };
-    
+
     return (
         <Dropzone
             multiple={false}

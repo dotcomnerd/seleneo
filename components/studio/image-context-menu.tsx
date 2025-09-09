@@ -120,37 +120,59 @@ export default function ContextMenuImage({
     })
 
     useHotkeys(['ctrl+shift+s', 'meta+shift+s'], () => {
-        if (images.length === 0) {
-            toast.error('Cannot Save Empty Canvas', { position: 'top-left' })
-            return
-        }
+        (async () => {
+            if (images.length === 0) {
+                toast.error('Cannot Save Empty Canvas', { position: 'top-left' })
+                return
+            }
 
-        const canvasState = {
-            images: images,
-            texts: texts,
-            backgroundSettings: {
-                backgroundColor: background,
-                backgroundType: backgroundType,
-                imageBackground: imageBackground,
-                noise: noise,
-                gradientAngle: gradientAngle,
-                solidColor: solidColor,
-                attribution: attribution,
-                highResBackground: highResBackground,
-                isBackgroundClicked: isBackgroundClicked,
-            },
-            canvasSettings: {
-                scale: scale,
-                resolution: resolution,
-                canvasRoundness: canvasRoundness,
-                scrollScale: scrollScale,
-                automaticResolution: automaticResolution,
-            },
-        }
+            const toDataUrl = async (url: string): Promise<string> => {
+                const res = await fetch(url)
+                const blob = await res.blob()
+                return await new Promise((resolve, reject) => {
+                    const reader = new FileReader()
+                    reader.onloadend = () => resolve(reader.result as string)
+                    reader.onerror = reject
+                    reader.readAsDataURL(blob)
+                })
+            }
 
-        localStorage.setItem('canvasState', JSON.stringify(canvasState))
+            const imagesForSave = await Promise.all(
+                images.map(async (img) => {
+                    if (typeof img.image === 'string') {
+                        return { ...img, image: await toDataUrl(img.image) }
+                    }
+                    return img
+                })
+            )
 
-        toast.success('Current State Saved Locally', { position: 'top-left' })
+            const canvasState = {
+                images: imagesForSave,
+                texts: texts,
+                backgroundSettings: {
+                    backgroundColor: background,
+                    backgroundType: backgroundType,
+                    imageBackground: imageBackground,
+                    noise: noise,
+                    gradientAngle: gradientAngle,
+                    solidColor: solidColor,
+                    attribution: attribution,
+                    highResBackground: highResBackground,
+                    isBackgroundClicked: isBackgroundClicked,
+                },
+                canvasSettings: {
+                    scale: scale,
+                    resolution: resolution,
+                    canvasRoundness: canvasRoundness,
+                    scrollScale: scrollScale,
+                    automaticResolution: automaticResolution,
+                },
+            }
+
+            localStorage.setItem('canvasState', JSON.stringify(canvasState))
+
+            toast.success('Current State Saved Locally', { position: 'top-left' })
+        })()
     })
 
     const cropImageNow = () => {
@@ -296,7 +318,12 @@ export default function ContextMenuImage({
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                                 ref={imgRef}
-                                src={images.find((image) => image.id === selectedImage)?.image}
+                                src={(function () {
+                                    const src = images.find((image) => image.id === selectedImage)?.image || ''
+                                    if (!src || src.startsWith('blob:') || src.startsWith('data:')) return src
+                                    const sep = src.includes('?') ? '&' : '?'
+                                    return `${src}${sep}seleneo-cache-bust=${Date.now()}`
+                                })()}
                                 alt="Crop selected image"
                                 className="h-full w-full object-cover"
                                 crossOrigin="anonymous"

@@ -74,7 +74,13 @@ export function ResolutionButton({
 
           const padding = 200
           const img = new Image()
-          img.src = images[0].image
+          img.crossOrigin = 'Anonymous'
+          img.src = (() => {
+            const src = images[0].image
+            if (!src || src.startsWith('blob:') || src.startsWith('data:')) return src
+            const sep = src.includes('?') ? '&' : '?'
+            return `${src}${sep}seleneo-cache-bust=${Date.now()}`
+          })()
 
           img.onload = () => {
             const { naturalWidth, naturalHeight } = img
@@ -119,7 +125,13 @@ export function ResolutionButton({
 
           const padding = 250
           const img = new Image()
-          img.src = images[0].image
+          img.crossOrigin = 'Anonymous'
+          img.src = (() => {
+            const src = images[0].image
+            if (!src || src.startsWith('blob:') || src.startsWith('data:')) return src
+            const sep = src.includes('?') ? '&' : '?'
+            return `${src}${sep}seleneo-cache-bust=${Date.now()}`
+          })()
 
           img.onload = () => {
             const { naturalWidth, naturalHeight } = img

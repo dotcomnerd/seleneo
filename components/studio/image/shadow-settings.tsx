@@ -127,7 +127,7 @@ export default function ShadowSettings() {
                                 handleShadowButtonClick(shadow)
                             }}
                             className={`flex-center relative h-20 w-24 cursor-pointer rounded-md ${shadow.shadow ===
-                                images[selectedImage! - 1]?.style.imageShadow &&
+                                images.find(img => img.id === selectedImage)?.style.imageShadow &&
                                 'outline-none ring-2 ring-ring ring-offset-2'
                                 }`}
                             style={backgroundStyle}
