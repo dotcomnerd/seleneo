@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button'
 import { useActiveIndexStore } from '@/store/use-active-index'
+import { useDrawingTools } from '@/store/use-drawing'
 
 export default function SidebarButton({
   icon,
@@ -14,10 +15,17 @@ export default function SidebarButton({
 }) {
   const activeIndex = useActiveIndexStore((state) => state.activeIndex)
   const setActiveIndex = useActiveIndexStore((state) => state.setActiveIndex)
+  const { setCurrentTool, currentTool } = useDrawingTools()
+
+  const handleClick = () => {
+    setActiveIndex(index)
+    if (index === 4) setCurrentTool('pen');
+    else if (activeIndex === 4 && currentTool !== 'select') setCurrentTool('select');
+  }
 
   return (
     <li
-      onClick={() => setActiveIndex(index)}
+      onClick={handleClick}
       className={`click-ignored relative flex flex-col items-center gap-2`}
     >
       <Button

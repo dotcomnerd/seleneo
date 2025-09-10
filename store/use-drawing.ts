@@ -48,7 +48,7 @@ interface DrawingToolsState {
     setDragOffset: (offset: DragOffset | null) => void
 }
 
-export const useDrawingTools = create<DrawingToolsState>()((set) => ({
+export const useDrawingTools = create<DrawingToolsState>()((set,) => ({
     currentTool: 'select',
     currentColor: '#000000',
     currentStrokeWidth: 3,
