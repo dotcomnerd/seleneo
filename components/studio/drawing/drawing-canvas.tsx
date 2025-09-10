@@ -117,10 +117,10 @@ export default function DrawingCanvas() {
         const updated = drawings.map((path, index) => {
             if (index === drawings.length - 1) {
                 const lastPoint = path.points[path.points.length - 1]
-                const isDuplicate = lastPoint && 
-                    Math.abs(lastPoint.x - point.x) < 0.5 && 
+                const isDuplicate = lastPoint &&
+                    Math.abs(lastPoint.x - point.x) < 0.5 &&
                     Math.abs(lastPoint.y - point.y) < 0.5
-                
+
                 if (!isDuplicate) {
                     return {
                         ...path,
